@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Thailand Honeymoon 2027</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🇹🇭</text></svg>">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html{scroll-behavior:smooth}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;overflow-x:hidden}
+  body.dark{color-scheme:dark}
+  input,textarea,select,button{font-family:inherit}
+  ::-webkit-scrollbar{width:0}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.24.7/babel.min.js"></script>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const {useState,useEffect}=React;
+
+/*
+ * ── PDF DOWNLOADS ──
+ * Buttons are wired to this function. Replace with your Supabase URLs.
+ * e.g. dlPdf("amanda_sq") → fetch from supabase storage and trigger download
+ */
+const PDF_META = {
+  amanda_sq: { label:"Amanda — SQ E-Ticket", name:"eticket-Amanda-SQ.pdf" },
+  liam_sq:   { label:"Liam — SQ E-Ticket",   name:"eticket-Liam-SQ.pdf" },
+  amanda_15: { label:"Amanda — PG KBV→USM",   name:"Amanda-PG-KBV-USM.pdf" },
+  liam_15:   { label:"Liam — PG KBV→USM",     name:"Liam-PG-KBV-USM.pdf" },
+  amanda_21: { label:"Amanda — PG USM→HKT",   name:"Amanda-PG-USM-HKT.pdf" },
+  liam_21:   { label:"Liam — PG USM→HKT",     name:"Liam-PG-USM-HKT.pdf" },
+};
+
+// TODO: Replace with Supabase storage fetch + download
+const dlPdf = (key) => {
+  const meta = PDF_META[key];
+  if (!meta) return;
+  alert(`Download: ${meta.label}\n\nConnect Supabase storage to enable.`);
+  // Example Supabase implementation:
+  // const { data } = await supabase.storage.from('documents').download(meta.name);
+  // const url = URL.createObjectURL(data);
+  // const a = document.createElement('a'); a.href = url; a.download = meta.name; a.click();
+};
+
+/* ── THEMES ── */
+const themes = {
+  light:{bg:"#f8fafc",card:"#fff",sh:"0 2px 12px rgba(0,0,0,.07)",text:"#1e293b",sub:"#475569",mut:"#94a3b8",bdr:"#e2e8f0",inp:"#f1f5f9",acc:"#0e7490",accBg:"linear-gradient(135deg,#0c4a6e,#0e7490)",teal:"#14b8a6",coral:"#e87461",tabBg:"rgba(255,255,255,.95)",tabBdr:"#e2e8f0",actBdr:"#14b8a6",accomBg:"linear-gradient(135deg,#14b8a6,#0e7490)",ferryBg:"linear-gradient(135deg,#0f766e,#14b8a6)",hero:"linear-gradient(135deg,#0c4a6e 0%,#0e7490 50%,#14b8a6 100%)",noteBg:"#fef3c7",noteTxt:"#475569",pill:"#fef3c7",pillTxt:"#1e293b",tag:"#f1f5f9",tagAcc:"#fef2f2",sandDk:"#f59e0b"},
+  dark:{bg:"#0f172a",card:"#1e293b",sh:"0 2px 12px rgba(0,0,0,.3)",text:"#e2e8f0",sub:"#94a3b8",mut:"#64748b",bdr:"#334155",inp:"#334155",acc:"#7dd3fc",accBg:"linear-gradient(135deg,#1e3a5f,#0e7490)",teal:"#2dd4bf",coral:"#fb923c",tabBg:"rgba(15,23,42,.95)",tabBdr:"#334155",actBdr:"#2dd4bf",accomBg:"linear-gradient(135deg,#0f766e,#0c4a6e)",ferryBg:"linear-gradient(135deg,#064e3b,#0f766e)",hero:"linear-gradient(135deg,#1e293b 0%,#0c4a6e 50%,#0f766e 100%)",noteBg:"rgba(250,204,21,.08)",noteTxt:"#fef08a",pill:"rgba(255,255,255,.1)",pillTxt:"#e2e8f0",tag:"rgba(255,255,255,.06)",tagAcc:"rgba(251,146,60,.15)",sandDk:"#f59e0b"}
+};
+
+/* ── INITIAL DATA ── */
+const mk=(id,emoji,title,dur,dist,how,price,desc)=>({id,emoji,title,dur,dist,how,price,desc});
+const INIT={
+  phiphi:[
+    {id:"pp_d1",label:"Day 1 — Fri 12 Feb",note:"Arrive ~4pm. Settle in, pool, let the island work its magic.",acts:[
+      mk("pp1","🏊","Resort Pool & Beach","2–3 hrs","On-site","Walk","Free","Infinity pool, swim-up bar, white sand. Free kayaks to Monkey Bay."),
+      mk("pp2","🍽️","Dinner at CoCo Restaurant","1.5 hrs","On-site","Walk","฿200–600 (A$9–27)","Thai & international. Fresh sushi, poolside views."),
+      mk("pp3","🌙","Beach Bar Wander","1–2 hrs","1.5 km","Walk 15 min","฿100–300 (A$4–13)","Slinky Bar, fire shows along Loh Dalam."),
+    ]},
+    {id:"pp_d2",label:"Day 2 — Sat 13 Feb",note:"",acts:[
+      mk("pp4","🚤","Maya Bay & Phi Phi Leh Tour","6–7 hrs","Boat trip","Longtail/speedboat","฿750–1,500/pp + ฿400 park (A$33–67+A$18)","Must-do. Maya Bay, Pi Leh Lagoon, Viking Cave, snorkelling."),
+      mk("pp5","🐒","Monkey Beach","Incl.","Boat","Part of tour","Incl.","Crab-eating macaques — usually a stop on the tour."),
+      mk("pp6","🤿","Shark Point Snorkelling","Incl.","Boat","Part of tour","Incl.","Blacktip reef sharks, colourful fish. Gear included."),
+      mk("pp7","💆","Poolside Massage","1 hr","On-site","Walk","฿300–500 (A$13–22)","Thai massage by the pool — ocean breeze included."),
+    ]},
+    {id:"pp_d3",label:"Day 3 — Sun 14 Feb 💕",note:"Happy Valentine's Day!",acts:[
+      mk("pp8","🌄","Phi Phi Viewpoint Hike","1–1.5 hrs","1.5 km","Walk","฿30 (A$1)","Three viewpoints overlooking twin bays. Steep but paved."),
+      mk("pp9","🏝️","Bamboo Island Day Trip","4–5 hrs","Boat trip","Longtail","฿400–800 (A$18–36)","Pristine white sand, incredible snorkelling."),
+      mk("pp10","🍸","Valentine's Sunset Cocktails","2 hrs","On-site","Walk","฿200–500 (A$9–22)","Sunset from CoCo's beach bar. Poolside movies."),
+      mk("pp11","🦑","Night Squid Fishing","3 hrs","Tonsai Pier","Walk 10–15 min","฿500–1,000 (A$22–44)","Fish for squid under stars. Catch cooked fresh."),
+    ]},
+  ],
+  samui:[
+    {id:"sm_d1",label:"Day 4 — Mon 15 Feb",note:"Arrive ~3pm. Travel day — relax into your suite.",acts:[
+      mk("sm1","🏊","Private Pool & Suite","2–3 hrs","On-site","In-room","Free","Your own plunge pool and soaking tub."),
+      mk("sm2","🍹","Beach Bar Cocktails","1 hr","On-site","Walk","฿200–500 (A$9–22)","Welcome cocktails watching Chaweng Beach."),
+    ]},
+    {id:"sm_d2",label:"Day 5 — Tue 16 Feb",note:"",acts:[
+      mk("sm3","🏝️","Ang Thong Marine Park","7–8.5 hrs","Boat trip","Hotel pickup","฿1,200–1,800/pp (A$53–80)","Sea caves, Emerald Lake, snorkel. Lunch incl."),
+      mk("sm4","🧖","SALA Spa Evening","1.5–2 hrs","Garden Wing","Walk 2 min","฿2,000–4,500 (A$89–200)","Moon-inspired spa. Thai or couples' massage."),
+    ]},
+    {id:"sm_d3",label:"Day 6 — Wed 17 Feb",note:"",acts:[
+      mk("sm5","🐘","Elephant Sanctuary","3–4 hrs","20 km","Hotel pickup","฿1,600–2,000/pp (A$71–89)","Ethical sanctuary — feed & walk with elephants."),
+      mk("sm6","🛍️","Fisherman's Village","2–3 hrs","8 km","Grab 15 min","Free entry","Bophut shophouses. Friday market is the big one."),
+    ]},
+    {id:"sm_d4",label:"Day 7 — Thu 18 Feb",note:"",acts:[
+      mk("sm7","🏄","Chaweng Water Sports","2–3 hrs","On-site","Walk","฿500–2,000 (A$22–89)","Jet skiing, parasailing, paddleboarding."),
+      mk("sm8","🍳","Thai Cooking Class","4–5 hrs","Various","Pickup incl.","฿1,200–1,800 (A$53–80)","Pad thai, green curry, mango sticky rice."),
+      mk("sm9","🍹","Chaweng Nightlife","Evening","1–3 km","Walk / Grab","฿150–400 (A$7–18)","Beach clubs, live music. Ark Bar."),
+    ]},
+    {id:"sm_d5",label:"Day 8 — Fri 19 Feb",note:"",acts:[
+      mk("sm10","🗿","Big Buddha Temple","1–1.5 hrs","10 km","Grab 15 min","Free","12m golden Buddha. Cover shoulders & knees."),
+      mk("sm11","💧","Na Muang Waterfalls","1.5–2 hrs","12 km","Grab 20 min","Free","Two jungle waterfalls with swimming holes."),
+      mk("sm12","🪨","Hin Ta & Hin Yai Rocks","30 min","14 km","Combine w/ waterfalls","Free","Famous rock formations."),
+      mk("sm13","🌅","Sunset Dinner Cruise","3 hrs","Hotel pickup","Transfer incl.","฿2,500–3,200 (A$111–142)","Red Baron sailing with multi-course dinner."),
+    ]},
+    {id:"sm_d6",label:"Day 9 — Sat 20 Feb",note:"",acts:[
+      mk("sm14","🐷","Pig Island (Koh Madsum)","4–5 hrs","South coast","Longtail","฿1,500–3,000 (A$67–133) boat","Pigs on the beach! Combine with Koh Tan."),
+      mk("sm15","🚙","4WD Jungle Safari","6–7 hrs","Island-wide","Hotel pickup","฿1,000–1,600 (A$44–71)","Off-road. Viewpoints, temples. Lunch incl."),
+      mk("sm16","🛒","Lamai Night Market","1.5–2 hrs","14 km","Grab 20 min","฿50–200/dish (A$2–9)","Authentic street food."),
+    ]},
+  ],
+  phuket:[
+    {id:"pk_d1",label:"Day 10 — Sat 21 Feb",note:"Arrive ~3pm. Beach sunset, then Bangla Road.",acts:[
+      mk("pk1","🌅","Patong Beach Sunset","1–2 hrs","On-site","Walk","Free","Andaman Sea sunsets are spectacular."),
+      mk("pk2","🌃","Bangla Road","2–3 hrs","500m","Walk 5 min","฿100–400 (A$4–18)","Neon walking street. Go after 9pm."),
+    ]},
+    {id:"pk_d2",label:"Day 11 — Sun 22 Feb",note:"",acts:[
+      mk("pk3","🏖️","Patong Water Sports","2–3 hrs","On-site","Walk","฿500–2,500 (A$22–111)","Jet skiing, parasailing, banana boats."),
+      mk("pk4","🛕","Big Buddha & Wat Chalong","3–4 hrs","16 km","Grab 30 min","Free (donation)","45m marble Buddha. 360° views. Dress modestly."),
+      mk("pk5","🏘️","Phuket Old Town","2–3 hrs","12 km","Grab 25 min","Free","Sino-Portuguese streets, cafés, street art."),
+    ]},
+    {id:"pk_d3",label:"Day 12 — Mon 23 Feb",note:"",acts:[
+      mk("pk6","🏝️","James Bond Island","8–9 hrs","Full day","Hotel pickup","฿1,500–2,200 (A$67–98)","Limestone karsts, sea caves, mangroves. Lunch incl."),
+      mk("pk7","💆","Swasana Spa","1.5–2 hrs","On-site","Walk","฿1,500–3,500 (A$67–156)","Massage, wraps, facials. Perfect after boat day."),
+    ]},
+    {id:"pk_d4",label:"Day 13 — Tue 24 Feb",note:"",acts:[
+      mk("pk8","🏖️","Freedom Beach","2–3 hrs","3 km","Longtail 10 min","฿1,500 boat + ฿100 entry (A$71)","Hidden white sand, boat-only. Great snorkelling."),
+      mk("pk9","🥊","Muay Thai Fight Night","2.5–3 hrs","2 km","Grab 5 min","฿1,500–2,500 (A$67–111)","Ringside at Patong Boxing Stadium."),
+      mk("pk10","🛒","Malin Plaza Night Market","1–2 hrs","1 km","Walk 10 min","฿40–200/dish (A$2–9)","Street food, souvenirs. Last-night shopping."),
+    ]},
+    {id:"pk_d5",label:"Day 14 — Wed 25 Feb",note:"Check-out 12:00. Final breakfast, last swim.",acts:[
+      mk("pk11","☀️","Final Beach Walk","1 hr","On-site","Walk","Free","One last stroll. Grab a coconut. Soak it in."),
+    ]},
+  ],
+};
+
+/* ── STORAGE ── */
+const SK="th-honeymoon-2027";
+const load=()=>{try{const s=localStorage.getItem(SK);return s?JSON.parse(s):null}catch{return null}};
+const save=(s)=>{try{localStorage.setItem(SK,JSON.stringify(s))}catch{}};
+
+const TABS=["overview","phiphi","samui","phuket","settings"];
+const TLAB={overview:"Overview",phiphi:"Phi Phi",samui:"Samui",phuket:"Phuket",settings:"Settings"};
+const TICO={overview:"🗺️",phiphi:"🏝️",samui:"🌴",phuket:"⛱️",settings:"⚙️"};
+
+/* ── COMPONENTS ── */
+const Flight=({th,from,to,date,dep,arr,flight,carrier,bref,notes,pdfKeys})=>(
+  <div style={{background:th.accBg,borderRadius:16,padding:"16px 18px",color:"#fff"}}>
+    <div style={{display:"flex",justifyContent:"space-between",marginBottom:8}}>
+      <span style={{fontSize:11,opacity:.8,textTransform:"uppercase",letterSpacing:1}}>{carrier}</span>
+      <span style={{fontSize:11,background:"rgba(255,255,255,.2)",padding:"2px 8px",borderRadius:20}}>{flight}</span>
+    </div>
+    <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:6}}>
+      <div><div style={{fontSize:22,fontWeight:700}}>{dep}</div><div style={{fontSize:12,opacity:.8}}>{from}</div></div>
+      <div style={{flex:1,textAlign:"center",padding:"0 6px"}}><div style={{borderTop:"1.5px dashed rgba(255,255,255,.4)",position:"relative",margin:"10px 0"}}><span style={{position:"absolute",top:-8,left:"50%",transform:"translateX(-50%)",fontSize:14}}>✈️</span></div></div>
+      <div style={{textAlign:"right"}}><div style={{fontSize:22,fontWeight:700}}>{arr}</div><div style={{fontSize:12,opacity:.8}}>{to}</div></div>
+    </div>
+    <div style={{fontSize:11,opacity:.7}}>{date}</div>
+    {bref&&<div style={{fontSize:11,marginTop:6,background:"rgba(255,255,255,.15)",padding:"3px 8px",borderRadius:8,display:"inline-block"}}>Ref: {bref}</div>}
+    {notes&&<div style={{fontSize:11,opacity:.7,marginTop:4,fontStyle:"italic"}}>{notes}</div>}
+    {pdfKeys&&<div style={{marginTop:8,display:"flex",flexWrap:"wrap",gap:6}}>{pdfKeys.map(k=><button key={k} onClick={()=>dlPdf(k)} style={{display:"inline-flex",alignItems:"center",gap:4,background:"rgba(255,255,255,.2)",color:"#fff",border:"1px solid rgba(255,255,255,.3)",borderRadius:8,padding:"5px 10px",fontSize:11,fontWeight:600,cursor:"pointer"}}>⬇ {PDF_META[k].label}</button>)}</div>}
+  </div>
+);
+
+const LBar=({th,airport,dur,tip})=>(
+  <div style={{display:"flex",alignItems:"center",gap:10,padding:"8px 18px",background:th.tag,borderTop:`1px dashed ${th.bdr}`,borderBottom:`1px dashed ${th.bdr}`}}>
+    <span style={{fontSize:14}}>⏱</span><div><div style={{fontSize:12,fontWeight:600,color:th.text}}>Layover in {airport}</div><div style={{fontSize:11,color:th.mut}}>{dur}{tip?` · ${tip}`:""}</div></div>
+  </div>
+);
+
+const FG=({children})=><div style={{borderRadius:16,overflow:"hidden",marginBottom:12}}>{children}</div>;
+
+const Ferry=({th,from,to,dep,arr,dur,type,date,cost})=>(
+  <div style={{background:th.ferryBg,borderRadius:16,padding:"16px 18px",color:"#fff",marginBottom:12}}>
+    <div style={{display:"flex",justifyContent:"space-between",marginBottom:8}}>
+      <span style={{fontSize:11,opacity:.8,textTransform:"uppercase",letterSpacing:1}}>{type}</span>
+      <span style={{fontSize:11,opacity:.7}}>{date}</span>
+    </div>
+    <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:6}}>
+      <div><div style={{fontSize:22,fontWeight:700}}>{dep}</div><div style={{fontSize:12,opacity:.8}}>{from}</div></div>
+      <div style={{flex:1,textAlign:"center",padding:"0 6px"}}><div style={{borderTop:"1.5px dashed rgba(255,255,255,.4)",position:"relative",margin:"10px 0"}}><span style={{position:"absolute",top:-8,left:"50%",transform:"translateX(-50%)",fontSize:14}}>⛴</span></div></div>
+      <div style={{textAlign:"right"}}><div style={{fontSize:22,fontWeight:700}}>{arr}</div><div style={{fontSize:12,opacity:.8}}>{to}</div></div>
+    </div>
+    <div style={{display:"flex",gap:6}}>
+      <span style={{fontSize:11,background:"rgba(255,255,255,.2)",padding:"2px 8px",borderRadius:20}}>⏱ {dur}</span>
+      {cost&&<span style={{fontSize:11,background:"rgba(255,255,255,.2)",padding:"2px 8px",borderRadius:20}}>💰 {cost}</span>}
+    </div>
+  </div>
+);
+
+const Xfer=({th,icon,from,to,time,method,cost})=>(
+  <div style={{display:"flex",alignItems:"center",gap:12,padding:"10px 14px",background:th.tag,borderRadius:12,marginBottom:8,fontSize:13}}>
+    <span style={{fontSize:20}}>{icon}</span>
+    <div style={{flex:1}}><div style={{fontWeight:600,color:th.text}}>{from} → {to}</div><div style={{color:th.mut,fontSize:11}}>{method} · {time}</div></div>
+    {cost&&<div style={{fontWeight:700,color:th.coral,fontSize:13}}>{cost}</div>}
+  </div>
+);
+
+const Acc=({th,name,room,dates,nights,bfast,ppn,total,feat})=>(
+  <div style={{background:th.card,borderRadius:16,overflow:"hidden",boxShadow:th.sh,marginBottom:16}}>
+    <div style={{background:th.accomBg,padding:"14px 18px",color:"#fff"}}>
+      <div style={{fontSize:11,textTransform:"uppercase",letterSpacing:1,opacity:.8,marginBottom:4}}>Your Accommodation</div>
+      <div style={{fontSize:18,fontWeight:700}}>{name}</div>
+      <div style={{fontSize:13,opacity:.9,marginTop:2}}>{room}</div>
+    </div>
+    <div style={{padding:"14px 18px"}}>
+      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginBottom:10}}>
+        {[["Check-in",dates[0]],["Check-out",dates[1]],["Nights",nights],["Breakfast",bfast]].map(([l,v],i)=>(
+          <div key={i} style={{background:th.inp,borderRadius:8,padding:"6px 10px"}}>
+            <div style={{fontSize:10,color:th.mut,textTransform:"uppercase"}}>{l}</div>
+            <div style={{fontSize:13,fontWeight:600,color:th.text}}>{v}</div>
+          </div>
+        ))}
+      </div>
+      <div style={{borderTop:`1px solid ${th.bdr}`,paddingTop:10,display:"flex",justifyContent:"space-between"}}>
+        <span style={{fontSize:12,color:th.mut}}>A${ppn}/night</span>
+        <span style={{fontSize:16,fontWeight:700,color:th.acc}}>A${total} total</span>
+      </div>
+      {feat&&<div style={{display:"flex",flexWrap:"wrap",gap:6,marginTop:10}}>{feat.map((f,i)=><span key={i} style={{fontSize:11,background:th.pill,color:th.pillTxt,padding:"3px 8px",borderRadius:20}}>{f}</span>)}</div>}
+    </div>
+  </div>
+);
+
+const ActC=({th,act,edit,onEdit,onRm})=>(
+  <div style={{background:th.card,borderRadius:14,padding:"14px 16px",marginBottom:10,boxShadow:th.sh,borderLeft:`3px solid ${th.actBdr}`,position:"relative"}}>
+    {edit&&<div style={{position:"absolute",top:8,right:8,display:"flex",gap:4}}>
+      <button onClick={()=>onEdit(act)} style={{background:th.acc,color:"#fff",border:"none",borderRadius:6,width:28,height:28,fontSize:13,cursor:"pointer"}}>✏️</button>
+      <button onClick={()=>onRm(act.id)} style={{background:th.coral,color:"#fff",border:"none",borderRadius:6,width:28,height:28,fontSize:13,cursor:"pointer"}}>✕</button>
+    </div>}
+    <div style={{display:"flex",alignItems:"flex-start",gap:10,paddingRight:edit?70:0}}>
+      <span style={{fontSize:24,lineHeight:1,flexShrink:0}}>{act.emoji}</span>
+      <div style={{flex:1,minWidth:0}}>
+        <div style={{fontWeight:700,fontSize:14,color:th.text,marginBottom:4}}>{act.title}</div>
+        {act.desc&&<div style={{fontSize:12,color:th.sub,marginBottom:8,lineHeight:1.4}}>{act.desc}</div>}
+        <div style={{display:"flex",flexWrap:"wrap",gap:5}}>
+          {act.dur&&<span style={{fontSize:10,background:th.tag,color:th.sub,padding:"2px 7px",borderRadius:6}}>⏱ {act.dur}</span>}
+          {act.dist&&<span style={{fontSize:10,background:th.tag,color:th.sub,padding:"2px 7px",borderRadius:6}}>📍 {act.dist}</span>}
+          {act.how&&<span style={{fontSize:10,background:th.tag,color:th.sub,padding:"2px 7px",borderRadius:6}}>🚗 {act.how}</span>}
+          {act.price&&<span style={{fontSize:10,background:th.tagAcc,color:th.coral,padding:"2px 7px",borderRadius:6}}>💰 {act.price}</span>}
+        </div>
+      </div>
+    </div>
+  </div>
+);
+
+const Sec=({th,children})=><div style={{fontSize:13,fontWeight:700,textTransform:"uppercase",letterSpacing:1.5,color:th.acc,marginTop:22,marginBottom:10,display:"flex",alignItems:"center",gap:8}}><div style={{width:20,height:2,background:th.acc,borderRadius:1}}/>{children}</div>;
+const Note=({th,children,bg})=><div style={{background:bg||th.noteBg,borderRadius:12,padding:"10px 14px",marginBottom:12,fontSize:12,color:th.noteTxt,lineHeight:1.5}}>{children}</div>;
+
+/* ── EDIT MODAL ── */
+const EditM=({th,act,days,curDay,onSave,onMove,onClose})=>{
+  const[f,sF]=useState({...act});
+  const[td,sTd]=useState(curDay);
+  const u=(k,v)=>sF(p=>({...p,[k]:v}));
+  const inp=(l,k)=>(<div style={{marginBottom:10}}><div style={{fontSize:11,color:th.mut,marginBottom:3,textTransform:"uppercase"}}>{l}</div><input value={f[k]||""} onChange={e=>u(k,e.target.value)} style={{width:"100%",padding:"8px 10px",borderRadius:8,border:`1px solid ${th.bdr}`,background:th.inp,color:th.text,fontSize:13,boxSizing:"border-box",outline:"none"}}/></div>);
+  return(
+    <div style={{position:"fixed",inset:0,zIndex:9999,background:"rgba(0,0,0,.6)",display:"flex",alignItems:"flex-end",justifyContent:"center"}} onClick={e=>{if(e.target===e.currentTarget)onClose()}}>
+      <div style={{background:th.card,borderRadius:"20px 20px 0 0",width:"100%",maxWidth:480,maxHeight:"85vh",overflow:"auto",padding:"20px 20px env(safe-area-inset-bottom,20px)"}}>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}>
+          <span style={{fontSize:16,fontWeight:700,color:th.text}}>Edit Activity</span>
+          <button onClick={onClose} style={{background:th.inp,border:"none",borderRadius:8,width:32,height:32,fontSize:16,color:th.text,cursor:"pointer"}}>✕</button>
+        </div>
+        <div style={{marginBottom:10}}><div style={{fontSize:11,color:th.mut,marginBottom:3,textTransform:"uppercase"}}>Emoji</div><input value={f.emoji} onChange={e=>u("emoji",e.target.value)} style={{width:60,padding:"8px",borderRadius:8,border:`1px solid ${th.bdr}`,background:th.inp,color:th.text,fontSize:20,textAlign:"center",boxSizing:"border-box",outline:"none"}}/></div>
+        {inp("Title","title")}
+        <div style={{marginBottom:10}}><div style={{fontSize:11,color:th.mut,marginBottom:3,textTransform:"uppercase"}}>Description</div><textarea value={f.desc||""} onChange={e=>u("desc",e.target.value)} rows={3} style={{width:"100%",padding:"8px 10px",borderRadius:8,border:`1px solid ${th.bdr}`,background:th.inp,color:th.text,fontSize:13,boxSizing:"border-box",outline:"none",resize:"vertical",fontFamily:"inherit"}}/></div>
+        {inp("Duration","dur")}{inp("Distance","dist")}{inp("Transport","how")}{inp("Price","price")}
+        <div style={{marginBottom:16}}><div style={{fontSize:11,color:th.mut,marginBottom:3,textTransform:"uppercase"}}>Move to Day</div>
+          <select value={td} onChange={e=>sTd(e.target.value)} style={{width:"100%",padding:"8px 10px",borderRadius:8,border:`1px solid ${th.bdr}`,background:th.inp,color:th.text,fontSize:13,boxSizing:"border-box",outline:"none"}}>
+            {days.map(d=><option key={d.id} value={d.id}>{d.label}</option>)}
+          </select>
+        </div>
+        <div style={{display:"flex",gap:10}}>
+          <button onClick={()=>{if(td!==curDay)onMove(f,td);else onSave(f);onClose();}} style={{flex:1,padding:12,borderRadius:12,border:"none",background:th.acc,color:"#fff",fontSize:14,fontWeight:700,cursor:"pointer"}}>Save</button>
+          <button onClick={onClose} style={{padding:"12px 20px",borderRadius:12,border:`1px solid ${th.bdr}`,background:"transparent",color:th.text,fontSize:14,cursor:"pointer"}}>Cancel</button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+/* ── ADD MODAL ── */
+const AddM=({th,standby,onNew,onRestore,onClose})=>(
+  <div style={{position:"fixed",inset:0,zIndex:9999,background:"rgba(0,0,0,.6)",display:"flex",alignItems:"flex-end",justifyContent:"center"}} onClick={e=>{if(e.target===e.currentTarget)onClose()}}>
+    <div style={{background:th.card,borderRadius:"20px 20px 0 0",width:"100%",maxWidth:480,maxHeight:"70vh",overflow:"auto",padding:"20px 20px env(safe-area-inset-bottom,20px)"}}>
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}>
+        <span style={{fontSize:16,fontWeight:700,color:th.text}}>Add Activity</span>
+        <button onClick={onClose} style={{background:th.inp,border:"none",borderRadius:8,width:32,height:32,fontSize:16,color:th.text,cursor:"pointer"}}>✕</button>
+      </div>
+      <button onClick={()=>{onNew();onClose();}} style={{width:"100%",padding:14,borderRadius:12,border:`2px dashed ${th.acc}`,background:"transparent",color:th.acc,fontSize:14,fontWeight:600,cursor:"pointer",marginBottom:16}}>+ Create New Activity</button>
+      {standby.length>0&&<>
+        <div style={{fontSize:12,fontWeight:600,color:th.mut,textTransform:"uppercase",marginBottom:8}}>Restore from Standby ({standby.length})</div>
+        {standby.map(a=>(
+          <button key={a.id} onClick={()=>{onRestore(a.id);onClose();}} style={{width:"100%",display:"flex",alignItems:"center",gap:10,padding:"10px 14px",background:th.tag,border:`1px solid ${th.bdr}`,borderRadius:12,marginBottom:6,cursor:"pointer",textAlign:"left"}}>
+            <span style={{fontSize:20}}>{a.emoji}</span>
+            <div style={{flex:1}}><div style={{fontSize:13,fontWeight:600,color:th.text}}>{a.title}</div><div style={{fontSize:11,color:th.mut}}>{a.dur} · {a.price}</div></div>
+            <span style={{color:th.acc,fontSize:13,fontWeight:600}}>+</span>
+          </button>
+        ))}
+      </>}
+    </div>
+  </div>
+);
+
+/* ── MAIN ── */
+function App(){
+  const[tab,setTab]=useState("overview");
+  const[dark,setDark]=useState(false);
+  const[edit,setEdit]=useState(false);
+  const[data,setData]=useState(INIT);
+  const[standby,setStandby]=useState([]);
+  const[ea,sEa]=useState(null);const[ed,sEd]=useState(null);const[eDst,sEDst]=useState(null);
+  const[aDay,sADay]=useState(null);const[aDst,sADst]=useState(null);
+  const[loaded,setLoaded]=useState(false);
+  const th=dark?themes.dark:themes.light;
+
+  useEffect(()=>{const s=load();if(s){if(s.data)setData(s.data);if(s.standby)setStandby(s.standby);if(s.dark!==undefined)setDark(s.dark)}setLoaded(true)},[]);
+  useEffect(()=>{if(loaded)save({data,standby,dark})},[data,standby,dark,loaded]);
+  useEffect(()=>{document.body.className=dark?"dark":""},[dark]);
+
+  const allDays=["phiphi","samui","phuket"].flatMap(d=>(data[d]||[]).map(x=>({...x,dest:d})));
+  const rmAct=(dest,dayId,actId)=>{const day=data[dest].find(d=>d.id===dayId);const act=day?.acts.find(a=>a.id===actId);if(!act)return;setStandby(s=>[...s,{...act,fromDest:dest,fromDay:dayId}]);setData(p=>({...p,[dest]:p[dest].map(d=>d.id===dayId?{...d,acts:d.acts.filter(a=>a.id!==actId)}:d)}))};
+  const saveAct=(dest,dayId,upd)=>{setData(p=>({...p,[dest]:p[dest].map(d=>d.id===dayId?{...d,acts:d.acts.map(a=>a.id===upd.id?upd:a)}:d)}))};
+  const moveAct=(dest,fromDay,act,toDay)=>{const tDest=allDays.find(d=>d.id===toDay)?.dest||dest;setData(p=>{const n={...p};n[dest]=n[dest].map(d=>d.id===fromDay?{...d,acts:d.acts.filter(a=>a.id!==act.id)}:d);n[tDest]=n[tDest].map(d=>d.id===toDay?{...d,acts:[...d.acts,act]}:d);return n})};
+  const addNew=(dest,dayId)=>{const id=`n${Date.now()}`;const act=mk(id,"🎯","New Activity","","","","","");setData(p=>({...p,[dest]:p[dest].map(d=>d.id===dayId?{...d,acts:[...d.acts,act]}:d)}));sEa(act);sEd(dayId);sEDst(dest)};
+  const restore=(dest,dayId,actId)=>{const act=standby.find(a=>a.id===actId);if(!act)return;setStandby(s=>s.filter(a=>a.id!==actId));const{fromDest,fromDay,...clean}=act;setData(p=>({...p,[dest]:p[dest].map(d=>d.id===dayId?{...d,acts:[...d.acts,clean]}:d)}))};
+
+  const renderDays=(dest)=>data[dest]?.map(day=>(
+    <div key={day.id}>
+      <Sec th={th}>{day.label}</Sec>
+      {day.note&&<Note th={th}>{day.note}</Note>}
+      {day.acts.map(a=><ActC key={a.id} th={th} act={a} edit={edit} onEdit={a=>{sEa(a);sEd(day.id);sEDst(dest)}} onRm={id=>rmAct(dest,day.id,id)}/>)}
+      {edit&&<button onClick={()=>{sADay(day.id);sADst(dest)}} style={{width:"100%",padding:12,borderRadius:12,border:`2px dashed ${th.acc}`,background:"transparent",color:th.acc,fontSize:13,fontWeight:600,cursor:"pointer",marginBottom:12}}>+ Add Activity</button>}
+    </div>
+  ));
+
+  return(
+    <div style={{background:th.bg,minHeight:"100vh",maxWidth:480,margin:"0 auto",transition:"background .3s"}}>
+      <div style={{padding:"16px 16px 100px"}}>
+
+        {tab==="overview"&&<>
+          <div style={{background:th.hero,borderRadius:20,padding:"28px 22px",color:"#fff",marginBottom:20,position:"relative",overflow:"hidden"}}>
+            <div style={{position:"absolute",top:-20,right:-20,fontSize:80,opacity:.1}}>🌺</div>
+            <div style={{fontSize:12,textTransform:"uppercase",letterSpacing:2,opacity:.7,marginBottom:6}}>February 2027</div>
+            <div style={{fontSize:26,fontWeight:800,lineHeight:1.2,marginBottom:4}}>Thailand<br/>Honeymoon</div>
+            <div style={{fontSize:13,opacity:.8}}>14 nights · 3 destinations · 2 travellers</div>
+            <div style={{display:"flex",gap:6,marginTop:14,flexWrap:"wrap"}}>
+              {["Phi Phi Islands","Koh Samui","Phuket"].map((d,i)=><span key={i} style={{fontSize:11,background:"rgba(255,255,255,.2)",padding:"4px 10px",borderRadius:20}}>{d}</span>)}
+            </div>
+          </div>
+          <Sec th={th}>Trip Timeline</Sec>
+          {[{d:"Thu 11 – Fri 12 Feb",l:"Travel Day",s:"BNE → SIN → Phuket → Phi Phi",i:"✈️",t:1},{d:"Fri 12 – Mon 15 Feb",l:"Koh Phi Phi",s:"3 nights · CoCo Beach Resort",i:"🏝️"},{d:"Mon 15 Feb",l:"Travel Day",s:"Phi Phi → Krabi → Koh Samui",i:"🚤",t:1},{d:"Mon 15 – Sat 21 Feb",l:"Koh Samui",s:"6 nights · SALA Samui",i:"🌴"},{d:"Sat 21 Feb",l:"Travel Day",s:"Koh Samui → Phuket",i:"✈️",t:1},{d:"Sat 21 – Wed 25 Feb",l:"Phuket",s:"4 nights · Impiana Patong",i:"⛱️"},{d:"Thu 25 – Fri 26 Feb",l:"Travel Home",s:"Phuket → SIN → Brisbane",i:"🏠",t:1}].map((x,i)=>(
+            <div key={i} style={{display:"flex",gap:12,marginBottom:2}}>
+              <div style={{display:"flex",flexDirection:"column",alignItems:"center",width:28,flexShrink:0}}>
+                <div style={{width:28,height:28,borderRadius:"50%",background:x.t?th.tag:`linear-gradient(135deg,${th.coral},${th.sandDk})`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:13}}>{x.i}</div>
+                {i<6&&<div style={{width:2,flex:1,background:th.bdr,minHeight:20}}/>}
+              </div>
+              <div style={{paddingBottom:16}}><div style={{fontSize:11,color:th.mut}}>{x.d}</div><div style={{fontWeight:700,fontSize:14,color:th.text}}>{x.l}</div><div style={{fontSize:12,color:th.sub}}>{x.s}</div></div>
+            </div>
+          ))}
+          <Sec th={th}>Budget</Sec>
+          <div style={{background:th.card,borderRadius:14,overflow:"hidden",boxShadow:th.sh}}>
+            {[["Flights & Ferries","A$3,753"],["Accommodation","A$7,457"],["Transfers","A$190"]].map(([l,v],i)=>(
+              <div key={i} style={{display:"flex",justifyContent:"space-between",padding:"12px 16px",borderBottom:`1px solid ${th.bdr}`}}>
+                <span style={{fontSize:13,color:th.sub}}>{l}</span><span style={{fontSize:13,fontWeight:700,color:th.text}}>{v}</span>
+              </div>
+            ))}
+            <div style={{display:"flex",justifyContent:"space-between",padding:"14px 16px",background:th.accBg,color:"#fff"}}>
+              <span style={{fontSize:14,fontWeight:600}}>Estimated Total</span><span style={{fontSize:16,fontWeight:800}}>~A$11,400</span>
+            </div>
+          </div>
+          <Sec th={th}>Booking References</Sec>
+          <div style={{background:th.card,borderRadius:14,padding:16,boxShadow:th.sh}}>
+            {[["BNE ↔ HKT","Singapore Airlines","DIE356"],["KBV → USM","Bangkok Airways","D5VC6X"],["USM → HKT","Bangkok Airways","D64QO5"]].map(([r,c,ref],i)=>(
+              <div key={i} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"8px 0",borderBottom:i<2?`1px solid ${th.bdr}`:"none"}}>
+                <div><div style={{fontSize:13,fontWeight:600,color:th.text}}>{r}</div><div style={{fontSize:11,color:th.mut}}>{c}</div></div>
+                <code style={{fontSize:13,fontWeight:700,color:th.acc,background:th.tag,padding:"3px 8px",borderRadius:6}}>{ref}</code>
+              </div>
+            ))}
+          </div>
+        </>}
+
+        {tab==="phiphi"&&<>
+          <div style={{fontSize:22,fontWeight:800,color:th.text}}>Koh Phi Phi 🏝️</div>
+          <div style={{fontSize:13,color:th.mut,marginBottom:16}}>Fri 12 – Mon 15 Feb · 3 nights</div>
+          <Sec th={th}>Getting There</Sec>
+          <FG><Flight th={th} from="BNE" to="SIN" date="Thu 11 Feb" dep="23:25" arr="05:05" flight="SQ-246" carrier="Singapore Airlines" bref="DIE356" notes="A350-900 · 25kg" pdfKeys={["amanda_sq","liam_sq"]}/><LBar th={th} airport="Singapore (Changi)" dur="1h 20min"/><Flight th={th} from="SIN" to="HKT" date="Fri 12 Feb" dep="06:25" arr="07:50" flight="SQ-724" carrier="Singapore Airlines" notes="737-8 MAX"/></FG>
+          <Xfer th={th} icon="🚕" from="Phuket Airport" to="Rassada Pier" time="40–60 min" method="Grab / Bolt" cost="A$40"/>
+          <Note th={th}>⏳ 1.5 hr wait at Rassada Pier</Note>
+          <Ferry th={th} type="Ferry" from="Rassada Pier" to="Phi Phi Tonsai" dep="13:30" arr="15:30" dur="2 hours" date="Fri 12 Feb" cost="A$102 (both)"/>
+          <Sec th={th}>Your Stay</Sec>
+          <Acc th={th} name="Phi Phi CoCo Beach Resort" room="Pool Beach Bungalow" dates={["Fri 12 Feb","Mon 15 Feb"]} nights="3" bfast="Included" ppn="538.67" total="1,616" feat={["🏖️ Beach","🏊 Pool","🛶 Kayaks","💆 Massage","📶 WiFi","🎬 Movies"]}/>
+          {renderDays("phiphi")}
+          <Sec th={th}>Departure — Mon 15 Feb</Sec>
+          <Note th={th}>Check-out 11:00. Tonsai Pier for 10:30 speedboat.</Note>
+          <Ferry th={th} type="Speedboat" from="Phi Phi" to="Krabi Pier" dep="10:30" arr="11:30" dur="1 hour" date="Mon 15 Feb" cost="A$102 (both)"/>
+          <Xfer th={th} icon="🚕" from="Krabi Pier" to="KBV Airport" time="30 min" method="Grab / Bolt" cost="A$30"/>
+          <Note th={th}>⏳ 1h 15min at Krabi Airport</Note>
+          <FG><Flight th={th} from="KBV" to="USM" date="Mon 15 Feb" dep="13:45" arr="14:30" flight="PG-266" carrier="Bangkok Airways" bref="D5VC6X" notes="45 min · 20kg" pdfKeys={["amanda_15","liam_15"]}/></FG>
+          <Xfer th={th} icon="🚕" from="Samui Airport" to="SALA Samui" time="10 min" method="Grab / Bolt" cost="A$10"/>
+        </>}
+
+        {tab==="samui"&&<>
+          <div style={{fontSize:22,fontWeight:800,color:th.text}}>Koh Samui 🌴</div>
+          <div style={{fontSize:13,color:th.mut,marginBottom:16}}>Mon 15 – Sat 21 Feb · 6 nights</div>
+          <Sec th={th}>Your Stay</Sec>
+          <Acc th={th} name="SALA Samui Chaweng Beach" room="Oceanfront Balcony Pool Suite" dates={["Mon 15 Feb","Sat 21 Feb"]} nights="6" bfast="Not included" ppn="732.70" total="4,396" feat={["🏖️ Beach","🏊 Private pool","🛁 Bathtub","🌅 Ocean view","🧖 Spa","🍽️ The Tent"]}/>
+          <Note th={th}>Oceanfront Wing — private pool, ocean-view balcony. The Tent right there. Sexy Fish & SALA Spa across the road.</Note>
+          {renderDays("samui")}
+          <Sec th={th}>Departure — Sat 21 Feb</Sec>
+          <Note th={th}>Check-out 11:00. 10 min to airport.</Note>
+          <Xfer th={th} icon="🚕" from="SALA Samui" to="Samui Airport" time="10 min" method="Grab / Bolt" cost="A$10"/>
+          <FG><Flight th={th} from="USM" to="HKT" date="Sat 21 Feb" dep="12:30" arr="13:30" flight="PG-253" carrier="Bangkok Airways" bref="D64QO5" notes="1 hr · 20kg · Seats 07C/07D" pdfKeys={["amanda_21","liam_21"]}/></FG>
+          <Xfer th={th} icon="🚕" from="Phuket Airport" to="Impiana Patong" time="1 hr" method="Grab / Bolt" cost="A$50"/>
+        </>}
+
+        {tab==="phuket"&&<>
+          <div style={{fontSize:22,fontWeight:800,color:th.text}}>Phuket ⛱️</div>
+          <div style={{fontSize:13,color:th.mut,marginBottom:16}}>Sat 21 – Wed 25 Feb · 4 nights</div>
+          <Sec th={th}>Your Stay</Sec>
+          <Acc th={th} name="Impiana Resort Patong" room="Superior Ocean View" dates={["Sat 21 Feb","Wed 25 Feb"]} nights="4" bfast="Included" ppn="361.25" total="1,445" feat={["🏖️ Beach","🏊 Pool","🧖 Spa","🍽️ Sala Bua","🍸 Bar","📍 Bangla Rd"]}/>
+          <Note th={th}>Right on Patong Beach. 5 min to Bangla Road & Jungceylon.</Note>
+          {renderDays("phuket")}
+          <Sec th={th}>Going Home — Wed 25 Feb</Sec>
+          <Xfer th={th} icon="🚕" from="Patong" to="Phuket Airport" time="1 hr" method="Grab / Bolt" cost="A$50"/>
+          <FG><Flight th={th} from="HKT" to="SIN" date="Wed 25 Feb" dep="14:55" arr="18:00" flight="SQ-731" carrier="Singapore Airlines" bref="DIE356" notes="737-8 MAX · 25kg" pdfKeys={["amanda_sq","liam_sq"]}/><LBar th={th} airport="Singapore (Changi)" dur="3h 35min" tip="Shops & food in T3"/><Flight th={th} from="SIN" to="BNE" date="Wed 25→Thu 26 Feb" dep="21:35" arr="07:15+1" flight="SQ-235" carrier="Singapore Airlines" notes="A350-900 · Arrive BNE Fri 26 Feb 🎉"/></FG>
+        </>}
+
+        {tab==="settings"&&<>
+          <div style={{fontSize:22,fontWeight:800,color:th.text}}>Settings ⚙️</div>
+          <div style={{fontSize:13,color:th.mut,marginBottom:20}}>Customise your itinerary</div>
+          {[["🌙","Dark Mode","Light and dark theme",dark,()=>setDark(!dark)],["✏️","Edit Mode","Modify, add, remove activities",edit,()=>setEdit(!edit)]].map(([ico,t,s,on,fn],i)=>(
+            <div key={i} style={{background:th.card,borderRadius:16,padding:16,boxShadow:th.sh,marginBottom:12}}>
+              <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+                <div><div style={{fontSize:14,fontWeight:600,color:th.text}}>{ico} {t}</div><div style={{fontSize:12,color:th.mut}}>{s}</div></div>
+                <button onClick={fn} style={{width:52,height:30,borderRadius:15,border:"none",background:on?th.acc:th.bdr,position:"relative",cursor:"pointer",transition:"background .3s"}}>
+                  <div style={{width:24,height:24,borderRadius:12,background:"#fff",position:"absolute",top:3,left:on?25:3,transition:"left .3s",boxShadow:"0 1px 3px rgba(0,0,0,.2)"}}/>
+                </button>
+              </div>
+            </div>
+          ))}
+          {standby.length>0&&<><Sec th={th}>Standby List ({standby.length})</Sec><Note th={th}>Removed activities. Use + on any day to restore.</Note>
+            {standby.map(a=>(
+              <div key={a.id} style={{display:"flex",alignItems:"center",gap:10,padding:"12px 14px",background:th.card,border:`1px solid ${th.bdr}`,borderRadius:12,marginBottom:8,boxShadow:th.sh}}>
+                <span style={{fontSize:20}}>{a.emoji}</span>
+                <div style={{flex:1}}><div style={{fontSize:13,fontWeight:600,color:th.text}}>{a.title}</div><div style={{fontSize:11,color:th.mut}}>{a.dur} · {a.price}</div></div>
+                <button onClick={()=>setStandby(s=>s.filter(x=>x.id!==a.id))} style={{background:th.coral,color:"#fff",border:"none",borderRadius:6,padding:"4px 8px",fontSize:11,fontWeight:600,cursor:"pointer"}}>Delete</button>
+              </div>
+            ))}
+          </>}
+          <Sec th={th}>Travel Documents</Sec>
+          <Note th={th}>Connect Supabase to enable PDF downloads.</Note>
+          {[{t:"Singapore Airlines · BNE ↔ HKT",r:"DIE356",k:["amanda_sq","liam_sq"]},{t:"Bangkok Airways · KBV → USM",r:"D5VC6X",k:["amanda_15","liam_15"]},{t:"Bangkok Airways · USM → HKT",r:"D64QO5",k:["amanda_21","liam_21"]}].map((g,i)=>(
+            <div key={i} style={{marginBottom:12}}>
+              <div style={{fontSize:12,fontWeight:600,color:th.text,marginBottom:4}}>{g.t}</div>
+              <div style={{fontSize:11,color:th.mut,marginBottom:6}}>Ref: {g.r}</div>
+              <div style={{display:"flex",flexWrap:"wrap",gap:6}}>
+                {g.k.map(k=><button key={k} onClick={()=>dlPdf(k)} style={{display:"flex",alignItems:"center",gap:6,padding:"8px 12px",background:th.card,border:`1px solid ${th.bdr}`,borderRadius:10,cursor:"pointer"}}><span style={{fontSize:14}}>📄</span><span style={{fontSize:12,fontWeight:600,color:th.text}}>{PDF_META[k].label}</span><span style={{fontSize:11,color:th.acc}}>⬇</span></button>)}
+              </div>
+            </div>
+          ))}
+          <Sec th={th}>Reset</Sec>
+          <button onClick={()=>{if(confirm("Reset all activities to default?")){setData(INIT);setStandby([])}}} style={{width:"100%",padding:12,borderRadius:12,border:`1px solid ${th.coral}`,background:"transparent",color:th.coral,fontSize:13,fontWeight:600,cursor:"pointer"}}>Reset All to Default</button>
+        </>}
+      </div>
+
+      {ea&&<EditM th={th} act={ea} days={allDays} curDay={ed} onSave={u=>saveAct(eDst,ed,u)} onMove={(a,td)=>moveAct(eDst,ed,a,td)} onClose={()=>sEa(null)}/>}
+      {aDay&&<AddM th={th} standby={standby} onNew={()=>addNew(aDst,aDay)} onRestore={id=>restore(aDst,aDay,id)} onClose={()=>{sADay(null);sADst(null)}}/>}
+
+      <div style={{position:"fixed",bottom:0,left:"50%",transform:"translateX(-50%)",width:"100%",maxWidth:480,background:th.tabBg,backdropFilter:"blur(20px)",WebkitBackdropFilter:"blur(20px)",borderTop:`1px solid ${th.tabBdr}`,display:"flex",justifyContent:"space-around",padding:"6px 0 env(safe-area-inset-bottom,8px)",zIndex:100}}>
+        {TABS.map(t=>(
+          <button key={t} onClick={()=>{setTab(t);window.scrollTo(0,0)}} style={{display:"flex",flexDirection:"column",alignItems:"center",gap:2,background:"none",border:"none",cursor:"pointer",padding:"6px 12px",color:tab===t?th.acc:th.mut}}>
+            <span style={{fontSize:20}}>{TICO[t]}</span>
+            <span style={{fontSize:10,fontWeight:tab===t?700:500}}>{TLAB[t]}</span>
+            {tab===t&&<div style={{width:4,height:4,borderRadius:"50%",background:th.acc,marginTop:1}}/>}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(React.createElement(App));
+</script>
+</body>
+</html>
