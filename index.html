@@ -63,6 +63,14 @@ const INIT_DOCS = {
   speed_krabi: {
     label: "Speedboat Ticket — Phi Phi → Krabi",
     file: "docs/speedboat-phiphi-krabi.pdf"
+  },
+  ins_amanda: {
+    label: "Amanda — Travel Insurance",
+    file: "docs/insurance-amanda.pdf"
+  },
+  ins_liam: {
+    label: "Liam — Travel Insurance",
+    file: "docs/insurance-liam.pdf"
   }
 };
 
@@ -2596,7 +2604,131 @@ function App() {
       padding: "3px 8px",
       borderRadius: 6
     }
-  }, ref))))), tab === "phiphi" && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+  }, ref)))), /*#__PURE__*/React.createElement(Sec, {
+    th: th
+  }, "Before You Fly"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      background: th.card,
+      borderRadius: 16,
+      overflow: "hidden",
+      boxShadow: th.sh,
+      marginBottom: 12
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      background: "linear-gradient(135deg,#dc2626,#b91c1c)",
+      padding: "14px 18px",
+      color: "#fff"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 15,
+      fontWeight: 700
+    }
+  }, "🇹🇭 Thailand Digital Arrival Card"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12,
+      opacity: .85,
+      marginTop: 4
+    }
+  }, "Must be submitted at least 2 days before arrival")), /*#__PURE__*/React.createElement("div", {
+    style: {
+      padding: "14px 18px"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12,
+      color: th.sub,
+      lineHeight: 1.5,
+      marginBottom: 12
+    }
+  }, "Both travellers need to complete this online form before landing in Thailand. You'll need your passport details and flight info."), /*#__PURE__*/React.createElement("button", {
+    onClick: () => window.open("https://tdac.immigration.go.th/arrival-card/#/home", "_blank"),
+    style: {
+      width: "100%",
+      padding: "12px",
+      borderRadius: 12,
+      border: "none",
+      background: th.acc,
+      color: "#fff",
+      fontSize: 14,
+      fontWeight: 700,
+      cursor: "pointer",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      gap: 8
+    }
+  }, "Open Arrival Card ↗"))), /*#__PURE__*/React.createElement(Sec, {
+    th: th
+  }, "Travel Insurance"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      flexDirection: "column",
+      gap: 6
+    }
+  }, ["ins_amanda", "ins_liam"].map(k => {
+    const d = docs[k];
+    return d ? /*#__PURE__*/React.createElement("span", {
+      key: k,
+      style: {
+        display: "inline-flex",
+        alignItems: "center",
+        gap: 0
+      }
+    }, /*#__PURE__*/React.createElement("button", {
+      onClick: () => sVp(k),
+      style: {
+        flex: 1,
+        display: "flex",
+        alignItems: "center",
+        gap: 8,
+        padding: "12px 14px",
+        background: th.card,
+        border: `1px solid ${th.bdr}`,
+        borderRadius: edit ? "12px 0 0 12px" : "12px",
+        cursor: "pointer",
+        boxShadow: th.sh
+      }
+    }, /*#__PURE__*/React.createElement("span", {
+      style: {
+        fontSize: 18
+      }
+    }, "🛡️"), /*#__PURE__*/React.createElement("div", {
+      style: {
+        flex: 1,
+        textAlign: "left"
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 13,
+        fontWeight: 600,
+        color: th.text
+      }
+    }, d.label), /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 11,
+        color: th.mut
+      }
+    }, "Tap to preview")), /*#__PURE__*/React.createElement("span", {
+      style: {
+        fontSize: 12,
+        color: th.acc
+      }
+    }, "View")), edit && /*#__PURE__*/React.createElement("button", {
+      onClick: () => sDe(k),
+      style: {
+        background: th.tag,
+        border: `1px solid ${th.bdr}`,
+        borderLeft: "none",
+        borderRadius: "0 12px 12px 0",
+        padding: "12px 10px",
+        fontSize: 11,
+        cursor: "pointer",
+        color: th.text
+      }
+    }, "✏️")) : null;
+  }))), tab === "phiphi" && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 22,
       fontWeight: 800,
@@ -2784,6 +2916,10 @@ function App() {
     t: "Ferry & Speedboat Tickets",
     r: "—",
     k: ["ferry_pp", "speed_krabi"]
+  }, {
+    t: "Travel Insurance",
+    r: "—",
+    k: ["ins_amanda", "ins_liam"]
   }].map((g, i) => /*#__PURE__*/React.createElement("div", {
     key: i,
     style: {
