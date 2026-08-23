@@ -890,6 +890,7 @@ const PdfBtns = ({
   keys,
   edit,
   onEditDoc,
+  onView,
   white
 }) => {
   if (!keys || !keys.length) return null;
@@ -910,11 +911,8 @@ const PdfBtns = ({
         alignItems: "center",
         gap: 0
       }
-    }, /*#__PURE__*/React.createElement("a", {
-      href: d.file,
-      target: "_blank",
-      rel: "noopener noreferrer",
-      download: true,
+    }, /*#__PURE__*/React.createElement("button", {
+      onClick: () => onView(k),
       style: {
         display: "inline-flex",
         alignItems: "center",
@@ -926,10 +924,9 @@ const PdfBtns = ({
         padding: "5px 10px",
         fontSize: 11,
         fontWeight: 600,
-        textDecoration: "none",
-        opacity: white ? 1 : .8
+        cursor: "pointer"
       }
-    }, "⬇ ", d.label), edit && /*#__PURE__*/React.createElement("button", {
+    }, d.label), edit && /*#__PURE__*/React.createElement("button", {
       onClick: () => onEditDoc(k),
       style: {
         background: white ? "rgba(255,255,255,.35)" : "rgba(0,0,0,.08)",
@@ -952,7 +949,8 @@ const FlightC = ({
   docs,
   edit,
   onEdit,
-  onEditDoc
+  onEditDoc,
+  onView
 }) => /*#__PURE__*/React.createElement("div", {
   style: {
     background: th.accBg,
@@ -1062,6 +1060,7 @@ const FlightC = ({
   keys: d.pdfKeys,
   edit: edit,
   onEditDoc: onEditDoc,
+  onView: onView,
   white: true
 }));
 const LBarC = ({
@@ -1117,7 +1116,8 @@ const FerryC = ({
   docs,
   edit,
   onEdit,
-  onEditDoc
+  onEditDoc,
+  onView
 }) => /*#__PURE__*/React.createElement("div", {
   style: {
     background: th.ferryBg,
@@ -1224,6 +1224,7 @@ const FerryC = ({
   keys: d.pdfKeys,
   edit: edit,
   onEditDoc: onEditDoc,
+  onView: onView,
   white: true
 }));
 const XferC = ({
@@ -2149,6 +2150,7 @@ function App() {
   const [eDst, sEDst] = useState(null);
   const [ce, sCe] = useState(null);
   const [de, sDe] = useState(null); // doc edit key
+  const [vp, sVp] = useState(null); // viewing pdf key
   const [aDay, sADay] = useState(null);
   const [aDst, sADst] = useState(null);
   const [loaded, setLoaded] = useState(false);
@@ -2314,7 +2316,8 @@ function App() {
     docs: docs,
     edit: edit,
     onEdit: () => editCard(id),
-    onEditDoc: onEditDoc
+    onEditDoc: onEditDoc,
+    onView: sVp
   });
   const rl = id => /*#__PURE__*/React.createElement(LBarC, {
     th: th,
@@ -2328,7 +2331,8 @@ function App() {
     docs: docs,
     edit: edit,
     onEdit: () => editCard(id),
-    onEditDoc: onEditDoc
+    onEditDoc: onEditDoc,
+    onView: sVp
   });
   const rx = id => /*#__PURE__*/React.createElement(XferC, {
     th: th,
@@ -2813,11 +2817,8 @@ function App() {
         alignItems: "center",
         gap: 0
       }
-    }, /*#__PURE__*/React.createElement("a", {
-      href: d.file,
-      target: "_blank",
-      rel: "noopener noreferrer",
-      download: true,
+    }, /*#__PURE__*/React.createElement("button", {
+      onClick: () => sVp(k),
       style: {
         display: "flex",
         alignItems: "center",
@@ -2826,7 +2827,7 @@ function App() {
         background: th.card,
         border: `1px solid ${th.bdr}`,
         borderRadius: edit ? "10px 0 0 10px" : "10px",
-        textDecoration: "none"
+        cursor: "pointer"
       }
     }, /*#__PURE__*/React.createElement("span", {
       style: {
@@ -2843,7 +2844,7 @@ function App() {
         fontSize: 11,
         color: th.acc
       }
-    }, "⬇")), edit && /*#__PURE__*/React.createElement("button", {
+    }, "View")), edit && /*#__PURE__*/React.createElement("button", {
       onClick: () => sDe(k),
       style: {
         background: th.tag,
@@ -2878,7 +2879,11 @@ function App() {
       fontWeight: 600,
       cursor: "pointer"
     }
-  }, "Reset All to Default"))), ea && /*#__PURE__*/React.createElement(ActEditM, {
+  }, "Reset All to Default"))), vp && docs[vp] && /*#__PURE__*/React.createElement(PdfView, {
+    th: th,
+    doc: docs[vp],
+    onClose: () => sVp(null)
+  }), ea && /*#__PURE__*/React.createElement(ActEditM, {
     th: th,
     act: ea,
     days: allDays,
