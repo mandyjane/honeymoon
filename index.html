@@ -30,6 +30,12 @@ const {
   useState,
   useEffect
 } = React;
+const openPdf = doc => {
+  if (!doc) return;
+  const base = window.location.href.replace(/\/[^\/]*$/, '/');
+  const url = doc.file.startsWith('http') ? doc.file : base + doc.file;
+  window.open(url, '_blank');
+};
 
 /* ── DOCUMENT METADATA (editable, persisted) ── */
 const INIT_DOCS = {
@@ -3136,7 +3142,6 @@ function App() {
   const [eDst, sEDst] = useState(null);
   const [ce, sCe] = useState(null);
   const [de, sDe] = useState(null); // doc edit key
-  const [vp, sVp] = useState(null); // viewing pdf key
   const [meals, setMeals] = useState([]);
   const [mEdit, setMEdit] = useState(null); // editing meal
   const [mAdd, setMAdd] = useState(false);
@@ -3343,7 +3348,7 @@ function App() {
     edit: edit,
     onEdit: () => editCard(id),
     onEditDoc: onEditDoc,
-    onView: sVp
+    onView: k => openPdf(docs[k])
   });
   const rl = id => /*#__PURE__*/React.createElement(LBarC, {
     th: th,
@@ -3358,7 +3363,7 @@ function App() {
     edit: edit,
     onEdit: () => editCard(id),
     onEditDoc: onEditDoc,
-    onView: sVp
+    onView: k => openPdf(docs[k])
   });
   const rx = id => /*#__PURE__*/React.createElement(XferC, {
     th: th,
@@ -3695,7 +3700,7 @@ function App() {
         gap: 0
       }
     }, /*#__PURE__*/React.createElement("button", {
-      onClick: () => sVp(k),
+      onClick: () => openPdf(docs[k]),
       style: {
         flex: 1,
         display: "flex",
@@ -4311,7 +4316,7 @@ function App() {
         gap: 0
       }
     }, /*#__PURE__*/React.createElement("button", {
-      onClick: () => sVp(k),
+      onClick: () => openPdf(docs[k]),
       style: {
         display: "flex",
         alignItems: "center",
@@ -4475,10 +4480,6 @@ function App() {
       setMAdd(false);
       setMEdit(null);
     }
-  }), vp && docs[vp] && /*#__PURE__*/React.createElement(PdfView, {
-    th: th,
-    doc: docs[vp],
-    onClose: () => sVp(null)
   }), ea && /*#__PURE__*/React.createElement(ActEditM, {
     th: th,
     act: ea,
