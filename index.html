@@ -490,10 +490,23 @@ const CardEditM = ({
   const [f, sF] = useState({
     ...data
   });
-  const u = (k, v) => sF(p => ({
-    ...p,
-    [k]: v
-  }));
+  const hasTimes = type === "ferry" || type === "flight";
+  const u = (k, v) => {
+    sF(p => {
+      const n = {
+        ...p,
+        [k]: v
+      };
+      if (hasTimes && (k === "dep" || k === "arr") && n.dep && n.arr) {
+        const d = calcDur(n.dep, n.arr);
+        if (d) {
+          if (type === "ferry") n.dur = d;
+          if (type === "flight") n.notes = (n.notes || "").replace(/^[\dh minours]+\s*·/, "").trim() ? d + " · " + (n.notes || "").replace(/^[\dh minours]+\s*·\s*/, "") : d;
+        }
+      }
+      return n;
+    });
+  };
   return /*#__PURE__*/React.createElement("div", {
     style: {
       position: "fixed",
@@ -1446,7 +1459,7 @@ const ActC = ({
     padding: "2px 7px",
     borderRadius: 6
   }
-}, "🚗 ", act.how), act.price && /*#__PURE__*/React.createElement("span", {
+}, act.howIcon || guessIcon(act.how), " ", act.how), act.price && /*#__PURE__*/React.createElement("span", {
   style: {
     fontSize: 10,
     background: th.tagAcc,
@@ -1491,7 +1504,8 @@ const ActEditM = ({
   onClose
 }) => {
   const [f, sF] = useState({
-    ...act
+    ...act,
+    howIcon: act.howIcon || guessIcon(act.how)
   });
   const [td, sTd] = useState(curDay);
   const u = (k, v) => sF(p => ({
@@ -1626,7 +1640,40 @@ const ActEditM = ({
       resize: "vertical",
       fontFamily: "inherit"
     }
-  })), inp("Duration", "dur"), inp("Distance", "dist"), inp("Transport", "how"), inp("Price", "price"), /*#__PURE__*/React.createElement("div", {
+  })), inp("Duration", "dur"), inp("Distance", "dist"), inp("Transport", "how"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      marginBottom: 10
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 11,
+      color: th.mut,
+      marginBottom: 6,
+      textTransform: "uppercase"
+    }
+  }, "Transport Icon"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      flexWrap: "wrap",
+      gap: 4
+    }
+  }, TRANSPORT_ICONS.map(([ico, lbl]) => /*#__PURE__*/React.createElement("button", {
+    key: ico,
+    onClick: () => u("howIcon", ico),
+    title: lbl,
+    style: {
+      width: 36,
+      height: 36,
+      borderRadius: 8,
+      border: f.howIcon === ico ? `2px solid ${th.acc}` : `1px solid ${th.bdr}`,
+      background: f.howIcon === ico ? th.tag : th.inp,
+      fontSize: 18,
+      cursor: "pointer",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center"
+    }
+  }, ico)))), inp("Price", "price"), /*#__PURE__*/React.createElement("div", {
     style: {
       marginBottom: 16
     }
@@ -2639,7 +2686,9 @@ function App() {
   })))));
 }
 ReactDOM.createRoot(document.getElementById("root")).render(React.createElement(App));
-</script><script>
+</script>
+<script>
 if("serviceWorker" in navigator){navigator.serviceWorker.register("sw.js").catch(()=>{});}
 </script>
-</body></html>
+</body>
+</html>
