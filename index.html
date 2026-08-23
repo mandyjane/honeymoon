@@ -64,13 +64,9 @@ const INIT_DOCS = {
     label: "Speedboat Ticket — Phi Phi → Krabi",
     file: "docs/speedboat-phiphi-krabi.pdf"
   },
-  ins_amanda: {
-    label: "Amanda — Travel Insurance",
-    file: "docs/insurance-amanda.pdf"
-  },
-  ins_liam: {
-    label: "Liam — Travel Insurance",
-    file: "docs/insurance-liam.pdf"
+  insurance: {
+    label: "Travel Insurance Policy",
+    file: "docs/travel-insurance.pdf"
   }
 };
 
@@ -2166,8 +2162,14 @@ function App() {
   useEffect(() => {
     const s = load();
     if (s) {
-      if (s.cards) setCards(s.cards);
-      if (s.docs) setDocs(s.docs);
+      if (s.cards) setCards({
+        ...INIT_CARDS,
+        ...s.cards
+      });
+      if (s.docs) setDocs({
+        ...INIT_DOCS,
+        ...s.docs
+      });
       if (s.acts) setActs(s.acts);
       if (s.standby) setStandby(s.standby);
       if (s.dark !== undefined) setDark(s.dark);
@@ -2667,7 +2669,7 @@ function App() {
       flexDirection: "column",
       gap: 6
     }
-  }, ["ins_amanda", "ins_liam"].map(k => {
+  }, ["insurance"].map(k => {
     const d = docs[k];
     return d ? /*#__PURE__*/React.createElement("span", {
       key: k,
@@ -2919,7 +2921,7 @@ function App() {
   }, {
     t: "Travel Insurance",
     r: "—",
-    k: ["ins_amanda", "ins_liam"]
+    k: ["insurance"]
   }].map((g, i) => /*#__PURE__*/React.createElement("div", {
     key: i,
     style: {
