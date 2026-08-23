@@ -1345,12 +1345,12 @@ const save = s => {
 };
 const TABS = ["overview", "phiphi", "samui", "phuket", "meals", "currency", "settings"];
 const TLAB = {
-  overview: "Overview",
+  overview: "Home",
   phiphi: "Phi Phi",
   samui: "Samui",
   phuket: "Phuket",
   meals: "Meals",
-  currency: "Currency",
+  currency: "FX",
   settings: "Settings"
 };
 const TICO = {
@@ -4300,21 +4300,24 @@ function App() {
       display: "flex",
       flexDirection: "column",
       alignItems: "center",
-      gap: 2,
+      gap: 1,
       background: "none",
       border: "none",
       cursor: "pointer",
-      padding: "6px 12px",
-      color: tab === t ? th.acc : th.mut
+      padding: "6px 4px",
+      color: tab === t ? th.acc : th.mut,
+      minWidth: 0,
+      flex: "1 1 0"
     }
   }, /*#__PURE__*/React.createElement("span", {
     style: {
-      fontSize: 20
+      fontSize: 18
     }
   }, TICO[t]), /*#__PURE__*/React.createElement("span", {
     style: {
-      fontSize: 10,
-      fontWeight: tab === t ? 700 : 500
+      fontSize: 9,
+      fontWeight: tab === t ? 700 : 500,
+      whiteSpace: "nowrap"
     }
   }, TLAB[t]), tab === t && /*#__PURE__*/React.createElement("div", {
     style: {
