@@ -71,7 +71,7 @@ const INIT_DOCS = {
     label: "Speedboat Ticket — Phi Phi → Krabi",
     file: "docs/speedboat-phiphi-krabi.pdf"
   },
-  info_pp: {
+  guide_pp: {
     label: "CoCo Beach Resort Guide",
     file: "docs/guide-coco-beach.pdf"
   },
@@ -79,7 +79,7 @@ const INIT_DOCS = {
     label: "CoCo Beach Website",
     file: "https://phiphicocobeachresort.com/"
   },
-  info_sm: {
+  guide_sm: {
     label: "SALA Samui Resort Guide",
     file: "docs/guide-sala-samui.pdf"
   },
@@ -91,7 +91,7 @@ const INIT_DOCS = {
     label: "SALA Spa Treatments",
     file: "https://www.salahospitality.com/samui-chaweng/wellness/sala-spa/"
   },
-  info_pk: {
+  guide_pk: {
     label: "Impiana Patong Resort Guide",
     file: "docs/guide-impiana-patong.pdf"
   },
@@ -3645,9 +3645,9 @@ function App() {
     }).catch(() => {});
   }, []);
   const ACCOM_DOCS = {
-    a_pp: ["info_pp", "menu_pp"],
-    a_sm: ["info_sm", "menu_sm_tent", "menu_sm_spa"],
-    a_pk: ["info_pk", "menu_pk_sala", "menu_pk_spa"]
+    a_pp: ["guide_pp", "menu_pp"],
+    a_sm: ["guide_sm", "menu_sm_tent", "menu_sm_spa"],
+    a_pk: ["guide_pk", "menu_pk_sala", "menu_pk_spa"]
   };
   const c = id => {
     const d = cards[id] || INIT_CARDS[id] || {};
