@@ -71,6 +71,38 @@ const INIT_DOCS = {
     label: "Speedboat Ticket — Phi Phi → Krabi",
     file: "docs/speedboat-phiphi-krabi.pdf"
   },
+  info_pp: {
+    label: "CoCo Beach Resort Guide",
+    file: "docs/info-coco-beach.pdf"
+  },
+  menu_pp: {
+    label: "CoCo Beach Website",
+    file: "https://phiphicocobeachresort.com/"
+  },
+  info_sm: {
+    label: "SALA Samui Resort Guide",
+    file: "docs/info-sala-samui.pdf"
+  },
+  menu_sm_tent: {
+    label: "The Tent — Menus",
+    file: "https://www.salahospitality.com/samui-chaweng/eat-drink/the-tent-beachfront-restaurant-and-bar/"
+  },
+  menu_sm_spa: {
+    label: "SALA Spa Treatments",
+    file: "https://www.salahospitality.com/samui-chaweng/wellness/sala-spa/"
+  },
+  info_pk: {
+    label: "Impiana Patong Resort Guide",
+    file: "docs/info-impiana-patong.pdf"
+  },
+  menu_pk_sala: {
+    label: "Sala Bua Restaurant",
+    file: "https://phukethotels.impiana.com.my/dining/sala-bua-restaurant/"
+  },
+  menu_pk_spa: {
+    label: "Swasana Spa",
+    file: "https://phukethotels.impiana.com.my/services-facilities/swasana-spa/"
+  },
   ins_cert: {
     label: "Travel Insurance Certificate",
     file: "docs/insurance-certificate.pdf"
@@ -417,6 +449,244 @@ const getTodayDay = () => {
   const m = TRIP_DAYS.find(d => d.iso === t);
   return m ? m.id : TRIP_DAYS[0].id;
 };
+
+/* ── LOCATIONS ── */
+const LOCS = {
+  a_pp: {
+    lat: 7.7407,
+    lng: 98.7784
+  },
+  a_sm: {
+    lat: 9.5315,
+    lng: 100.0801
+  },
+  a_pk: {
+    lat: 7.8920,
+    lng: 98.2963
+  },
+  hkt_apt: {
+    lat: 8.1132,
+    lng: 98.3169,
+    name: "Phuket Airport (HKT)"
+  },
+  sin_apt: {
+    lat: 1.3644,
+    lng: 103.9915,
+    name: "Singapore Changi (SIN)"
+  },
+  bne_apt: {
+    lat: -27.3842,
+    lng: 153.1175,
+    name: "Brisbane Airport (BNE)"
+  },
+  kbv_apt: {
+    lat: 8.0987,
+    lng: 98.9862,
+    name: "Krabi Airport (KBV)"
+  },
+  usm_apt: {
+    lat: 9.5478,
+    lng: 100.0623,
+    name: "Samui Airport (USM)"
+  },
+  rassada: {
+    lat: 7.8590,
+    lng: 98.3894,
+    name: "Rassada Pier"
+  },
+  tonsai: {
+    lat: 7.7389,
+    lng: 98.7696,
+    name: "Tonsai Pier, Phi Phi"
+  },
+  krabi_pier: {
+    lat: 8.0592,
+    lng: 98.9186,
+    name: "Krabi Pier"
+  }
+};
+const DEST_LOCS = {
+  phiphi: [{
+    name: "Phi Phi CoCo Beach Resort",
+    lat: 7.7407,
+    lng: 98.7784,
+    type: "🏨"
+  }, {
+    name: "Tonsai Pier",
+    lat: 7.7389,
+    lng: 98.7696,
+    type: "⛴"
+  }, {
+    name: "Maya Bay",
+    lat: 7.6778,
+    lng: 98.7648,
+    type: "🏖️"
+  }, {
+    name: "Phi Phi Viewpoint",
+    lat: 7.7361,
+    lng: 98.7730,
+    type: "🌄"
+  }, {
+    name: "Monkey Beach",
+    lat: 7.6886,
+    lng: 98.7601,
+    type: "🐒"
+  }, {
+    name: "Bamboo Island",
+    lat: 7.8095,
+    lng: 98.7764,
+    type: "🏝️"
+  }, {
+    name: "Loh Dalum Beach",
+    lat: 7.7404,
+    lng: 98.7658,
+    type: "🍹"
+  }],
+  samui: [{
+    name: "SALA Samui Chaweng",
+    lat: 9.5315,
+    lng: 100.0801,
+    type: "🏨"
+  }, {
+    name: "Samui Airport",
+    lat: 9.5478,
+    lng: 100.0623,
+    type: "✈️"
+  }, {
+    name: "Ang Thong Marine Park",
+    lat: 9.6167,
+    lng: 99.6667,
+    type: "🏝️"
+  }, {
+    name: "Big Buddha Temple",
+    lat: 9.5105,
+    lng: 100.0520,
+    type: "🗿"
+  }, {
+    name: "Na Muang Waterfalls",
+    lat: 9.4649,
+    lng: 100.0250,
+    type: "💧"
+  }, {
+    name: "Fisherman Village Bophut",
+    lat: 9.5521,
+    lng: 100.0293,
+    type: "🛍️"
+  }, {
+    name: "Pig Island (Koh Madsum)",
+    lat: 9.4197,
+    lng: 100.0500,
+    type: "🐷"
+  }, {
+    name: "Hin Ta Hin Yai Rocks",
+    lat: 9.4504,
+    lng: 100.0578,
+    type: "🪨"
+  }],
+  phuket: [{
+    name: "Impiana Resort Patong",
+    lat: 7.8920,
+    lng: 98.2963,
+    type: "🏨"
+  }, {
+    name: "Phuket Airport",
+    lat: 8.1132,
+    lng: 98.3169,
+    type: "✈️"
+  }, {
+    name: "Patong Beach",
+    lat: 7.8952,
+    lng: 98.2905,
+    type: "🏖️"
+  }, {
+    name: "Bangla Road",
+    lat: 7.8867,
+    lng: 98.2978,
+    type: "🌃"
+  }, {
+    name: "Big Buddha Phuket",
+    lat: 7.8277,
+    lng: 98.3129,
+    type: "🛕"
+  }, {
+    name: "Phuket Old Town",
+    lat: 7.8847,
+    lng: 98.3867,
+    type: "🏘️"
+  }, {
+    name: "Freedom Beach",
+    lat: 7.8764,
+    lng: 98.2716,
+    type: "🏖️"
+  }, {
+    name: "James Bond Island",
+    lat: 8.2750,
+    lng: 98.5000,
+    type: "🏝️"
+  }]
+};
+const viewMap = (lat, lng, name) => window.open("https://www.google.com/maps/search/?api=1&query=" + lat + "," + lng, "_blank");
+
+/* ── LOCATION CARD ── */
+const LocCard = ({
+  th,
+  loc
+}) => /*#__PURE__*/React.createElement("div", {
+  style: {
+    display: "flex",
+    alignItems: "center",
+    gap: 10,
+    padding: "10px 12px",
+    background: th.card,
+    border: `0.5px solid ${th.bdr}`,
+    borderRadius: 10,
+    marginBottom: 6,
+    boxShadow: th.sh
+  }
+}, /*#__PURE__*/React.createElement("span", {
+  style: {
+    fontSize: 18
+  }
+}, loc.type), /*#__PURE__*/React.createElement("div", {
+  style: {
+    flex: 1,
+    minWidth: 0
+  }
+}, /*#__PURE__*/React.createElement("div", {
+  style: {
+    fontSize: 13,
+    fontWeight: 500,
+    color: th.text,
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    whiteSpace: "nowrap"
+  }
+}, loc.name)), /*#__PURE__*/React.createElement("button", {
+  onClick: () => viewMap(loc.lat, loc.lng, loc.name),
+  style: {
+    background: th.tag,
+    border: `0.5px solid ${th.bdr}`,
+    borderRadius: 8,
+    padding: "6px 8px",
+    fontSize: 11,
+    color: th.acc,
+    cursor: "pointer",
+    flexShrink: 0
+  }
+}, "📍 Map"), /*#__PURE__*/React.createElement("button", {
+  onClick: () => navTo(loc.lat, loc.lng, loc.name),
+  style: {
+    background: th.acc,
+    border: "none",
+    borderRadius: 8,
+    padding: "6px 10px",
+    fontSize: 11,
+    color: "#fff",
+    cursor: "pointer",
+    flexShrink: 0,
+    fontWeight: 600
+  }
+}, "Navigate"));
 const MealEditM = ({
   th,
   meal,
@@ -1310,6 +1580,56 @@ const INIT_CARDS = {
     _t: "note",
     text: "Right on Patong Beach. 5 min to Bangla Road & Jungceylon."
   }
+};
+const addMaps = acts => {
+  const maps = {
+    "Resort Pool & Beach": "Phi Phi CoCo Beach Resort",
+    "Dinner at CoCo Restaurant": "CoCo Restaurant Phi Phi",
+    "Beach Bar Wander": "Loh Dalum Beach Phi Phi",
+    "Maya Bay & Phi Phi Leh Tour": "Maya Bay Thailand",
+    "Monkey Beach": "Monkey Beach Phi Phi",
+    "Shark Point Snorkelling": "Shark Point Phi Phi",
+    "Phi Phi Viewpoint Hike": "Phi Phi Viewpoint",
+    "Bamboo Island Day Trip": "Bamboo Island Phi Phi",
+    "Private Pool & Suite": "SALA Samui Chaweng Beach Resort",
+    "Beach Bar Cocktails": "Chaweng Beach Koh Samui",
+    "Ang Thong Marine Park": "Ang Thong National Marine Park",
+    "SALA Spa Evening": "SALA Spa Chaweng",
+    "Elephant Sanctuary": "Samui Elephant Sanctuary",
+    "Fisherman's Village": "Fishermans Village Bophut Samui",
+    "Chaweng Water Sports": "Chaweng Beach Koh Samui",
+    "Thai Cooking Class": "Koh Samui cooking class",
+    "Chaweng Nightlife": "Ark Bar Chaweng",
+    "Big Buddha Temple": "Big Buddha Koh Samui",
+    "Na Muang Waterfalls": "Na Muang Waterfall Samui",
+    "Hin Ta & Hin Yai Rocks": "Hin Ta Hin Yai Koh Samui",
+    "Sunset Dinner Cruise": "Red Baron Sailing Samui",
+    "Pig Island (Koh Madsum)": "Koh Madsum Pig Island",
+    "4WD Jungle Safari": "Koh Samui safari",
+    "Lamai Night Market": "Lamai Night Market Samui",
+    "Patong Beach Sunset": "Patong Beach Phuket",
+    "Bangla Road": "Bangla Road Patong",
+    "Patong Water Sports": "Patong Beach Phuket",
+    "Big Buddha & Wat Chalong": "Big Buddha Phuket",
+    "Phuket Old Town": "Phuket Old Town",
+    "James Bond Island": "James Bond Island Phang Nga",
+    "Swasana Spa": "Swasana Spa Impiana Patong",
+    "Freedom Beach": "Freedom Beach Phuket",
+    "Muay Thai Fight Night": "Patong Boxing Stadium",
+    "Malin Plaza Night Market": "Malin Plaza Patong",
+    "Final Beach Walk": "Patong Beach Phuket"
+  };
+  const r = {};
+  for (const [dest, days] of Object.entries(acts)) {
+    r[dest] = days.map(day => ({
+      ...day,
+      acts: day.acts.map(a => maps[a.title] ? {
+        ...a,
+        mapQuery: maps[a.title]
+      } : a)
+    }));
+  }
+  return r;
 };
 const INIT_ACTS = {
   phiphi: [{
@@ -2259,7 +2579,18 @@ const XferC = ({
     color: th.coral,
     fontSize: 13
   }
-}, d.cost), edit && /*#__PURE__*/React.createElement(PenD, {
+}, d.cost), /*#__PURE__*/React.createElement("span", {
+  onClick: () => window.open("https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(d.to), "_blank"),
+  style: {
+    fontSize: 10,
+    background: "#e6f1fb",
+    color: "#185fa5",
+    padding: "3px 7px",
+    borderRadius: 6,
+    cursor: "pointer",
+    fontWeight: 500
+  }
+}, "📍"), edit && /*#__PURE__*/React.createElement(PenD, {
   th: th,
   onClick: onEdit
 }));
@@ -2267,7 +2598,9 @@ const AccC = ({
   th,
   d,
   edit,
-  onEdit
+  onEdit,
+  docs,
+  openPdf
 }) => {
   const feat = d.feat ? d.feat.split(",").map(s => s.trim()).filter(Boolean) : [];
   return /*#__PURE__*/React.createElement("div", {
@@ -2372,7 +2705,80 @@ const AccC = ({
       padding: "3px 8px",
       borderRadius: 20
     }
-  }, f)))));
+  }, f))), d._loc && /*#__PURE__*/React.createElement("div", {
+    style: {
+      marginTop: 10,
+      paddingTop: 10,
+      borderTop: `0.5px solid ${th.bdr}`
+    }
+  }, /*#__PURE__*/React.createElement("button", {
+    onClick: () => viewMap(d._loc.lat, d._loc.lng, d.name),
+    style: {
+      width: "100%",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      gap: 6,
+      padding: "8px",
+      borderRadius: 10,
+      background: th.tag,
+      border: `0.5px solid ${th.bdr}`,
+      fontSize: 12,
+      color: th.acc,
+      cursor: "pointer",
+      fontWeight: 500
+    }
+  }, "📍 View on Map"), d._docs && /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      flexDirection: "column",
+      gap: 4,
+      marginTop: 8
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 11,
+      fontWeight: 600,
+      color: th.sub
+    }
+  }, "Resort documents"), d._docs.map(dk => {
+    const doc = docs[dk];
+    return doc ? /*#__PURE__*/React.createElement("button", {
+      key: dk,
+      onClick: () => openPdf(doc),
+      style: {
+        display: "flex",
+        alignItems: "center",
+        gap: 8,
+        padding: "8px 10px",
+        background: th.inp,
+        border: `0.5px solid ${th.bdr}`,
+        borderRadius: 8,
+        cursor: "pointer",
+        width: "100%",
+        textAlign: "left"
+      }
+    }, /*#__PURE__*/React.createElement("span", {
+      style: {
+        fontSize: 13
+      }
+    }, "📋"), /*#__PURE__*/React.createElement("div", {
+      style: {
+        flex: 1
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 12,
+        fontWeight: 500,
+        color: th.text
+      }
+    }, doc.label)), /*#__PURE__*/React.createElement("span", {
+      style: {
+        fontSize: 11,
+        color: th.acc
+      }
+    }, "View")) : null;
+  })))));
 };
 const NoteC = ({
   th,
@@ -2527,7 +2933,18 @@ const ActC = ({
     padding: "2px 7px",
     borderRadius: 6
   }
-}, "💰 ", act.price)))));
+}, "💰 ", act.price), act.mapQuery && /*#__PURE__*/React.createElement("span", {
+  onClick: () => window.open("https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(act.mapQuery), "_blank"),
+  style: {
+    fontSize: 10,
+    background: "#e6f1fb",
+    color: "#185fa5",
+    padding: "2px 7px",
+    borderRadius: 6,
+    cursor: "pointer",
+    fontWeight: 500
+  }
+}, "📍 Map")))));
 const Sec = ({
   th,
   children
@@ -3135,7 +3552,7 @@ function App() {
   const [edit, setEdit] = useState(false);
   const [cards, setCards] = useState(INIT_CARDS);
   const [docs, setDocs] = useState(INIT_DOCS);
-  const [acts, setActs] = useState(INIT_ACTS);
+  const [acts, setActs] = useState(() => addMaps(INIT_ACTS));
   const [standby, setStandby] = useState([]);
   const [ea, sEa] = useState(null);
   const [ed, sEd] = useState(null);
@@ -3163,7 +3580,7 @@ function App() {
         ...INIT_DOCS,
         ...s.docs
       });
-      if (s.acts) setActs(s.acts);
+      if (s.acts) setActs(addMaps(s.acts));
       if (s.standby) setStandby(s.standby);
       if (s.meals) setMeals(s.meals);
       if (s.dark !== undefined) setDark(s.dark);
@@ -3194,7 +3611,20 @@ function App() {
       }
     }).catch(() => {});
   }, []);
-  const c = id => cards[id] || INIT_CARDS[id] || {};
+  const ACCOM_DOCS = {
+    a_pp: ["info_pp", "menu_pp"],
+    a_sm: ["info_sm", "menu_sm_tent", "menu_sm_spa"],
+    a_pk: ["info_pk", "menu_pk_sala", "menu_pk_spa"]
+  };
+  const c = id => {
+    const d = cards[id] || INIT_CARDS[id] || {};
+    const r = {
+      ...d
+    };
+    if (LOCS[id]) r._loc = LOCS[id];
+    if (ACCOM_DOCS[id]) r._docs = ACCOM_DOCS[id];
+    return r;
+  };
   const updCard = (id, data) => setCards(p => ({
     ...p,
     [id]: {
@@ -3375,7 +3805,9 @@ function App() {
     th: th,
     d: c(id),
     edit: edit,
-    onEdit: () => editCard(id)
+    onEdit: () => editCard(id),
+    docs: docs,
+    openPdf: openPdf
   });
   const rn = (id, bg) => /*#__PURE__*/React.createElement(NoteC, {
     th: th,
@@ -4453,7 +4885,7 @@ function App() {
       if (confirm("Reset everything to default?")) {
         setCards(INIT_CARDS);
         setDocs(INIT_DOCS);
-        setActs(INIT_ACTS);
+        setActs(addMaps(INIT_ACTS));
         setStandby([]);
         setMeals([]);
       }
