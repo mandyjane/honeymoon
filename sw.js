@@ -1,4 +1,4 @@
-const CACHE = 'honeymoon-v3';
+const CACHE = 'honeymoon-v4';
 
 const CDN_ASSETS = [
   'https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js',
