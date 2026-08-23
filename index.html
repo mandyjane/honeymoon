@@ -17,7 +17,8 @@
   body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;overflow-x:hidden}
   body.dark{color-scheme:dark}
   input,textarea,select,button{font-family:inherit}
-  ::-webkit-scrollbar{width:0}
+  ::-webkit-scrollbar{width:0;height:0}
+  *{scrollbar-width:none}
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
@@ -64,9 +65,13 @@ const INIT_DOCS = {
     label: "Speedboat Ticket — Phi Phi → Krabi",
     file: "docs/speedboat-phiphi-krabi.pdf"
   },
-  insurance: {
+  ins_cert: {
+    label: "Travel Insurance Certificate",
+    file: "docs/insurance-certificate.pdf"
+  },
+  ins_policy: {
     label: "Travel Insurance Policy",
-    file: "docs/travel-insurance.pdf"
+    file: "docs/insurance-policy.pdf"
   }
 };
 
@@ -305,60 +310,107 @@ const SVC_TYPES = ["Dine-in", "Room service", "Poolside", "Takeaway", "Bar", "St
 const TRIP_DAYS = [{
   id: "d_12",
   label: "Fri 12 Feb",
-  loc: "Phi Phi"
+  loc: "Phi Phi",
+  dow: "FRI",
+  dn: "12",
+  iso: "2027-02-12"
 }, {
   id: "d_13",
   label: "Sat 13 Feb",
-  loc: "Phi Phi"
+  loc: "Phi Phi",
+  dow: "SAT",
+  dn: "13",
+  iso: "2027-02-13"
 }, {
   id: "d_14",
   label: "Sun 14 Feb",
-  loc: "Phi Phi"
+  loc: "Phi Phi",
+  dow: "SUN",
+  dn: "14",
+  iso: "2027-02-14"
 }, {
   id: "d_15",
   label: "Mon 15 Feb",
-  loc: "Samui"
+  loc: "Samui",
+  dow: "MON",
+  dn: "15",
+  iso: "2027-02-15"
 }, {
   id: "d_16",
   label: "Tue 16 Feb",
-  loc: "Samui"
+  loc: "Samui",
+  dow: "TUE",
+  dn: "16",
+  iso: "2027-02-16"
 }, {
   id: "d_17",
   label: "Wed 17 Feb",
-  loc: "Samui"
+  loc: "Samui",
+  dow: "WED",
+  dn: "17",
+  iso: "2027-02-17"
 }, {
   id: "d_18",
   label: "Thu 18 Feb",
-  loc: "Samui"
+  loc: "Samui",
+  dow: "THU",
+  dn: "18",
+  iso: "2027-02-18"
 }, {
   id: "d_19",
   label: "Fri 19 Feb",
-  loc: "Samui"
+  loc: "Samui",
+  dow: "FRI",
+  dn: "19",
+  iso: "2027-02-19"
 }, {
   id: "d_20",
   label: "Sat 20 Feb",
-  loc: "Samui"
+  loc: "Samui",
+  dow: "SAT",
+  dn: "20",
+  iso: "2027-02-20"
 }, {
   id: "d_21",
   label: "Sat 21 Feb",
-  loc: "Phuket"
+  loc: "Phuket",
+  dow: "SAT",
+  dn: "21",
+  iso: "2027-02-21"
 }, {
   id: "d_22",
   label: "Sun 22 Feb",
-  loc: "Phuket"
+  loc: "Phuket",
+  dow: "SUN",
+  dn: "22",
+  iso: "2027-02-22"
 }, {
   id: "d_23",
   label: "Mon 23 Feb",
-  loc: "Phuket"
+  loc: "Phuket",
+  dow: "MON",
+  dn: "23",
+  iso: "2027-02-23"
 }, {
   id: "d_24",
   label: "Tue 24 Feb",
-  loc: "Phuket"
+  loc: "Phuket",
+  dow: "TUE",
+  dn: "24",
+  iso: "2027-02-24"
 }, {
   id: "d_25",
   label: "Wed 25 Feb",
-  loc: "Phuket"
+  loc: "Phuket",
+  dow: "WED",
+  dn: "25",
+  iso: "2027-02-25"
 }];
+const getTodayDay = () => {
+  const t = new Date().toISOString().slice(0, 10);
+  const m = TRIP_DAYS.find(d => d.iso === t);
+  return m ? m.id : TRIP_DAYS[0].id;
+};
 const MealEditM = ({
   th,
   meal,
@@ -376,7 +428,7 @@ const MealEditM = ({
     typeName: "Breakfast",
     where: "",
     svc: "Dine-in",
-    day: TRIP_DAYS[0].id,
+    day: mDay || getTodayDay(),
     items: [{
       name: "",
       thb: ""
@@ -3088,6 +3140,7 @@ function App() {
   const [meals, setMeals] = useState([]);
   const [mEdit, setMEdit] = useState(null); // editing meal
   const [mAdd, setMAdd] = useState(false);
+  const [mDay, setMDay] = useState(getTodayDay);
   const [liveRate, setLiveRate] = useState(null);
   const [rateTime, setRateTime] = useState(null);
   const [aDay, sADay] = useState(null);
@@ -3632,7 +3685,7 @@ function App() {
       flexDirection: "column",
       gap: 6
     }
-  }, ["insurance"].map(k => {
+  }, ["ins_cert", "ins_policy"].map(k => {
     const d = docs[k];
     return d ? /*#__PURE__*/React.createElement("span", {
       key: k,
@@ -3775,133 +3828,213 @@ function App() {
     style: {
       fontSize: 13,
       color: th.mut,
-      marginBottom: 16
+      marginBottom: 12
     }
   }, "Track food & drinks"), (() => {
     const r = liveRate || 22.5;
     const tripTotal = meals.reduce((s, m) => s + m.total, 0);
+    const dayMeals = meals.filter(m => m.day === mDay);
+    const dayTotal = dayMeals.reduce((s, m) => s + m.total, 0);
+    const selDay = TRIP_DAYS.find(d => d.id === mDay);
     return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
       style: {
         display: "grid",
         gridTemplateColumns: "1fr 1fr",
         gap: 8,
-        marginBottom: 16
+        marginBottom: 12
       }
     }, /*#__PURE__*/React.createElement("div", {
       style: {
         background: th.accBg,
         borderRadius: 12,
-        padding: "12px 14px",
+        padding: "10px 12px",
         color: "#fff"
       }
     }, /*#__PURE__*/React.createElement("div", {
       style: {
         fontSize: 10,
         opacity: .7,
-        marginBottom: 4
+        marginBottom: 2
       }
     }, "TRIP TOTAL"), /*#__PURE__*/React.createElement("div", {
       style: {
-        fontSize: 20,
+        fontSize: 18,
         fontWeight: 700
       }
     }, "฿", tripTotal.toLocaleString()), /*#__PURE__*/React.createElement("div", {
       style: {
-        fontSize: 12,
+        fontSize: 11,
         opacity: .8
       }
     }, "A$", Math.round(tripTotal / r))), /*#__PURE__*/React.createElement("div", {
       style: {
         background: th.ferryBg,
         borderRadius: 12,
-        padding: "12px 14px",
+        padding: "10px 12px",
         color: "#fff"
       }
     }, /*#__PURE__*/React.createElement("div", {
       style: {
         fontSize: 10,
         opacity: .7,
-        marginBottom: 4
+        marginBottom: 2
       }
-    }, "MEALS"), /*#__PURE__*/React.createElement("div", {
+    }, "THIS DAY"), /*#__PURE__*/React.createElement("div", {
       style: {
-        fontSize: 20,
+        fontSize: 18,
         fontWeight: 700
       }
-    }, meals.length), /*#__PURE__*/React.createElement("div", {
+    }, "฿", dayTotal.toLocaleString()), /*#__PURE__*/React.createElement("div", {
       style: {
-        fontSize: 12,
+        fontSize: 11,
         opacity: .8
       }
-    }, "logged"))), meals.length === 0 && /*#__PURE__*/React.createElement("div", {
+    }, "A$", Math.round(dayTotal / r), " · ", dayMeals.length, " meal", dayMeals.length !== 1 ? "s" : ""))), /*#__PURE__*/React.createElement("div", {
+      style: {
+        overflowX: "auto",
+        WebkitOverflowScrolling: "touch",
+        scrollbarWidth: "none",
+        msOverflowStyle: "none",
+        margin: "0 -16px",
+        padding: "0 16px"
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        display: "inline-flex",
+        gap: 0,
+        minWidth: "max-content"
+      }
+    }, TRIP_DAYS.map(td => {
+      const sel = td.id === mDay;
+      const hasMeals = meals.some(m => m.day === td.id);
+      return /*#__PURE__*/React.createElement("button", {
+        key: td.id,
+        onClick: () => setMDay(td.id),
+        style: {
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          padding: "8px 6px 6px",
+          minWidth: 48,
+          border: "none",
+          borderBottom: sel ? `2px solid ${th.acc}` : "2px solid transparent",
+          background: sel ? `${th.acc}15` : "transparent",
+          cursor: "pointer",
+          borderRadius: 0
+        }
+      }, /*#__PURE__*/React.createElement("span", {
+        style: {
+          fontSize: 9,
+          color: sel ? th.acc : th.mut,
+          letterSpacing: .5,
+          fontWeight: sel ? 600 : 400
+        }
+      }, td.dow), /*#__PURE__*/React.createElement("span", {
+        style: {
+          fontSize: 15,
+          fontWeight: 500,
+          color: sel ? th.acc : th.sub
+        }
+      }, td.dn), /*#__PURE__*/React.createElement("span", {
+        style: {
+          fontSize: 8,
+          color: sel ? th.acc : th.mut
+        }
+      }, td.loc), hasMeals && /*#__PURE__*/React.createElement("div", {
+        style: {
+          width: 5,
+          height: 5,
+          borderRadius: "50%",
+          background: th.coral,
+          marginTop: 2
+        }
+      }));
+    }))), /*#__PURE__*/React.createElement("div", {
+      style: {
+        borderTop: `0.5px solid ${th.bdr}`,
+        paddingTop: 14,
+        marginTop: 0
+      }
+    }, selDay && /*#__PURE__*/React.createElement("div", {
+      style: {
+        display: "flex",
+        alignItems: "center",
+        gap: 6,
+        marginBottom: 10
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        width: 16,
+        height: 2,
+        background: th.acc,
+        borderRadius: 1
+      }
+    }), /*#__PURE__*/React.createElement("span", {
+      style: {
+        fontSize: 12,
+        fontWeight: 600,
+        letterSpacing: 1,
+        color: th.acc
+      }
+    }, selDay.label.toUpperCase(), " — ", selDay.loc.toUpperCase())), dayMeals.length === 0 && /*#__PURE__*/React.createElement("div", {
       style: {
         textAlign: "center",
-        padding: "40px 20px",
+        padding: "30px 20px",
         color: th.mut
       }
     }, /*#__PURE__*/React.createElement("div", {
       style: {
-        fontSize: 40,
-        marginBottom: 8
+        fontSize: 36,
+        marginBottom: 6
       }
     }, "🍜"), /*#__PURE__*/React.createElement("div", {
       style: {
-        fontSize: 14,
+        fontSize: 13,
         fontWeight: 600,
         color: th.sub,
         marginBottom: 4
       }
-    }, "No meals yet"), /*#__PURE__*/React.createElement("div", {
+    }, "No meals logged"), /*#__PURE__*/React.createElement("div", {
       style: {
         fontSize: 12
       }
-    }, "Tap + Add meal to start tracking")), TRIP_DAYS.map(td => {
-      const dm = meals.filter(m => m.day === td.id);
-      if (!dm.length) return null;
-      const dt = dm.reduce((s, m) => s + m.total, 0);
-      return /*#__PURE__*/React.createElement("div", {
-        key: td.id
-      }, /*#__PURE__*/React.createElement(Sec, {
-        th: th
-      }, td.label, " — ", td.loc), dm.map(m => /*#__PURE__*/React.createElement(MealCard, {
-        key: m.id,
-        th: th,
-        m: m,
-        rate: r,
-        edit: edit,
-        onEdit: m => {
-          setMEdit(m);
-          setMAdd(true);
-        }
-      })), /*#__PURE__*/React.createElement("div", {
-        style: {
-          background: th.tag,
-          borderRadius: 10,
-          padding: "8px 14px",
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: 16
-        }
-      }, /*#__PURE__*/React.createElement("span", {
-        style: {
-          fontSize: 12,
-          color: th.mut
-        }
-      }, "Day total"), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("span", {
-        style: {
-          fontSize: 14,
-          fontWeight: 600,
-          color: th.text
-        }
-      }, "฿", dt.toLocaleString()), /*#__PURE__*/React.createElement("span", {
-        style: {
-          fontSize: 12,
-          color: th.acc,
-          marginLeft: 6
-        }
-      }, "A$", Math.round(dt / r)))));
-    }));
+    }, "Tap + Add meal to start")), dayMeals.map(m => /*#__PURE__*/React.createElement(MealCard, {
+      key: m.id,
+      th: th,
+      m: m,
+      rate: r,
+      edit: edit,
+      onEdit: m => {
+        setMEdit(m);
+        setMAdd(true);
+      }
+    })), dayMeals.length > 0 && /*#__PURE__*/React.createElement("div", {
+      style: {
+        background: th.tag,
+        borderRadius: 8,
+        padding: "8px 12px",
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center"
+      }
+    }, /*#__PURE__*/React.createElement("span", {
+      style: {
+        fontSize: 12,
+        color: th.mut
+      }
+    }, "Day total"), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("span", {
+      style: {
+        fontSize: 14,
+        fontWeight: 600,
+        color: th.text
+      }
+    }, "฿", dayTotal.toLocaleString()), /*#__PURE__*/React.createElement("span", {
+      style: {
+        fontSize: 12,
+        color: th.acc,
+        marginLeft: 6
+      }
+    }, "A$", Math.round(dayTotal / r))))));
   })()), tab === "currency" && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 22,
@@ -4143,7 +4276,7 @@ function App() {
   }, {
     t: "Travel Insurance",
     r: "—",
-    k: ["insurance"]
+    k: ["ins_cert", "ins_policy"]
   }].map((g, i) => /*#__PURE__*/React.createElement("div", {
     key: i,
     style: {
@@ -4218,6 +4351,97 @@ function App() {
       }
     }, "✏️")) : null;
   })))), /*#__PURE__*/React.createElement(Sec, {
+    th: th
+  }, "Backup & Sync"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 10,
+      marginBottom: 12
+    }
+  }, /*#__PURE__*/React.createElement("button", {
+    onClick: () => {
+      const d = JSON.stringify({
+        cards,
+        docs,
+        acts,
+        standby,
+        meals,
+        dark
+      }, null, 2);
+      const b = new Blob([d], {
+        type: "application/json"
+      });
+      const u = URL.createObjectURL(b);
+      const a = document.createElement("a");
+      a.href = u;
+      a.download = "honeymoon-backup-" + new Date().toISOString().slice(0, 10) + ".json";
+      a.click();
+      URL.revokeObjectURL(u);
+    },
+    style: {
+      flex: 1,
+      padding: 12,
+      borderRadius: 12,
+      background: th.acc,
+      color: "#fff",
+      border: "none",
+      fontSize: 13,
+      fontWeight: 600,
+      cursor: "pointer"
+    }
+  }, "⬇ Export JSON"), /*#__PURE__*/React.createElement("label", {
+    style: {
+      flex: 1,
+      padding: 12,
+      borderRadius: 12,
+      border: `1px solid ${th.acc}`,
+      background: "transparent",
+      color: th.acc,
+      fontSize: 13,
+      fontWeight: 600,
+      cursor: "pointer",
+      textAlign: "center"
+    }
+  }, "⬆ Import JSON", /*#__PURE__*/React.createElement("input", {
+    type: "file",
+    accept: ".json",
+    style: {
+      display: "none"
+    },
+    onChange: e => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const r = new FileReader();
+      r.onload = ev => {
+        try {
+          const d = JSON.parse(ev.target.result);
+          if (d.cards) setCards(c => ({
+            ...INIT_CARDS,
+            ...d.cards
+          }));
+          if (d.docs) setDocs(c => ({
+            ...INIT_DOCS,
+            ...d.docs
+          }));
+          if (d.acts) setActs(d.acts);
+          if (d.standby) setStandby(d.standby);
+          if (d.meals) setMeals(d.meals);
+          if (d.dark !== undefined) setDark(d.dark);
+          alert("Imported successfully!");
+        } catch {
+          alert("Invalid backup file");
+        }
+      };
+      r.readAsText(file);
+      e.target.value = "";
+    }
+  }))), /*#__PURE__*/React.createElement(NoteC, {
+    th: th,
+    d: {
+      text: "Export saves all your edits, meals, and settings as a JSON file. Import loads them onto another device."
+    },
+    edit: false
+  }), /*#__PURE__*/React.createElement(Sec, {
     th: th
   }, "Reset"), /*#__PURE__*/React.createElement("button", {
     onClick: () => {
