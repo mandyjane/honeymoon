@@ -66,6 +66,65 @@ const INIT_DOCS = {
   }
 };
 
+/* ── TRANSPORT ICONS ── */
+const TRANSPORT_ICONS = [["🚶", "Walk"], ["🚕", "Taxi/Grab"], ["🚤", "Boat"], ["🚐", "Pickup"], ["🎫", "Part of tour"], ["🏠", "On-site"], ["🚙", "Drive"], ["🛵", "Scooter"], ["🚌", "Bus"], ["🚂", "Train"], ["✈️", "Fly"]];
+const guessIcon = how => {
+  if (!how) return "🚗";
+  const h = how.toLowerCase();
+  if (h.includes("walk")) return "🚶";
+  if (h.includes("boat") || h.includes("longtail") || h.includes("speedboat") || h.includes("ferry") || h.includes("catamaran")) return "🚤";
+  if (h.includes("grab") || h.includes("bolt") || h.includes("taxi")) return "🚕";
+  if (h.includes("part of") || h.includes("incl")) return "🎫";
+  if (h.includes("hotel") || h.includes("pickup") || h.includes("transfer")) return "🚐";
+  if (h.includes("in-room") || h.includes("on-site")) return "🏠";
+  if (h.includes("scoot") || h.includes("moto")) return "🛵";
+  return "🚗";
+};
+const calcDur = (dep, arr) => {
+  try {
+    const parse = t => {
+      const nd = t.includes("+1");
+      const c = t.replace(/\+1/, "").trim();
+      const [h, m] = c.split(":").map(Number);
+      return h * 60 + m + (nd ? 1440 : 0);
+    };
+    let diff = parse(arr) - parse(dep);
+    if (diff < 0) diff += 1440;
+    const hrs = Math.floor(diff / 60),
+      mins = diff % 60;
+    if (hrs === 0) return mins + " min";
+    if (mins === 0) return hrs + (hrs > 1 ? " hours" : " hour");
+    return hrs + "h " + mins + "min";
+  } catch {
+    return "";
+  }
+};
+
+/* ── PRICE HELPERS ── */
+const RATE = 22.5;
+const thbToAud = s => {
+  const parts = s.replace(/,/g, "").split(/[-–]/);
+  if (parts.length === 2) {
+    const lo = Math.round(parseFloat(parts[0]) / RATE),
+      hi = Math.round(parseFloat(parts[1]) / RATE);
+    if (isNaN(lo) || isNaN(hi)) return "";
+    return "A$" + lo + "–" + hi;
+  }
+  const v = parseFloat(parts[0]);
+  if (isNaN(v)) return "";
+  return "A$" + Math.round(v / RATE);
+};
+const fmtPrice = (thb, aud, suffix) => {
+  if (!thb && !aud) return "";
+  if (!thb) return aud;
+  const c = thb.replace(/,/g, "").trim(),
+    p = c.split(/[-–]/);
+  let d;
+  if (p.length === 2) d = "฿" + parseInt(p[0]).toLocaleString() + "–" + parseInt(p[1]).toLocaleString();else d = "฿" + parseInt(p[0]).toLocaleString();
+  const a = aud || thbToAud(c);
+  return d + (suffix ? "/" + suffix : "") + " (" + (a || "?") + ")";
+};
+
 /* ── THEMES ── */
 const TH = {
   light: {
@@ -1435,7 +1494,15 @@ const ActC = ({
     flexWrap: "wrap",
     gap: 5
   }
-}, act.dur && /*#__PURE__*/React.createElement("span", {
+}, (act.startTime || act.endTime) && /*#__PURE__*/React.createElement("span", {
+  style: {
+    fontSize: 10,
+    background: th.tag,
+    color: th.sub,
+    padding: "2px 7px",
+    borderRadius: 6
+  }
+}, "🕐 ", act.startTime || "?", act.endTime ? " – " + act.endTime : ""), act.dur && /*#__PURE__*/React.createElement("span", {
   style: {
     fontSize: 10,
     background: th.tag,
@@ -1640,7 +1707,79 @@ const ActEditM = ({
       resize: "vertical",
       fontFamily: "inherit"
     }
-  })), inp("Duration", "dur"), inp("Distance", "dist"), inp("Transport", "how"), /*#__PURE__*/React.createElement("div", {
+  })), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 8,
+      marginBottom: 10
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      flex: 1
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 11,
+      color: th.mut,
+      marginBottom: 3,
+      textTransform: "uppercase"
+    }
+  }, "Start Time"), /*#__PURE__*/React.createElement("input", {
+    value: f.startTime || "",
+    onChange: e => {
+      const v = e.target.value;
+      u("startTime", v);
+      if (v && f.endTime) {
+        const d = calcDur(v, f.endTime);
+        if (d) u("dur", d);
+      }
+    },
+    placeholder: "e.g. 09:00",
+    style: {
+      width: "100%",
+      padding: "8px 10px",
+      borderRadius: 8,
+      border: `1px solid ${th.bdr}`,
+      background: th.inp,
+      color: th.text,
+      fontSize: 13,
+      boxSizing: "border-box",
+      outline: "none"
+    }
+  })), /*#__PURE__*/React.createElement("div", {
+    style: {
+      flex: 1
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 11,
+      color: th.mut,
+      marginBottom: 3,
+      textTransform: "uppercase"
+    }
+  }, "End Time"), /*#__PURE__*/React.createElement("input", {
+    value: f.endTime || "",
+    onChange: e => {
+      const v = e.target.value;
+      u("endTime", v);
+      if (f.startTime && v) {
+        const d = calcDur(f.startTime, v);
+        if (d) u("dur", d);
+      }
+    },
+    placeholder: "e.g. 12:00",
+    style: {
+      width: "100%",
+      padding: "8px 10px",
+      borderRadius: 8,
+      border: `1px solid ${th.bdr}`,
+      background: th.inp,
+      color: th.text,
+      fontSize: 13,
+      boxSizing: "border-box",
+      outline: "none"
+    }
+  }))), inp("Duration", "dur"), inp("Distance", "dist"), inp("Transport", "how"), /*#__PURE__*/React.createElement("div", {
     style: {
       marginBottom: 10
     }
@@ -1673,7 +1812,143 @@ const ActEditM = ({
       alignItems: "center",
       justifyContent: "center"
     }
-  }, ico)))), inp("Price", "price"), /*#__PURE__*/React.createElement("div", {
+  }, ico)))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      marginBottom: 10
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 11,
+      color: th.mut,
+      marginBottom: 6,
+      textTransform: "uppercase"
+    }
+  }, "Price"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 8
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      flex: 1
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 10,
+      color: th.mut,
+      marginBottom: 2
+    }
+  }, "THB (e.g. 750 or 750-1500)"), /*#__PURE__*/React.createElement("input", {
+    value: f.priceTHB || "",
+    onChange: e => {
+      const v = e.target.value;
+      sF(p => {
+        const n = {
+          ...p,
+          priceTHB: v
+        };
+        if (v) {
+          const a = thbToAud(v);
+          n.priceAUD = a;
+          n.price = fmtPrice(v, a, f.priceSuffix);
+        } else if (!n.priceAUD) {
+          n.price = "";
+        }
+        return n;
+      });
+    },
+    placeholder: "฿ amount",
+    style: {
+      width: "100%",
+      padding: "8px 10px",
+      borderRadius: 8,
+      border: `1px solid ${th.bdr}`,
+      background: th.inp,
+      color: th.text,
+      fontSize: 13,
+      boxSizing: "border-box",
+      outline: "none"
+    }
+  })), /*#__PURE__*/React.createElement("div", {
+    style: {
+      flex: 1
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 10,
+      color: th.mut,
+      marginBottom: 2
+    }
+  }, "AUD (auto or override)"), /*#__PURE__*/React.createElement("input", {
+    value: f.priceAUD || "",
+    onChange: e => {
+      const v = e.target.value;
+      sF(p => {
+        const n = {
+          ...p,
+          priceAUD: v
+        };
+        if (p.priceTHB) n.price = fmtPrice(p.priceTHB, v, p.priceSuffix);else n.price = v;
+        return n;
+      });
+    },
+    placeholder: "A$ or Free",
+    style: {
+      width: "100%",
+      padding: "8px 10px",
+      borderRadius: 8,
+      border: `1px solid ${th.bdr}`,
+      background: th.inp,
+      color: th.text,
+      fontSize: 13,
+      boxSizing: "border-box",
+      outline: "none"
+    }
+  }))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      marginTop: 6
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 10,
+      color: th.mut,
+      marginBottom: 2
+    }
+  }, "Suffix (optional: /pp, /boat, /dish)"), /*#__PURE__*/React.createElement("input", {
+    value: f.priceSuffix || "",
+    onChange: e => {
+      const v = e.target.value;
+      sF(p => {
+        const n = {
+          ...p,
+          priceSuffix: v
+        };
+        if (p.priceTHB) n.price = fmtPrice(p.priceTHB, p.priceAUD, v);
+        return n;
+      });
+    },
+    placeholder: "e.g. /pp",
+    style: {
+      width: "100%",
+      padding: "8px 10px",
+      borderRadius: 8,
+      border: `1px solid ${th.bdr}`,
+      background: th.inp,
+      color: th.text,
+      fontSize: 13,
+      boxSizing: "border-box",
+      outline: "none"
+    }
+  })), f.price && /*#__PURE__*/React.createElement("div", {
+    style: {
+      marginTop: 6,
+      padding: "6px 10px",
+      background: th.tag,
+      borderRadius: 8,
+      fontSize: 12,
+      color: th.sub
+    }
+  }, "Preview: ", f.price)), /*#__PURE__*/React.createElement("div", {
     style: {
       marginBottom: 16
     }
