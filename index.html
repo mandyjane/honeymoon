@@ -73,7 +73,7 @@ const INIT_DOCS = {
   },
   info_pp: {
     label: "CoCo Beach Resort Guide",
-    file: "docs/info-coco-beach.pdf"
+    file: "docs/guide-coco-beach.pdf"
   },
   menu_pp: {
     label: "CoCo Beach Website",
@@ -81,7 +81,7 @@ const INIT_DOCS = {
   },
   info_sm: {
     label: "SALA Samui Resort Guide",
-    file: "docs/info-sala-samui.pdf"
+    file: "docs/guide-sala-samui.pdf"
   },
   menu_sm_tent: {
     label: "The Tent — Menus",
@@ -93,7 +93,7 @@ const INIT_DOCS = {
   },
   info_pk: {
     label: "Impiana Patong Resort Guide",
-    file: "docs/info-impiana-patong.pdf"
+    file: "docs/guide-impiana-patong.pdf"
   },
   menu_pk_sala: {
     label: "Sala Bua Restaurant",
@@ -3359,6 +3359,39 @@ const ActEditM = ({
       color: th.sub
     }
   }, "Preview: ", f.price)), /*#__PURE__*/React.createElement("div", {
+    style: {
+      marginBottom: 10
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 10,
+      color: th.mut,
+      marginBottom: 3,
+      textTransform: "uppercase"
+    }
+  }, "Map Location (Google Maps search)"), /*#__PURE__*/React.createElement("input", {
+    value: f.mapQuery || "",
+    onChange: e => u("mapQuery", e.target.value),
+    placeholder: "e.g. Maya Bay Thailand",
+    autoComplete: "off",
+    style: {
+      width: "100%",
+      padding: "8px 10px",
+      borderRadius: 8,
+      border: `0.5px solid ${th.bdr}`,
+      background: th.inp,
+      color: th.text,
+      fontSize: 13,
+      boxSizing: "border-box",
+      outline: "none"
+    }
+  }), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 9,
+      color: th.mut,
+      marginTop: 2
+    }
+  }, "Leave empty to hide the map tag. Use a place name Google Maps can find.")), /*#__PURE__*/React.createElement("div", {
     style: {
       marginBottom: 16
     }
