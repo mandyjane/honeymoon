@@ -2855,7 +2855,8 @@ const AccC = ({
   docs,
   openPdf
 }) => {
-  const feat = d.feat ? d.feat.split(",").map(s => s.trim()).filter(Boolean) : [];
+  const base = window.location.href.replace(/\/[^\/]*$/, '/');
+  const heroUrl = d._hero ? d._hero.startsWith('http') ? d._hero : base + d._hero : null;
   return /*#__PURE__*/React.createElement("div", {
     style: {
       background: th.card,
@@ -2866,114 +2867,130 @@ const AccC = ({
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
-      background: th.accomBg,
-      padding: "14px 18px",
-      color: "#fff",
-      position: "relative"
+      height: 130,
+      position: "relative",
+      overflow: "hidden"
     }
-  }, edit && /*#__PURE__*/React.createElement(Pen, {
+  }, heroUrl ? /*#__PURE__*/React.createElement("img", {
+    src: heroUrl,
+    style: {
+      width: "100%",
+      height: "100%",
+      objectFit: "cover"
+    },
+    alt: d.name
+  }) : /*#__PURE__*/React.createElement("div", {
+    style: {
+      width: "100%",
+      height: "100%",
+      background: th.accomBg
+    }
+  }), /*#__PURE__*/React.createElement("div", {
+    style: {
+      position: "absolute",
+      inset: 0,
+      background: "linear-gradient(to top, rgba(12,74,110,0.85) 0%, rgba(12,74,110,0.3) 50%, transparent 100%)"
+    }
+  }), edit && /*#__PURE__*/React.createElement(Pen, {
     onClick: onEdit,
     abs: true
   }), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 11,
-      textTransform: "uppercase",
-      letterSpacing: 1,
-      opacity: .8,
-      marginBottom: 4,
-      paddingRight: edit ? 34 : 0
+      position: "absolute",
+      bottom: 12,
+      left: 16,
+      color: "#fff"
     }
-  }, "Your Accommodation"), /*#__PURE__*/React.createElement("div", {
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 11,
+      opacity: .65,
+      letterSpacing: 1,
+      textTransform: "uppercase"
+    }
+  }, "Your accommodation"), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 18,
       fontWeight: 700
     }
-  }, d.name), /*#__PURE__*/React.createElement("div", {
+  }, d.name))), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 13,
-      opacity: .9,
-      marginTop: 2
-    }
-  }, d.room)), /*#__PURE__*/React.createElement("div", {
-    style: {
-      padding: "14px 18px"
+      padding: "14px 16px"
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
-      display: "grid",
-      gridTemplateColumns: "1fr 1fr",
-      gap: 8,
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "center",
       marginBottom: 10
     }
-  }, [["Check-in", d.checkIn], ["Check-out", d.checkOut], ["Nights", d.nights], ["Breakfast", d.bfast]].map(([l, v], i) => /*#__PURE__*/React.createElement("div", {
-    key: i,
-    style: {
-      background: th.inp,
-      borderRadius: 8,
-      padding: "6px 10px"
-    }
-  }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 10,
-      color: th.mut,
-      textTransform: "uppercase"
-    }
-  }, l), /*#__PURE__*/React.createElement("div", {
+  }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 13,
       fontWeight: 600,
       color: th.text
     }
-  }, v)))), /*#__PURE__*/React.createElement("div", {
-    style: {
-      borderTop: `1px solid ${th.bdr}`,
-      paddingTop: 10,
-      display: "flex",
-      justifyContent: "space-between"
-    }
-  }, /*#__PURE__*/React.createElement("span", {
+  }, d.room), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 12,
       color: th.mut
     }
-  }, "A$", d.ppn, "/night"), /*#__PURE__*/React.createElement("span", {
+  }, d.dates || "", " · ", d.nights)), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 16,
+      textAlign: "right"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 15,
       fontWeight: 700,
       color: th.acc
     }
-  }, "A$", d.total, " total")), feat.length > 0 && /*#__PURE__*/React.createElement("div", {
-    style: {
-      display: "flex",
-      flexWrap: "wrap",
-      gap: 6,
-      marginTop: 10
-    }
-  }, feat.map((f, i) => /*#__PURE__*/React.createElement("span", {
-    key: i,
+  }, "A$", d.total), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 11,
-      background: th.pill,
-      color: th.pillTxt,
-      padding: "3px 8px",
-      borderRadius: 20
+      color: th.mut
     }
-  }, f))), d._loc && /*#__PURE__*/React.createElement("div", {
+  }, "A$", d.ppn, "/night"))), /*#__PURE__*/React.createElement("div", {
     style: {
-      marginTop: 10,
-      paddingTop: 10,
-      borderTop: `0.5px solid ${th.bdr}`
+      display: "grid",
+      gridTemplateColumns: "1fr 1fr 1fr 1fr",
+      gap: 4,
+      marginBottom: 12
     }
-  }, /*#__PURE__*/React.createElement("button", {
+  }, [["IN", d.checkIn], ["OUT", d.checkOut], ["BFAST", d.bfast], ["WIFI", d.wifi || "Free"]].map(([l, v], i) => /*#__PURE__*/React.createElement("div", {
+    key: i,
+    style: {
+      background: th.inp,
+      borderRadius: 6,
+      padding: "6px 8px",
+      textAlign: "center"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 9,
+      color: th.mut
+    }
+  }, l), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12,
+      fontWeight: 600,
+      color: th.text
+    }
+  }, v)))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "grid",
+      gridTemplateColumns: "1fr 1fr",
+      gap: 6
+    }
+  }, d._loc && /*#__PURE__*/React.createElement("button", {
     onClick: () => viewMap(d._loc.lat, d._loc.lng, d.name),
     style: {
-      width: "100%",
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
       gap: 6,
-      padding: "8px",
-      borderRadius: 10,
+      padding: 8,
+      borderRadius: 8,
       background: th.tag,
       border: `0.5px solid ${th.bdr}`,
       fontSize: 12,
@@ -2981,20 +2998,7 @@ const AccC = ({
       cursor: "pointer",
       fontWeight: 500
     }
-  }, "📍 View on Map"), d._docs && /*#__PURE__*/React.createElement("div", {
-    style: {
-      display: "flex",
-      flexDirection: "column",
-      gap: 4,
-      marginTop: 8
-    }
-  }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 11,
-      fontWeight: 600,
-      color: th.sub
-    }
-  }, "Resort documents"), d._docs.map(dk => {
+  }, "📍 View on map"), d._docs && d._docs.map(dk => {
     const doc = docs[dk];
     return doc ? /*#__PURE__*/React.createElement("button", {
       key: dk,
@@ -3002,36 +3006,19 @@ const AccC = ({
       style: {
         display: "flex",
         alignItems: "center",
-        gap: 8,
-        padding: "8px 10px",
-        background: th.inp,
-        border: `0.5px solid ${th.bdr}`,
+        justifyContent: "center",
+        gap: 6,
+        padding: 8,
         borderRadius: 8,
-        cursor: "pointer",
-        width: "100%",
-        textAlign: "left"
-      }
-    }, /*#__PURE__*/React.createElement("span", {
-      style: {
-        fontSize: 13
-      }
-    }, "📋"), /*#__PURE__*/React.createElement("div", {
-      style: {
-        flex: 1
-      }
-    }, /*#__PURE__*/React.createElement("div", {
-      style: {
+        background: th.tag,
+        border: `0.5px solid ${th.bdr}`,
         fontSize: 12,
-        fontWeight: 500,
-        color: th.text
+        color: th.acc,
+        cursor: "pointer",
+        fontWeight: 500
       }
-    }, doc.label)), /*#__PURE__*/React.createElement("span", {
-      style: {
-        fontSize: 11,
-        color: th.acc
-      }
-    }, "View")) : null;
-  })))));
+    }, dk.startsWith("guide_") ? "📋" : dk.includes("spa") ? "💆" : dk.includes("menu") ? "🍽️" : "🌐", " ", doc.label.length > 18 ? doc.label.slice(0, 18) + "…" : doc.label) : null;
+  }))));
 };
 const NoteC = ({
   th,
@@ -3950,6 +3937,11 @@ function App() {
     a_sm: ["guide_sm", "menu_sm_tent", "menu_sm_spa"],
     a_pk: ["guide_pk", "menu_pk_sala", "menu_pk_spa"]
   };
+  const ACCOM_HEROES = {
+    a_pp: "docs/hero-coco-beach.jpg",
+    a_sm: "docs/hero-sala-samui.jpg",
+    a_pk: "docs/hero-impiana-patong.jpg"
+  };
   const c = id => {
     const d = cards[id] || INIT_CARDS[id] || {};
     const r = {
@@ -3957,6 +3949,7 @@ function App() {
     };
     if (LOCS[id]) r._loc = LOCS[id];
     if (ACCOM_DOCS[id]) r._docs = ACCOM_DOCS[id];
+    if (ACCOM_HEROES[id]) r._hero = ACCOM_HEROES[id];
     return r;
   };
   const updCard = (id, data) => setCards(p => ({
