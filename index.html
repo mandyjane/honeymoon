@@ -2271,7 +2271,7 @@ const TICO = {
 const ACCOM_LINK_TYPES = [{
   key: "linkMap",
   label: "View on map",
-  placeholder: "Google Maps URL or lat,lng"
+  placeholder: "Place name, URL, or lat,lng"
 }, {
   key: "linkGuide",
   label: "Resort guide",
@@ -3996,8 +3996,9 @@ const AccC = ({
   const openMap = () => {
     if (d.linkMap) {
       if (d.linkMap.startsWith('http')) window.open(d.linkMap, '_blank');else {
-        const [la, ln] = d.linkMap.split(',');
-        if (la && ln) viewMap(la.trim(), ln.trim(), d.name);else window.open(d.linkMap, '_blank');
+        const parts = d.linkMap.split(',');
+        const la = parseFloat(parts[0]), ln = parseFloat(parts[1]);
+        if (parts.length === 2 && !isNaN(la) && !isNaN(ln)) viewMap(la, ln, d.name);else window.open("https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(d.linkMap), '_blank');
       }
     } else if (d._loc) viewMap(d._loc.lat, d._loc.lng, d.name);
   };
