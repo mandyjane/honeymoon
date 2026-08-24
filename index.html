@@ -37,6 +37,64 @@ const openPdf = doc => {
   window.open(url, '_blank');
 };
 
+/* ── TICKET STORAGE (IndexedDB blobs) ── */
+const TDB = "th-honeymoon-tickets";
+const TSTORE = "tickets";
+const MAX_TICKET_MB = 5;
+let tdbPromise = null;
+const openTDB = () => {
+  if (tdbPromise) return tdbPromise;
+  tdbPromise = new Promise((res, rej) => {
+    const req = indexedDB.open(TDB, 1);
+    req.onupgradeneeded = e => {
+      const db = e.target.result;
+      if (!db.objectStoreNames.contains(TSTORE)) db.createObjectStore(TSTORE, {
+        keyPath: "id"
+      });
+    };
+    req.onsuccess = e => res(e.target.result);
+    req.onerror = e => rej(e.target.error);
+  });
+  return tdbPromise;
+};
+const putTicket = async t => {
+  const db = await openTDB();
+  return new Promise((res, rej) => {
+    const tx = db.transaction(TSTORE, "readwrite");
+    const r = tx.objectStore(TSTORE).put(t);
+    r.onsuccess = () => res();
+    r.onerror = () => rej(r.error);
+  });
+};
+const getTicket = async id => {
+  const db = await openTDB();
+  return new Promise((res, rej) => {
+    const tx = db.transaction(TSTORE, "readonly");
+    const r = tx.objectStore(TSTORE).get(id);
+    r.onsuccess = () => res(r.result);
+    r.onerror = () => rej(r.error);
+  });
+};
+const delTicket = async id => {
+  const db = await openTDB();
+  return new Promise((res, rej) => {
+    const tx = db.transaction(TSTORE, "readwrite");
+    const r = tx.objectStore(TSTORE).delete(id);
+    r.onsuccess = () => res();
+    r.onerror = () => rej(r.error);
+  });
+};
+const clearTickets = async () => {
+  const db = await openTDB();
+  return new Promise((res, rej) => {
+    const tx = db.transaction(TSTORE, "readwrite");
+    const r = tx.objectStore(TSTORE).clear();
+    r.onsuccess = () => res();
+    r.onerror = () => rej(r.error);
+  });
+};
+const genTid = () => "tk_" + Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-4);
+
 /* ── DOCUMENT METADATA (editable, persisted) ── */
 const INIT_DOCS = {
   amanda_sq: {
@@ -2870,6 +2928,417 @@ const DocEditM = ({
   }, "Cancel"))));
 };
 
+/* ── TICKETS VIEWER MODAL ── */
+const TicketsM = ({
+  th,
+  tickets,
+  onClose
+}) => {
+  const [urls, setUrls] = useState({});
+  const [expanded, setExpanded] = useState(null);
+  useEffect(() => {
+    let cancelled = false;
+    const created = [];
+    (async () => {
+      const map = {};
+      for (const t of tickets) {
+        try {
+          const rec = await getTicket(t.id);
+          if (rec && !cancelled) {
+            const u = URL.createObjectURL(rec.blob);
+            map[t.id] = u;
+            created.push(u);
+          }
+        } catch (e) {}
+      }
+      if (!cancelled) setUrls(map);
+    })();
+    return () => {
+      cancelled = true;
+      created.forEach(u => URL.revokeObjectURL(u));
+    };
+  }, [tickets]);
+  return /*#__PURE__*/React.createElement("div", {
+    style: {
+      position: "fixed",
+      inset: 0,
+      zIndex: 9999,
+      background: "rgba(0,0,0,.7)",
+      display: "flex",
+      alignItems: "flex-end",
+      justifyContent: "center"
+    },
+    onClick: e => {
+      if (e.target === e.currentTarget) onClose();
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      background: th.card,
+      borderRadius: "20px 20px 0 0",
+      width: "100%",
+      maxWidth: 480,
+      maxHeight: "85vh",
+      overflow: "auto",
+      padding: "20px 20px env(safe-area-inset-bottom,20px)"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "center",
+      marginBottom: 16
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 16,
+      fontWeight: 700,
+      color: th.text
+    }
+  }, "Tickets (", tickets.length, ")"), /*#__PURE__*/React.createElement("button", {
+    onClick: onClose,
+    style: {
+      background: th.inp,
+      border: "none",
+      borderRadius: 8,
+      width: 32,
+      height: 32,
+      fontSize: 16,
+      color: th.text,
+      cursor: "pointer"
+    }
+  }, "✕")), tickets.map(t => /*#__PURE__*/React.createElement("div", {
+    key: t.id,
+    style: {
+      marginBottom: 14,
+      background: th.inp,
+      borderRadius: 12,
+      padding: 12
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12,
+      color: th.sub,
+      marginBottom: 8,
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "center"
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      overflow: "hidden",
+      textOverflow: "ellipsis",
+      whiteSpace: "nowrap",
+      flex: 1,
+      marginRight: 8
+    }
+  }, t.name), /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 10,
+      color: th.mut
+    }
+  }, t.type.startsWith("image") ? "IMAGE" : "PDF")), urls[t.id] ? t.type.startsWith("image") ? /*#__PURE__*/React.createElement("img", {
+    src: urls[t.id],
+    onClick: () => setExpanded(urls[t.id]),
+    style: {
+      width: "100%",
+      maxHeight: 400,
+      objectFit: "contain",
+      borderRadius: 8,
+      cursor: "pointer",
+      background: "#000"
+    },
+    alt: t.name
+  }) : /*#__PURE__*/React.createElement("button", {
+    onClick: () => window.open(urls[t.id], "_blank"),
+    style: {
+      width: "100%",
+      padding: "12px",
+      borderRadius: 8,
+      background: th.acc,
+      color: "#fff",
+      border: "none",
+      fontSize: 13,
+      fontWeight: 600,
+      cursor: "pointer"
+    }
+  }, "📄 Open PDF") : /*#__PURE__*/React.createElement("div", {
+    style: {
+      padding: "20px 0",
+      textAlign: "center",
+      color: th.mut,
+      fontSize: 12
+    }
+  }, "Loading…"))), expanded && /*#__PURE__*/React.createElement("div", {
+    onClick: () => setExpanded(null),
+    style: {
+      position: "fixed",
+      inset: 0,
+      zIndex: 99999,
+      background: "rgba(0,0,0,.95)",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      padding: 16
+    }
+  }, /*#__PURE__*/React.createElement("img", {
+    src: expanded,
+    style: {
+      maxWidth: "100%",
+      maxHeight: "100%",
+      objectFit: "contain"
+    }
+  }), /*#__PURE__*/React.createElement("button", {
+    onClick: () => setExpanded(null),
+    style: {
+      position: "absolute",
+      top: 16,
+      right: 16,
+      background: "rgba(255,255,255,0.15)",
+      border: "none",
+      borderRadius: 8,
+      width: 40,
+      height: 40,
+      fontSize: 18,
+      color: "#fff",
+      cursor: "pointer"
+    }
+  }, "✕"))));
+};
+
+/* ── QUICK COST LOG MODAL ── */
+const QuickCostM = ({
+  th,
+  act,
+  liveRate,
+  onSave,
+  onClose
+}) => {
+  const rate = liveRate || 22.5;
+  const isPpPrice = /pp|per person/i.test((act.price || "") + " " + (act.priceSuffix || ""));
+  const [currency, setCurrency] = useState("thb");
+  const [pp, setPp] = useState(!act.actualCost && isPpPrice);
+  const [val, setVal] = useState(act.actualCost ? String(act.actualCost) : "");
+  const numVal = Number(val) || 0;
+  const asTHB = currency === "aud" ? Math.round(numVal * rate) : numVal;
+  const totalTHB = pp ? asTHB * 2 : asTHB;
+  const totalAUD = Math.round(totalTHB / rate);
+  const togglePp = newPp => {
+    if (numVal > 0 && newPp !== pp) {
+      const currTotalTyped = pp ? numVal * 2 : numVal;
+      const newV = newPp ? Math.round(currTotalTyped / 2) : currTotalTyped;
+      setVal(String(newV));
+    }
+    setPp(newPp);
+  };
+  const toggleCur = newCur => {
+    if (numVal > 0 && newCur !== currency) {
+      const newV = newCur === "aud" ? Math.round(numVal / rate) : Math.round(numVal * rate);
+      setVal(String(newV));
+    }
+    setCurrency(newCur);
+  };
+  const save = () => {
+    onSave(val ? String(totalTHB) : "");
+    onClose();
+  };
+  const segStyle = active => ({
+    flex: 1,
+    padding: "7px",
+    borderRadius: 6,
+    border: "none",
+    background: active ? th.card : "transparent",
+    color: active ? th.text : th.sub,
+    fontSize: 12,
+    fontWeight: active ? 600 : 400,
+    cursor: "pointer",
+    boxShadow: active ? "0 1px 2px rgba(0,0,0,0.08)" : "none"
+  });
+  return /*#__PURE__*/React.createElement("div", {
+    style: {
+      position: "fixed",
+      inset: 0,
+      zIndex: 9999,
+      background: "rgba(0,0,0,.6)",
+      display: "flex",
+      alignItems: "flex-end",
+      justifyContent: "center"
+    },
+    onClick: e => {
+      if (e.target === e.currentTarget) onClose();
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      background: th.card,
+      borderRadius: "20px 20px 0 0",
+      width: "100%",
+      maxWidth: 480,
+      padding: "20px 20px env(safe-area-inset-bottom,20px)"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "center",
+      marginBottom: 6
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 16,
+      fontWeight: 700,
+      color: th.text
+    }
+  }, "Log actual cost"), /*#__PURE__*/React.createElement("button", {
+    onClick: onClose,
+    style: {
+      background: th.inp,
+      border: "none",
+      borderRadius: 8,
+      width: 32,
+      height: 32,
+      fontSize: 16,
+      color: th.text,
+      cursor: "pointer"
+    }
+  }, "✕")), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12,
+      color: th.mut,
+      marginBottom: 14,
+      display: "flex",
+      alignItems: "center",
+      gap: 6
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 18
+    }
+  }, act.emoji), /*#__PURE__*/React.createElement("span", {
+    style: {
+      overflow: "hidden",
+      textOverflow: "ellipsis",
+      whiteSpace: "nowrap"
+    }
+  }, act.title)), act.price && /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 11,
+      color: th.mut,
+      marginBottom: 10
+    }
+  }, "Estimate: ", act.price), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 3,
+      padding: 3,
+      background: th.inp,
+      borderRadius: 8,
+      marginBottom: 10
+    }
+  }, /*#__PURE__*/React.createElement("button", {
+    onClick: () => toggleCur("thb"),
+    style: segStyle(currency === "thb")
+  }, "฿ THB"), /*#__PURE__*/React.createElement("button", {
+    onClick: () => toggleCur("aud"),
+    style: segStyle(currency === "aud")
+  }, "A$ AUD")), /*#__PURE__*/React.createElement("div", {
+    style: {
+      position: "relative",
+      marginBottom: 10
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      position: "absolute",
+      left: 12,
+      top: "50%",
+      transform: "translateY(-50%)",
+      fontSize: 18,
+      color: th.mut,
+      fontWeight: 500
+    }
+  }, currency === "thb" ? "฿" : "A$"), /*#__PURE__*/React.createElement("input", {
+    value: val,
+    onChange: e => setVal(e.target.value.replace(/[^0-9]/g, "")),
+    onKeyDown: e => {
+      if (e.key === "Enter") save();
+    },
+    placeholder: "0",
+    inputMode: "numeric",
+    autoFocus: true,
+    style: {
+      width: "100%",
+      padding: "14px 12px 14px 40px",
+      borderRadius: 10,
+      border: `1px solid ${th.bdr}`,
+      background: th.inp,
+      color: th.text,
+      fontSize: 22,
+      fontWeight: 600,
+      boxSizing: "border-box",
+      outline: "none"
+    }
+  })), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 3,
+      padding: 3,
+      background: th.inp,
+      borderRadius: 8,
+      marginBottom: 14
+    }
+  }, /*#__PURE__*/React.createElement("button", {
+    onClick: () => togglePp(false),
+    style: segStyle(!pp)
+  }, "Total"), /*#__PURE__*/React.createElement("button", {
+    onClick: () => togglePp(true),
+    style: segStyle(pp)
+  }, "Per person × 2")), val ? /*#__PURE__*/React.createElement("div", {
+    style: {
+      background: th.dark ? "rgba(14,116,144,0.15)" : "rgba(14,116,144,0.08)",
+      padding: "10px 12px",
+      borderRadius: 8,
+      fontSize: 12,
+      color: th.acc,
+      marginBottom: 16
+    }
+  }, "Budget adds ", /*#__PURE__*/React.createElement("strong", null, "฿", totalTHB.toLocaleString()), " ", "(≈ A$" + totalAUD + ")") : /*#__PURE__*/React.createElement("div", {
+    style: {
+      height: 16
+    }
+  }), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 8
+    }
+  }, act.actualCost && /*#__PURE__*/React.createElement("button", {
+    onClick: () => {
+      onSave("");
+      onClose();
+    },
+    style: {
+      padding: "12px 16px",
+      borderRadius: 12,
+      border: `1px solid ${th.bdr}`,
+      background: "transparent",
+      color: th.coral,
+      fontSize: 13,
+      fontWeight: 500,
+      cursor: "pointer"
+    }
+  }, "Clear"), /*#__PURE__*/React.createElement("button", {
+    onClick: save,
+    style: {
+      flex: 1,
+      padding: 12,
+      borderRadius: 12,
+      border: "none",
+      background: th.acc,
+      color: "#fff",
+      fontSize: 14,
+      fontWeight: 700,
+      cursor: "pointer"
+    }
+  }, "Save"))));
+};
+
 /* ── PENCIL BUTTONS ── */
 const Pen = ({
   onClick,
@@ -3750,7 +4219,9 @@ const ActC = ({
   act,
   edit,
   onEdit,
-  onRm
+  onRm,
+  onOpenTickets,
+  onLogCost
 }) => /*#__PURE__*/React.createElement("div", {
   style: {
     background: th.card,
@@ -3899,27 +4370,44 @@ const ActC = ({
     borderRadius: 6
   }
 }, act.howIcon || guessIcon(act.how), " ", act.how), act.price && /*#__PURE__*/React.createElement("span", {
+  onClick: () => onLogCost && onLogCost(act),
   style: {
     fontSize: 10,
     background: th.tagAcc,
     color: th.coral,
     padding: "2px 7px",
-    borderRadius: 6
+    borderRadius: 6,
+    cursor: "pointer"
   }
-}, "💰 ", act.price), act.actualCost && /*#__PURE__*/React.createElement("span", {
+}, "💰 ", act.price), act.actualCost ? /*#__PURE__*/React.createElement("span", {
+  onClick: () => onLogCost && onLogCost(act),
   style: {
     fontSize: 10,
     background: "#ede9fe",
     color: "#5b21b6",
     padding: "2px 7px",
     borderRadius: 6,
+    fontWeight: 500,
+    cursor: "pointer"
+  }
+}, "✓ ฿", Number(act.actualCost).toLocaleString(), " ✎") : !act.price && /*#__PURE__*/React.createElement("span", {
+  onClick: () => onLogCost && onLogCost(act),
+  style: {
+    fontSize: 10,
+    background: "transparent",
+    color: "#8b5cf6",
+    padding: "2px 7px",
+    borderRadius: 6,
+    cursor: "pointer",
+    border: `1px dashed #c4b5fd`,
     fontWeight: 500
   }
-}, "✓ ฿", Number(act.actualCost).toLocaleString())), (act.webUrl || act.bookUrl) && /*#__PURE__*/React.createElement("div", {
+}, "+ Log ฿ paid")), (act.webUrl || act.bookUrl || act.tickets && act.tickets.length > 0) && /*#__PURE__*/React.createElement("div", {
   style: {
     display: "flex",
     gap: 6,
-    marginTop: 4
+    marginTop: 6,
+    flexWrap: "wrap"
   }
 }, act.webUrl && /*#__PURE__*/React.createElement("span", {
   onClick: () => window.open(act.webUrl, "_blank"),
@@ -3943,7 +4431,19 @@ const ActC = ({
     cursor: "pointer",
     border: `0.5px solid ${th.bdr}`
   }
-}, "🎫 Book")))));
+}, "🎫 Book"), act.tickets && act.tickets.length > 0 && /*#__PURE__*/React.createElement("span", {
+  onClick: () => onOpenTickets && onOpenTickets(act.tickets),
+  style: {
+    fontSize: 10,
+    color: "#5b21b6",
+    background: "#ede9fe",
+    padding: "3px 8px",
+    borderRadius: 6,
+    cursor: "pointer",
+    border: `0.5px solid #ddd6fe`,
+    fontWeight: 600
+  }
+}, "🎟️ ", act.tickets.length, " ticket", act.tickets.length > 1 ? "s" : "")))));
 const Sec = ({
   th,
   children
@@ -4281,7 +4781,109 @@ const ActEditM = ({
       padding: "4px 6px",
       whiteSpace: "nowrap"
     }
-  }, "− Hide")), secHead("💰", "Price & cost", secPrice, () => setSecPrice(!secPrice), !!f.price || !!f.actualCost), secPrice && /*#__PURE__*/React.createElement("div", {
+  }, "− Hide")), /*#__PURE__*/React.createElement("div", {
+    style: {
+      marginBottom: 14
+    }
+  }, /*#__PURE__*/React.createElement("label", {
+    style: {
+      display: "block",
+      padding: "9px",
+      borderRadius: 8,
+      background: th.inp,
+      border: `1px dashed ${th.bdr}`,
+      fontSize: 12,
+      color: th.acc,
+      cursor: "pointer",
+      textAlign: "center"
+    }
+  }, /*#__PURE__*/React.createElement("input", {
+    type: "file",
+    accept: "image/*,application/pdf",
+    multiple: true,
+    style: {
+      display: "none"
+    },
+    onChange: async e => {
+      const files = Array.from(e.target.files || []);
+      const added = [];
+      for (const file of files) {
+        if (file.size > MAX_TICKET_MB * 1024 * 1024) {
+          alert(`${file.name} is too large (max ${MAX_TICKET_MB}MB)`);
+          continue;
+        }
+        const id = genTid();
+        try {
+          await putTicket({
+            id,
+            activityId: f.id || f.title,
+            name: file.name,
+            type: file.type || "application/octet-stream",
+            blob: file,
+            addedAt: Date.now()
+          });
+          added.push({
+            id,
+            name: file.name,
+            type: file.type || "application/octet-stream"
+          });
+        } catch (err) {
+          alert("Couldn't save " + file.name + ": " + err.message);
+        }
+      }
+      if (added.length) sF(p => ({
+        ...p,
+        tickets: [...(p.tickets || []), ...added]
+      }));
+      e.target.value = "";
+    }
+  }), "+ Attach ticket (image or PDF)")), f.tickets && f.tickets.length > 0 && /*#__PURE__*/React.createElement("div", {
+    style: {
+      marginBottom: 14
+    }
+  }, f.tickets.map(t => /*#__PURE__*/React.createElement("div", {
+    key: t.id,
+    style: {
+      display: "flex",
+      alignItems: "center",
+      gap: 8,
+      padding: "8px 10px",
+      background: th.tag,
+      borderRadius: 8,
+      marginBottom: 6
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 16
+    }
+  }, t.type && t.type.startsWith("image") ? "🖼️" : "📄"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      flex: 1,
+      fontSize: 12,
+      color: th.text,
+      overflow: "hidden",
+      textOverflow: "ellipsis",
+      whiteSpace: "nowrap"
+    }
+  }, t.name), /*#__PURE__*/React.createElement("button", {
+    onClick: async () => {
+      try {
+        await delTicket(t.id);
+      } catch {}
+      sF(p => ({
+        ...p,
+        tickets: (p.tickets || []).filter(x => x.id !== t.id)
+      }));
+    },
+    style: {
+      fontSize: 11,
+      color: th.mut,
+      background: "transparent",
+      border: "none",
+      cursor: "pointer",
+      padding: "4px 6px"
+    }
+  }, "Remove")))), secHead("💰", "Price & cost", secPrice, () => setSecPrice(!secPrice), !!f.price || !!f.actualCost), secPrice && /*#__PURE__*/React.createElement("div", {
     style: {
       paddingBottom: 10
     }
@@ -4686,6 +5288,8 @@ function App() {
   const [mEdit, setMEdit] = useState(null); // editing meal
   const [mAdd, setMAdd] = useState(false);
   const [packOpen, setPackOpen] = useState(false);
+  const [ticketsView, setTicketsView] = useState(null);
+  const [quickCostAct, setQuickCostAct] = useState(null);
   const [budgetTotal, setBudgetTotal] = useState(() => {
     const s = load();
     return s && s.budgetTotal ? s.budgetTotal : 14000;
@@ -4861,8 +5465,12 @@ function App() {
     const day = acts[dest].find(d => d.id === dayId);
     const act = day?.acts.find(a => a.id === actId);
     if (!act) return;
+    if (act.tickets) act.tickets.forEach(t => {
+      delTicket(t.id).catch(() => {});
+    });
     setStandby(s => [...s, {
-      ...act
+      ...act,
+      tickets: undefined
     }]);
     setActs(p => ({
       ...p,
@@ -4947,7 +5555,13 @@ function App() {
       sEd(day.id);
       sEDst(dest);
     },
-    onRm: id => rmAct(dest, day.id, id)
+    onRm: id => rmAct(dest, day.id, id),
+    onOpenTickets: setTicketsView,
+    onLogCost: act => setQuickCostAct({
+      act,
+      dest,
+      dayId: day.id
+    })
   })), edit && /*#__PURE__*/React.createElement("button", {
     onClick: () => {
       sADay(day.id);
@@ -6728,6 +7342,7 @@ function App() {
           ...c,
           checked: c.items.map(() => false)
         })));
+        clearTickets().catch(() => {});
       }
     },
     style: {
@@ -6746,6 +7361,21 @@ function App() {
     packing: packing,
     setPacking: setPacking,
     onClose: () => setPackOpen(false)
+  }), ticketsView && /*#__PURE__*/React.createElement(TicketsM, {
+    th: th,
+    tickets: ticketsView,
+    onClose: () => setTicketsView(null)
+  }), quickCostAct && /*#__PURE__*/React.createElement(QuickCostM, {
+    th: th,
+    act: quickCostAct.act,
+    liveRate: liveRate,
+    onSave: val => {
+      saveAct(quickCostAct.dest, quickCostAct.dayId, {
+        ...quickCostAct.act,
+        actualCost: val
+      });
+    },
+    onClose: () => setQuickCostAct(null)
   }), mAdd && /*#__PURE__*/React.createElement(MealEditM, {
     th: th,
     meal: mEdit,
