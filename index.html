@@ -3186,7 +3186,16 @@ const ActC = ({
     padding: "2px 7px",
     borderRadius: 6
   }
-}, "💰 ", act.price), act.mapQuery && /*#__PURE__*/React.createElement("span", {
+}, "💰 ", act.price), act.actualCost && /*#__PURE__*/React.createElement("span", {
+  style: {
+    fontSize: 10,
+    background: "#ede9fe",
+    color: "#5b21b6",
+    padding: "2px 7px",
+    borderRadius: 6,
+    fontWeight: 500
+  }
+}, "✓ ฿", Number(act.actualCost).toLocaleString()), act.mapQuery && /*#__PURE__*/React.createElement("span", {
   onClick: () => window.open("https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(act.mapQuery), "_blank"),
   style: {
     fontSize: 10,
@@ -3197,7 +3206,35 @@ const ActC = ({
     cursor: "pointer",
     fontWeight: 500
   }
-}, "📍 Map")))));
+}, "📍 Map")), (act.webUrl || act.bookUrl) && /*#__PURE__*/React.createElement("div", {
+  style: {
+    display: "flex",
+    gap: 6,
+    marginTop: 4
+  }
+}, act.webUrl && /*#__PURE__*/React.createElement("span", {
+  onClick: () => window.open(act.webUrl, "_blank"),
+  style: {
+    fontSize: 10,
+    color: th.acc,
+    background: th.tag,
+    padding: "3px 8px",
+    borderRadius: 6,
+    cursor: "pointer",
+    border: `0.5px solid ${th.bdr}`
+  }
+}, "🌐 Website"), act.bookUrl && /*#__PURE__*/React.createElement("span", {
+  onClick: () => window.open(act.bookUrl, "_blank"),
+  style: {
+    fontSize: 10,
+    color: th.acc,
+    background: th.tag,
+    padding: "3px 8px",
+    borderRadius: 6,
+    cursor: "pointer",
+    border: `0.5px solid ${th.bdr}`
+  }
+}, "🎫 Book")))));
 const Sec = ({
   th,
   children
@@ -4510,75 +4547,45 @@ function App() {
     }
   }, x.s)))), /*#__PURE__*/React.createElement(Sec, {
     th: th
-  }, "Budget"), /*#__PURE__*/React.createElement("div", {
+  }, "Booking References"), /*#__PURE__*/React.createElement("div", {
     style: {
       background: th.card,
       borderRadius: 14,
       overflow: "hidden",
       boxShadow: th.sh
     }
-  }, [["Flights & Ferries", "A$3,753"], ["Accommodation", "A$7,457"], ["Transfers", "A$190"]].map(([l, v], i) => /*#__PURE__*/React.createElement("div", {
-    key: i,
-    style: {
-      display: "flex",
-      justifyContent: "space-between",
-      padding: "12px 16px",
-      borderBottom: `1px solid ${th.bdr}`
-    }
-  }, /*#__PURE__*/React.createElement("span", {
-    style: {
-      fontSize: 13,
-      color: th.sub
-    }
-  }, l), /*#__PURE__*/React.createElement("span", {
-    style: {
-      fontSize: 13,
-      fontWeight: 700,
-      color: th.text
-    }
-  }, v))), /*#__PURE__*/React.createElement("div", {
-    style: {
-      display: "flex",
-      justifyContent: "space-between",
-      padding: "14px 16px",
-      background: th.accBg,
-      color: "#fff"
-    }
-  }, /*#__PURE__*/React.createElement("span", {
-    style: {
-      fontSize: 14,
-      fontWeight: 600
-    }
-  }, "Estimated Total"), /*#__PURE__*/React.createElement("span", {
-    style: {
-      fontSize: 16,
-      fontWeight: 800
-    }
-  }, "~A$11,400"))), /*#__PURE__*/React.createElement(Sec, {
-    th: th
-  }, "Booking References"), /*#__PURE__*/React.createElement("div", {
-    style: {
-      background: th.card,
-      borderRadius: 14,
-      padding: 16,
-      boxShadow: th.sh
-    }
-  }, [["BNE ↔ HKT", "Singapore Airlines", "DIE356"], ["KBV → USM", "Bangkok Airways", "D5VC6X"], ["USM → HKT", "Bangkok Airways", "D64QO5"]].map(([r, cc, ref], i) => /*#__PURE__*/React.createElement("div", {
+  }, [{
+    ref: "DIE356",
+    cc: "Singapore Airlines",
+    route: "BNE ↔ HKT"
+  }, {
+    ref: "D5VC6X",
+    cc: "Bangkok Airways",
+    route: "KBV → USM"
+  }, {
+    ref: "D64QO5",
+    cc: "Bangkok Airways",
+    route: "USM → HKT"
+  }].map(({
+    ref,
+    cc,
+    route
+  }, i) => /*#__PURE__*/React.createElement("div", {
     key: i,
     style: {
       display: "flex",
       justifyContent: "space-between",
       alignItems: "center",
-      padding: "8px 0",
-      borderBottom: i < 2 ? `1px solid ${th.bdr}` : "none"
+      padding: "10px 14px",
+      borderBottom: i < 2 ? "0.5px solid " + th.bdr : "none"
     }
   }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 13,
       fontWeight: 600,
+      fontSize: 13,
       color: th.text
     }
-  }, r), /*#__PURE__*/React.createElement("div", {
+  }, route), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 11,
       color: th.mut
@@ -4596,11 +4603,19 @@ function App() {
     th: th
   }, "Trip Budget"), (() => {
     const r = liveRate || 22.5;
+    const flights = 3753;
+    const accom = 7457;
+    const transfers = 190;
+    const prebooked = flights + accom + transfers;
+    const totalBudget = 14000;
+    const spendBudget = totalBudget - prebooked;
     const mealTotal = meals.reduce((s, m) => s + m.total, 0);
     const mealAud = Math.round(mealTotal / r);
-    const prebooked = 7400;
-    const transfers = 190;
-    const remaining = 11400 - prebooked - transfers - mealAud;
+    const allActs = [...Object.values(acts)].flat().flatMap(d => d.acts || []);
+    const actTotal = allActs.reduce((s, a) => s + (Number(a.actualCost) || 0), 0);
+    const actAud = Math.round(actTotal / r);
+    const spent = mealAud + actAud;
+    const remaining = spendBudget - spent;
     return /*#__PURE__*/React.createElement("div", {
       style: {
         background: th.card,
@@ -4612,7 +4627,7 @@ function App() {
       style: {
         display: "flex",
         justifyContent: "space-between",
-        marginBottom: 8
+        marginBottom: 4
       }
     }, /*#__PURE__*/React.createElement("span", {
       style: {
@@ -4620,23 +4635,23 @@ function App() {
         fontWeight: 500,
         color: th.text
       }
-    }, "Total budget"), /*#__PURE__*/React.createElement("span", {
+    }, "Total trip budget"), /*#__PURE__*/React.createElement("span", {
       style: {
-        fontSize: 13,
+        fontSize: 15,
         fontWeight: 700,
         color: th.text
       }
-    }, "A$11,400")), /*#__PURE__*/React.createElement("div", {
+    }, "A$14,000")), /*#__PURE__*/React.createElement("div", {
       style: {
         display: "flex",
         borderRadius: 6,
         overflow: "hidden",
-        height: 22,
+        height: 24,
         marginBottom: 10
       }
     }, /*#__PURE__*/React.createElement("div", {
       style: {
-        width: prebooked / 11400 * 100 + "%",
+        width: prebooked / totalBudget * 100 + "%",
         background: "#0c4a6e",
         display: "flex",
         alignItems: "center",
@@ -4648,14 +4663,9 @@ function App() {
         color: "#fff",
         fontWeight: 500
       }
-    }, "Pre-booked")), /*#__PURE__*/React.createElement("div", {
+    }, "Pre-booked A$", prebooked.toLocaleString())), /*#__PURE__*/React.createElement("div", {
       style: {
-        width: transfers / 11400 * 100 + "%",
-        background: "#14b8a6"
-      }
-    }), /*#__PURE__*/React.createElement("div", {
-      style: {
-        width: mealAud / 11400 * 100 + "%",
+        width: mealAud / totalBudget * 100 + "%",
         background: "#f59e0b"
       }
     }), /*#__PURE__*/React.createElement("div", {
@@ -4665,6 +4675,80 @@ function App() {
       }
     })), /*#__PURE__*/React.createElement("div", {
       style: {
+        fontSize: 11,
+        fontWeight: 600,
+        color: th.sub,
+        marginBottom: 6
+      }
+    }, "Pre-booked costs"), /*#__PURE__*/React.createElement("div", {
+      style: {
+        borderRadius: 10,
+        overflow: "hidden",
+        border: ".5px solid " + th.bdr,
+        marginBottom: 10
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        display: "flex",
+        justifyContent: "space-between",
+        padding: "8px 12px",
+        borderBottom: ".5px solid " + th.bdr
+      }
+    }, /*#__PURE__*/React.createElement("span", {
+      style: {
+        fontSize: 12,
+        color: th.text
+      }
+    }, "Flights & ferries"), /*#__PURE__*/React.createElement("span", {
+      style: {
+        fontSize: 12,
+        fontWeight: 600,
+        color: th.text
+      }
+    }, "A$3,753")), /*#__PURE__*/React.createElement("div", {
+      style: {
+        display: "flex",
+        justifyContent: "space-between",
+        padding: "8px 12px",
+        borderBottom: ".5px solid " + th.bdr
+      }
+    }, /*#__PURE__*/React.createElement("span", {
+      style: {
+        fontSize: 12,
+        color: th.text
+      }
+    }, "Accommodation"), /*#__PURE__*/React.createElement("span", {
+      style: {
+        fontSize: 12,
+        fontWeight: 600,
+        color: th.text
+      }
+    }, "A$7,457")), /*#__PURE__*/React.createElement("div", {
+      style: {
+        display: "flex",
+        justifyContent: "space-between",
+        padding: "8px 12px"
+      }
+    }, /*#__PURE__*/React.createElement("span", {
+      style: {
+        fontSize: 12,
+        color: th.text
+      }
+    }, "Transfers"), /*#__PURE__*/React.createElement("span", {
+      style: {
+        fontSize: 12,
+        fontWeight: 600,
+        color: th.text
+      }
+    }, "A$190"))), /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 11,
+        fontWeight: 600,
+        color: th.sub,
+        marginBottom: 6
+      }
+    }, "Spending budget — A$", spendBudget.toLocaleString()), /*#__PURE__*/React.createElement("div", {
+      style: {
         display: "grid",
         gridTemplateColumns: "1fr 1fr 1fr",
         gap: 6
@@ -4673,25 +4757,7 @@ function App() {
       style: {
         background: th.inp,
         borderRadius: 8,
-        padding: "6px 8px",
-        textAlign: "center"
-      }
-    }, /*#__PURE__*/React.createElement("div", {
-      style: {
-        fontSize: 8,
-        color: th.mut
-      }
-    }, "PRE-BOOKED"), /*#__PURE__*/React.createElement("div", {
-      style: {
-        fontSize: 13,
-        fontWeight: 600,
-        color: th.text
-      }
-    }, "A$7,400")), /*#__PURE__*/React.createElement("div", {
-      style: {
-        background: th.inp,
-        borderRadius: 8,
-        padding: "6px 8px",
+        padding: "8px",
         textAlign: "center"
       }
     }, /*#__PURE__*/React.createElement("div", {
@@ -4701,7 +4767,7 @@ function App() {
       }
     }, "MEALS"), /*#__PURE__*/React.createElement("div", {
       style: {
-        fontSize: 13,
+        fontSize: 14,
         fontWeight: 600,
         color: "#f59e0b"
       }
@@ -4709,7 +4775,25 @@ function App() {
       style: {
         background: th.inp,
         borderRadius: 8,
-        padding: "6px 8px",
+        padding: "8px",
+        textAlign: "center"
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 8,
+        color: th.mut
+      }
+    }, "ACTIVITIES"), /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 14,
+        fontWeight: 600,
+        color: "#8b5cf6"
+      }
+    }, "A$", actAud)), /*#__PURE__*/React.createElement("div", {
+      style: {
+        background: th.inp,
+        borderRadius: 8,
+        padding: "8px",
         textAlign: "center"
       }
     }, /*#__PURE__*/React.createElement("div", {
@@ -4719,11 +4803,11 @@ function App() {
       }
     }, "REMAINING"), /*#__PURE__*/React.createElement("div", {
       style: {
-        fontSize: 13,
+        fontSize: 14,
         fontWeight: 600,
-        color: th.acc
+        color: remaining > 0 ? th.acc : "#ef4444"
       }
-    }, "A$", remaining > 0 ? remaining : 0))));
+    }, "A$", remaining > 0 ? remaining.toLocaleString() : 0))));
   })(), /*#__PURE__*/React.createElement(Sec, {
     th: th
   }, "Before You Fly"), /*#__PURE__*/React.createElement("div", {
