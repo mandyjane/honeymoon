@@ -4075,6 +4075,10 @@ function App() {
   const [mEdit, setMEdit] = useState(null); // editing meal
   const [mAdd, setMAdd] = useState(false);
   const [packOpen, setPackOpen] = useState(false);
+  const [budgetTotal, setBudgetTotal] = useState(() => {
+    const s = load();
+    return s && s.budgetTotal ? s.budgetTotal : 14000;
+  });
   const [packing, setPacking] = useState(() => {
     const s = load();
     return s && s.packing ? s.packing : INIT_PACKING.map(c => ({
@@ -4105,6 +4109,7 @@ function App() {
       if (s.standby) setStandby(s.standby);
       if (s.meals) setMeals(s.meals);
       if (s.packing) setPacking(s.packing);
+      if (s.budgetTotal) setBudgetTotal(s.budgetTotal);
       if (s.dark !== undefined) setDark(s.dark);
     }
     setLoaded(true);
@@ -4117,9 +4122,10 @@ function App() {
       standby,
       meals,
       packing,
+      budgetTotal,
       dark
     });
-  }, [cards, docs, acts, standby, meals, packing, dark, loaded]);
+  }, [cards, docs, acts, standby, meals, packing, budgetTotal, dark, loaded]);
   useEffect(() => {
     document.body.className = dark ? "dark" : "";
   }, [dark]);
@@ -4827,7 +4833,7 @@ function App() {
     const accom = 7457;
     const transfers = 190;
     const prebooked = flights + accom + transfers;
-    const totalBudget = 14000;
+    const totalBudget = budgetTotal;
     const spendBudget = totalBudget - prebooked;
     const mealTotal = meals.reduce((s, m) => s + m.total, 0);
     const mealAud = Math.round(mealTotal / r);
@@ -4847,6 +4853,7 @@ function App() {
       style: {
         display: "flex",
         justifyContent: "space-between",
+        alignItems: "center",
         marginBottom: 4
       }
     }, /*#__PURE__*/React.createElement("span", {
@@ -4855,13 +4862,25 @@ function App() {
         fontWeight: 500,
         color: th.text
       }
-    }, "Total trip budget"), /*#__PURE__*/React.createElement("span", {
+    }, "Total trip budget"), edit ? /*#__PURE__*/React.createElement("span", {
+      onClick: () => {
+        const v = prompt("Total trip budget (AUD):", budgetTotal);
+        if (v && !isNaN(Number(v))) setBudgetTotal(Number(v));
+      },
+      style: {
+        fontSize: 15,
+        fontWeight: 700,
+        color: th.text,
+        cursor: "pointer",
+        borderBottom: `1px dashed ${th.acc}`
+      }
+    }, "A$", budgetTotal.toLocaleString(), " ✏️") : /*#__PURE__*/React.createElement("span", {
       style: {
         fontSize: 15,
         fontWeight: 700,
         color: th.text
       }
-    }, "A$14,000")), /*#__PURE__*/React.createElement("div", {
+    }, "A$", budgetTotal.toLocaleString())), /*#__PURE__*/React.createElement("div", {
       style: {
         display: "flex",
         borderRadius: 6,
