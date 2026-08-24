@@ -3554,6 +3554,8 @@ const Sec = ({
 }), children);
 
 /* ── ACTIVITY EDIT MODAL ── */
+const TRANSPORT_CHIPS = [["🚤", "Boat"], ["🚕", "Taxi/Grab"], ["🚶", "Walk"], ["🛵", "Scooter"], ["🚐", "Pickup"], ["🎫", "Part of tour"], ["🏠", "On-site"], ["🚙", "Drive"], ["🚌", "Bus"], ["🚂", "Train"], ["✈️", "Fly"]];
+const DURATION_PRESETS = ["1-2 hrs", "Half day", "Full day", "Evening"];
 const ActEditM = ({
   th,
   act,
@@ -3568,36 +3570,74 @@ const ActEditM = ({
     howIcon: act.howIcon || guessIcon(act.how)
   });
   const [td, sTd] = useState(curDay);
+  const [showWeb, setShowWeb] = useState(!!act.webUrl);
+  const [showBook, setShowBook] = useState(!!act.bookUrl);
+  const [secPrice, setSecPrice] = useState(false);
+  const [secMap, setSecMap] = useState(false);
+  const [secMore, setSecMore] = useState(false);
+  const [durCustom, setDurCustom] = useState(!DURATION_PRESETS.includes(act.dur));
   const u = (k, v) => sF(p => ({
     ...p,
     [k]: v
   }));
-  const inp = (l, k) => /*#__PURE__*/React.createElement("div", {
+  const lbl = t => /*#__PURE__*/React.createElement("div", {
     style: {
-      marginBottom: 10
-    }
-  }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 11,
+      fontSize: 10,
       color: th.mut,
       marginBottom: 3,
       textTransform: "uppercase"
     }
-  }, l), /*#__PURE__*/React.createElement("input", {
-    value: f[k] || "",
-    onChange: e => u(k, e.target.value),
+  }, t);
+  const inpStyle = {
+    width: "100%",
+    padding: "9px 11px",
+    borderRadius: 8,
+    border: `1px solid ${th.bdr}`,
+    background: th.inp,
+    color: th.text,
+    fontSize: 13,
+    boxSizing: "border-box",
+    outline: "none"
+  };
+  const chip = active => ({
+    padding: "7px 12px",
+    borderRadius: 20,
+    border: active ? "none" : `0.5px solid ${th.bdr}`,
+    background: active ? th.acc : th.inp,
+    fontSize: 12,
+    color: active ? "#fff" : th.sub,
+    cursor: "pointer",
+    display: "flex",
+    alignItems: "center",
+    gap: 4
+  });
+  const secHead = (icon, title, open, toggle, filled) => /*#__PURE__*/React.createElement("div", {
+    onClick: toggle,
     style: {
-      width: "100%",
-      padding: "8px 10px",
-      borderRadius: 8,
-      border: `1px solid ${th.bdr}`,
-      background: th.inp,
-      color: th.text,
-      fontSize: 13,
-      boxSizing: "border-box",
-      outline: "none"
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "space-between",
+      padding: "11px 0",
+      cursor: "pointer",
+      borderTop: `0.5px solid ${th.bdr}`
     }
-  }));
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 13,
+      color: th.sub
+    }
+  }, icon, " ", title, filled ? /*#__PURE__*/React.createElement("span", {
+    style: {
+      color: th.acc,
+      marginLeft: 6,
+      fontSize: 11
+    }
+  }, "✓") : null), /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 16,
+      color: th.mut
+    }
+  }, open ? "−" : "+"));
   return /*#__PURE__*/React.createElement("div", {
     style: {
       position: "fixed",
@@ -3617,16 +3657,16 @@ const ActEditM = ({
       borderRadius: "20px 20px 0 0",
       width: "100%",
       maxWidth: 480,
-      maxHeight: "85vh",
+      maxHeight: "88vh",
       overflow: "auto",
-      padding: "20px 20px env(safe-area-inset-bottom,20px)"
+      padding: "18px 18px env(safe-area-inset-bottom,18px)"
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       justifyContent: "space-between",
       alignItems: "center",
-      marginBottom: 16
+      marginBottom: 14
     }
   }, /*#__PURE__*/React.createElement("span", {
     style: {
@@ -3648,21 +3688,16 @@ const ActEditM = ({
     }
   }, "✕")), /*#__PURE__*/React.createElement("div", {
     style: {
-      marginBottom: 10
+      display: "flex",
+      gap: 8,
+      marginBottom: 12
     }
-  }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 11,
-      color: th.mut,
-      marginBottom: 3,
-      textTransform: "uppercase"
-    }
-  }, "Emoji"), /*#__PURE__*/React.createElement("input", {
+  }, /*#__PURE__*/React.createElement("input", {
     value: f.emoji,
     onChange: e => u("emoji", e.target.value),
     style: {
-      width: 60,
-      padding: "8px",
+      width: 48,
+      padding: "10px 0",
       borderRadius: 8,
       border: `1px solid ${th.bdr}`,
       background: th.inp,
@@ -3670,168 +3705,181 @@ const ActEditM = ({
       fontSize: 20,
       textAlign: "center",
       boxSizing: "border-box",
-      outline: "none"
-    }
-  })), inp("Title", "title"), /*#__PURE__*/React.createElement("div", {
-    style: {
-      marginBottom: 10
-    }
-  }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 11,
-      color: th.mut,
-      marginBottom: 3,
-      textTransform: "uppercase"
-    }
-  }, "Description"), /*#__PURE__*/React.createElement("textarea", {
-    value: f.desc || "",
-    onChange: e => u("desc", e.target.value),
-    rows: 3,
-    style: {
-      width: "100%",
-      padding: "8px 10px",
-      borderRadius: 8,
-      border: `1px solid ${th.bdr}`,
-      background: th.inp,
-      color: th.text,
-      fontSize: 13,
-      boxSizing: "border-box",
       outline: "none",
-      resize: "vertical",
-      fontFamily: "inherit"
+      flexShrink: 0
     }
-  })), /*#__PURE__*/React.createElement("div", {
+  }), /*#__PURE__*/React.createElement("input", {
+    value: f.title || "",
+    onChange: e => u("title", e.target.value),
+    placeholder: "Activity name",
     style: {
-      display: "flex",
-      gap: 8,
-      marginBottom: 10
+      ...inpStyle,
+      fontSize: 15,
+      fontWeight: 500
     }
-  }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      flex: 1
-    }
-  }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 11,
-      color: th.mut,
-      marginBottom: 3,
-      textTransform: "uppercase"
-    }
-  }, "Start Time"), /*#__PURE__*/React.createElement("input", {
-    value: f.startTime || "",
-    onChange: e => {
-      const v = e.target.value;
-      u("startTime", v);
-      if (v && f.endTime) {
-        const d = calcDur(v, f.endTime);
-        if (d) u("dur", d);
-      }
-    },
-    placeholder: "e.g. 09:00",
-    style: {
-      width: "100%",
-      padding: "8px 10px",
-      borderRadius: 8,
-      border: `1px solid ${th.bdr}`,
-      background: th.inp,
-      color: th.text,
-      fontSize: 13,
-      boxSizing: "border-box",
-      outline: "none"
-    }
-  })), /*#__PURE__*/React.createElement("div", {
-    style: {
-      flex: 1
-    }
-  }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 11,
-      color: th.mut,
-      marginBottom: 3,
-      textTransform: "uppercase"
-    }
-  }, "End Time"), /*#__PURE__*/React.createElement("input", {
-    value: f.endTime || "",
-    onChange: e => {
-      const v = e.target.value;
-      u("endTime", v);
-      if (f.startTime && v) {
-        const d = calcDur(f.startTime, v);
-        if (d) u("dur", d);
-      }
-    },
-    placeholder: "e.g. 12:00",
-    style: {
-      width: "100%",
-      padding: "8px 10px",
-      borderRadius: 8,
-      border: `1px solid ${th.bdr}`,
-      background: th.inp,
-      color: th.text,
-      fontSize: 13,
-      boxSizing: "border-box",
-      outline: "none"
-    }
-  }))), inp("Duration", "dur"), inp("Distance", "dist"), inp("Transport", "how"), /*#__PURE__*/React.createElement("div", {
-    style: {
-      marginBottom: 10
-    }
-  }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 11,
-      color: th.mut,
-      marginBottom: 6,
-      textTransform: "uppercase"
-    }
-  }, "Transport Icon"), /*#__PURE__*/React.createElement("div", {
+  })), lbl("Getting there"), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       flexWrap: "wrap",
-      gap: 4
+      gap: 6,
+      marginBottom: 12
     }
-  }, TRANSPORT_ICONS.map(([ico, lbl]) => /*#__PURE__*/React.createElement("button", {
-    key: ico,
-    onClick: () => u("howIcon", ico),
-    title: lbl,
+  }, TRANSPORT_CHIPS.map(([ico, label]) => {
+    const active = f.howIcon === ico && f.how === label;
+    return /*#__PURE__*/React.createElement("button", {
+      key: ico,
+      onClick: () => {
+        u("howIcon", ico);
+        u("how", label);
+      },
+      style: chip(active)
+    }, ico, " ", label);
+  })), lbl("How long"), /*#__PURE__*/React.createElement("div", {
     style: {
-      width: 36,
-      height: 36,
+      display: "flex",
+      flexWrap: "wrap",
+      gap: 6,
+      marginBottom: durCustom ? 6 : 12
+    }
+  }, DURATION_PRESETS.map(d => /*#__PURE__*/React.createElement("button", {
+    key: d,
+    onClick: () => {
+      u("dur", d);
+      setDurCustom(false);
+    },
+    style: chip(f.dur === d && !durCustom)
+  }, d)), /*#__PURE__*/React.createElement("button", {
+    onClick: () => setDurCustom(true),
+    style: {
+      ...chip(durCustom),
+      border: `0.5px dashed ${th.bdr}`
+    }
+  }, "Custom…")), durCustom && /*#__PURE__*/React.createElement("input", {
+    value: f.dur || "",
+    onChange: e => u("dur", e.target.value),
+    placeholder: "e.g. 6-7 hrs",
+    style: {
+      ...inpStyle,
+      marginBottom: 12
+    }
+  }), lbl("Notes"), /*#__PURE__*/React.createElement("textarea", {
+    value: f.desc || "",
+    onChange: e => u("desc", e.target.value),
+    rows: 2,
+    placeholder: "Optional description",
+    style: {
+      ...inpStyle,
+      marginBottom: 14,
+      resize: "vertical",
+      fontFamily: "inherit"
+    }
+  }), lbl("Links"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 6,
+      marginBottom: showWeb || showBook ? 8 : 14
+    }
+  }, !showWeb && /*#__PURE__*/React.createElement("button", {
+    onClick: () => setShowWeb(true),
+    style: {
+      flex: 1,
+      padding: "9px",
       borderRadius: 8,
-      border: f.howIcon === ico ? `2px solid ${th.acc}` : `1px solid ${th.bdr}`,
-      background: f.howIcon === ico ? th.tag : th.inp,
-      fontSize: 18,
-      cursor: "pointer",
+      background: th.inp,
+      border: `1px dashed ${th.bdr}`,
+      fontSize: 12,
+      color: th.acc,
+      cursor: "pointer"
+    }
+  }, "+ Website"), !showBook && /*#__PURE__*/React.createElement("button", {
+    onClick: () => setShowBook(true),
+    style: {
+      flex: 1,
+      padding: "9px",
+      borderRadius: 8,
+      background: th.inp,
+      border: `1px dashed ${th.bdr}`,
+      fontSize: 12,
+      color: th.acc,
+      cursor: "pointer"
+    }
+  }, "+ Tickets")), showWeb && /*#__PURE__*/React.createElement("div", {
+    style: {
       display: "flex",
+      gap: 6,
       alignItems: "center",
-      justifyContent: "center"
-    }
-  }, ico)))), /*#__PURE__*/React.createElement("div", {
-    style: {
-      marginBottom: 10
-    }
-  }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 11,
-      color: th.mut,
-      marginBottom: 6,
-      textTransform: "uppercase"
-    }
-  }, "Price"), /*#__PURE__*/React.createElement("div", {
-    style: {
-      display: "flex",
-      gap: 8
+      marginBottom: 8
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
       flex: 1
     }
+  }, /*#__PURE__*/React.createElement("input", {
+    value: f.webUrl || "",
+    onChange: e => u("webUrl", e.target.value),
+    placeholder: "https:// website",
+    autoComplete: "off",
+    style: inpStyle
+  })), /*#__PURE__*/React.createElement("button", {
+    onClick: () => {
+      u("webUrl", "");
+      setShowWeb(false);
+    },
+    style: {
+      fontSize: 11,
+      color: th.mut,
+      background: "transparent",
+      border: "none",
+      cursor: "pointer",
+      padding: "4px 6px",
+      whiteSpace: "nowrap"
+    }
+  }, "− Hide")), showBook && /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 6,
+      alignItems: "center",
+      marginBottom: 14
+    }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 10,
-      color: th.mut,
-      marginBottom: 2
+      flex: 1
     }
-  }, "THB (e.g. 750 or 750-1500)"), /*#__PURE__*/React.createElement("input", {
+  }, /*#__PURE__*/React.createElement("input", {
+    value: f.bookUrl || "",
+    onChange: e => u("bookUrl", e.target.value),
+    placeholder: "https:// tickets",
+    autoComplete: "off",
+    style: inpStyle
+  })), /*#__PURE__*/React.createElement("button", {
+    onClick: () => {
+      u("bookUrl", "");
+      setShowBook(false);
+    },
+    style: {
+      fontSize: 11,
+      color: th.mut,
+      background: "transparent",
+      border: "none",
+      cursor: "pointer",
+      padding: "4px 6px",
+      whiteSpace: "nowrap"
+    }
+  }, "− Hide")), secHead("💰", "Price & cost", secPrice, () => setSecPrice(!secPrice), !!f.price || !!f.actualCost), secPrice && /*#__PURE__*/React.createElement("div", {
+    style: {
+      paddingBottom: 10
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 8,
+      marginBottom: 6
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      flex: 1
+    }
+  }, lbl("THB (750 or 750-1500)"), /*#__PURE__*/React.createElement("input", {
     value: f.priceTHB || "",
     onChange: e => {
       const v = e.target.value;
@@ -3843,7 +3891,7 @@ const ActEditM = ({
         if (v) {
           const a = thbToAud(v);
           n.priceAUD = a;
-          n.price = fmtPrice(v, a, f.priceSuffix);
+          n.price = fmtPrice(v, a, p.priceSuffix);
         } else if (!n.priceAUD) {
           n.price = "";
         }
@@ -3851,28 +3899,12 @@ const ActEditM = ({
       });
     },
     placeholder: "฿ amount",
-    style: {
-      width: "100%",
-      padding: "8px 10px",
-      borderRadius: 8,
-      border: `1px solid ${th.bdr}`,
-      background: th.inp,
-      color: th.text,
-      fontSize: 13,
-      boxSizing: "border-box",
-      outline: "none"
-    }
+    style: inpStyle
   })), /*#__PURE__*/React.createElement("div", {
     style: {
       flex: 1
     }
-  }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 10,
-      color: th.mut,
-      marginBottom: 2
-    }
-  }, "AUD (auto or override)"), /*#__PURE__*/React.createElement("input", {
+  }, lbl("AUD (auto)"), /*#__PURE__*/React.createElement("input", {
     value: f.priceAUD || "",
     onChange: e => {
       const v = e.target.value;
@@ -3886,28 +3918,8 @@ const ActEditM = ({
       });
     },
     placeholder: "A$ or Free",
-    style: {
-      width: "100%",
-      padding: "8px 10px",
-      borderRadius: 8,
-      border: `1px solid ${th.bdr}`,
-      background: th.inp,
-      color: th.text,
-      fontSize: 13,
-      boxSizing: "border-box",
-      outline: "none"
-    }
-  }))), /*#__PURE__*/React.createElement("div", {
-    style: {
-      marginTop: 6
-    }
-  }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 10,
-      color: th.mut,
-      marginBottom: 2
-    }
-  }, "Suffix (optional: /pp, /boat, /dish)"), /*#__PURE__*/React.createElement("input", {
+    style: inpStyle
+  }))), lbl("Suffix (/pp, /boat)"), /*#__PURE__*/React.createElement("input", {
     value: f.priceSuffix || "",
     onChange: e => {
       const v = e.target.value;
@@ -3920,39 +3932,21 @@ const ActEditM = ({
         return n;
       });
     },
-    placeholder: "e.g. /pp",
+    placeholder: "/pp",
     style: {
-      width: "100%",
-      padding: "8px 10px",
-      borderRadius: 8,
-      border: `1px solid ${th.bdr}`,
-      background: th.inp,
-      color: th.text,
-      fontSize: 13,
-      boxSizing: "border-box",
-      outline: "none"
+      ...inpStyle,
+      marginBottom: 6
     }
-  })), f.price && /*#__PURE__*/React.createElement("div", {
+  }), f.price && /*#__PURE__*/React.createElement("div", {
     style: {
-      marginTop: 6,
       padding: "6px 10px",
       background: th.tag,
       borderRadius: 8,
       fontSize: 12,
-      color: th.sub
+      color: th.sub,
+      marginBottom: 8
     }
-  }, "Preview: ", f.price)), /*#__PURE__*/React.createElement("div", {
-    style: {
-      marginBottom: 10
-    }
-  }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 10,
-      color: th.mut,
-      marginBottom: 3,
-      textTransform: "uppercase"
-    }
-  }, "Actual Cost Paid (THB)"), /*#__PURE__*/React.createElement("div", {
+  }, "Estimate: ", f.price), lbl("Actual paid (THB)"), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       gap: 8,
@@ -3977,156 +3971,111 @@ const ActEditM = ({
     onChange: e => u("actualCost", e.target.value.replace(/[^0-9]/g, "")),
     placeholder: "0",
     inputMode: "numeric",
-    autoComplete: "off",
     style: {
-      width: "100%",
-      padding: "8px 10px 8px 24px",
-      borderRadius: 8,
-      border: `0.5px solid ${th.bdr}`,
-      background: th.inp,
-      color: th.text,
-      fontSize: 14,
-      fontWeight: 600,
-      boxSizing: "border-box",
-      outline: "none"
+      ...inpStyle,
+      paddingLeft: 24,
+      fontWeight: 600
     }
   })), f.actualCost && /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 12,
       color: th.mut,
-      minWidth: 60,
+      minWidth: 56,
       textAlign: "right"
     }
-  }, "≈ A$", Math.round(Number(f.actualCost) / (liveRate || 22.5)))), /*#__PURE__*/React.createElement("div", {
+  }, "≈ A$", Math.round(Number(f.actualCost) / (liveRate || 22.5))))), secHead("📍", "Map & timing", secMap, () => setSecMap(!secMap), !!f.mapQuery || !!f.startTime), secMap && /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 9,
-      color: th.mut,
-      marginTop: 2
+      paddingBottom: 10
     }
-  }, "Enter after the activity. Feeds into the budget tracker.")), /*#__PURE__*/React.createElement("div", {
-    style: {
-      marginBottom: 10
-    }
-  }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 10,
-      color: th.mut,
-      marginBottom: 3,
-      textTransform: "uppercase"
-    }
-  }, "Website URL"), /*#__PURE__*/React.createElement("input", {
-    value: f.webUrl || "",
-    onChange: e => u("webUrl", e.target.value),
-    placeholder: "https://...",
-    autoComplete: "off",
-    style: {
-      width: "100%",
-      padding: "8px 10px",
-      borderRadius: 8,
-      border: `0.5px solid ${th.bdr}`,
-      background: th.inp,
-      color: th.text,
-      fontSize: 13,
-      boxSizing: "border-box",
-      outline: "none"
-    }
-  }), /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 9,
-      color: th.mut,
-      marginTop: 2
-    }
-  }, "Shows a Website button on the card.")), /*#__PURE__*/React.createElement("div", {
-    style: {
-      marginBottom: 10
-    }
-  }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 10,
-      color: th.mut,
-      marginBottom: 3,
-      textTransform: "uppercase"
-    }
-  }, "Booking / Tickets URL"), /*#__PURE__*/React.createElement("input", {
-    value: f.bookUrl || "",
-    onChange: e => u("bookUrl", e.target.value),
-    placeholder: "https://...",
-    autoComplete: "off",
-    style: {
-      width: "100%",
-      padding: "8px 10px",
-      borderRadius: 8,
-      border: `0.5px solid ${th.bdr}`,
-      background: th.inp,
-      color: th.text,
-      fontSize: 13,
-      boxSizing: "border-box",
-      outline: "none"
-    }
-  }), /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 9,
-      color: th.mut,
-      marginTop: 2
-    }
-  }, "Shows a Book button on the card.")), /*#__PURE__*/React.createElement("div", {
-    style: {
-      marginBottom: 10
-    }
-  }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 10,
-      color: th.mut,
-      marginBottom: 3,
-      textTransform: "uppercase"
-    }
-  }, "Map Location (Google Maps search)"), /*#__PURE__*/React.createElement("input", {
+  }, lbl("Map location (Google Maps search)"), /*#__PURE__*/React.createElement("input", {
     value: f.mapQuery || "",
     onChange: e => u("mapQuery", e.target.value),
     placeholder: "e.g. Maya Bay Thailand",
     autoComplete: "off",
     style: {
-      width: "100%",
-      padding: "8px 10px",
-      borderRadius: 8,
-      border: `0.5px solid ${th.bdr}`,
-      background: th.inp,
-      color: th.text,
-      fontSize: 13,
-      boxSizing: "border-box",
-      outline: "none"
+      ...inpStyle,
+      marginBottom: 8
     }
   }), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 9,
-      color: th.mut,
-      marginTop: 2
-    }
-  }, "Leave empty to hide the map tag. Use a place name Google Maps can find.")), /*#__PURE__*/React.createElement("div", {
-    style: {
-      marginBottom: 16
+      display: "flex",
+      gap: 8,
+      marginBottom: 6
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 11,
-      color: th.mut,
-      marginBottom: 3,
-      textTransform: "uppercase"
+      flex: 1
     }
-  }, "Move to Day"), /*#__PURE__*/React.createElement("select", {
+  }, lbl("Start"), /*#__PURE__*/React.createElement("input", {
+    value: f.startTime || "",
+    onChange: e => {
+      const v = e.target.value;
+      u("startTime", v);
+      if (v && f.endTime) {
+        const d = calcDur(v, f.endTime);
+        if (d) u("dur", d);
+      }
+    },
+    placeholder: "09:00",
+    style: inpStyle
+  })), /*#__PURE__*/React.createElement("div", {
+    style: {
+      flex: 1
+    }
+  }, lbl("End"), /*#__PURE__*/React.createElement("input", {
+    value: f.endTime || "",
+    onChange: e => {
+      const v = e.target.value;
+      u("endTime", v);
+      if (f.startTime && v) {
+        const d = calcDur(f.startTime, v);
+        if (d) u("dur", d);
+      }
+    },
+    placeholder: "12:00",
+    style: inpStyle
+  })))), secHead("⚙️", "More options", secMore, () => setSecMore(!secMore), !!f.dist), secMore && /*#__PURE__*/React.createElement("div", {
+    style: {
+      paddingBottom: 10
+    }
+  }, lbl("Distance"), /*#__PURE__*/React.createElement("input", {
+    value: f.dist || "",
+    onChange: e => u("dist", e.target.value),
+    placeholder: "e.g. 8 km",
+    style: {
+      ...inpStyle,
+      marginBottom: 8
+    }
+  }), lbl("Transport icon override"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      flexWrap: "wrap",
+      gap: 4
+    }
+  }, TRANSPORT_ICONS.map(([ico, label]) => /*#__PURE__*/React.createElement("button", {
+    key: ico,
+    onClick: () => u("howIcon", ico),
+    title: label,
+    style: {
+      width: 34,
+      height: 34,
+      borderRadius: 8,
+      border: f.howIcon === ico ? `2px solid ${th.acc}` : `1px solid ${th.bdr}`,
+      background: f.howIcon === ico ? th.tag : th.inp,
+      fontSize: 17,
+      cursor: "pointer"
+    }
+  }, ico)))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      borderTop: `0.5px solid ${th.bdr}`,
+      paddingTop: 12,
+      marginTop: 4,
+      marginBottom: 14
+    }
+  }, lbl("Move to day"), /*#__PURE__*/React.createElement("select", {
     value: td,
     onChange: e => sTd(e.target.value),
-    style: {
-      width: "100%",
-      padding: "8px 10px",
-      borderRadius: 8,
-      border: `1px solid ${th.bdr}`,
-      background: th.inp,
-      color: th.text,
-      fontSize: 13,
-      boxSizing: "border-box",
-      outline: "none"
-    }
+    style: inpStyle
   }, days.map(d => /*#__PURE__*/React.createElement("option", {
     key: d.id,
     value: d.id
@@ -4142,7 +4091,7 @@ const ActEditM = ({
     },
     style: {
       flex: 1,
-      padding: 12,
+      padding: 13,
       borderRadius: 12,
       border: "none",
       background: th.acc,
@@ -4154,7 +4103,7 @@ const ActEditM = ({
   }, "Save"), /*#__PURE__*/React.createElement("button", {
     onClick: onClose,
     style: {
-      padding: "12px 20px",
+      padding: "13px 20px",
       borderRadius: 12,
       border: `1px solid ${th.bdr}`,
       background: "transparent",
