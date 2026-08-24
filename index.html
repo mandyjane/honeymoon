@@ -3716,29 +3716,7 @@ const AccC = ({
       gridTemplateColumns: "1fr 1fr",
       gap: 6
     }
-  }, d.linkGuide && customBtn(ICO_DOC, "Resort guide", d.linkGuide), d.linkWebsite && customBtn(ICO_GLOBE, "Website", d.linkWebsite), d.linkMenus && customBtn(ICO_FORK, "Menus", d.linkMenus), d.linkSpa && customBtn(ICO_LOTUS, "Spa", d.linkSpa), !d.linkGuide && !d.linkWebsite && !d.linkMenus && !d.linkSpa && d._docs && d._docs.map(dk => {
-    const doc = docs[dk];
-    const short = dk.startsWith("guide_") ? "Resort guide" : dk.includes("spa") ? "Spa" : dk.includes("menu_sm_tent") || dk.includes("menu_pk_sala") ? "Menus" : dk.includes("menu_pp") ? "Website" : "Info";
-    const Ico = dk.startsWith("guide_") ? ICO_DOC : dk.includes("spa") ? ICO_LOTUS : dk.includes("menu") ? ICO_FORK : ICO_GLOBE;
-    return doc ? /*#__PURE__*/React.createElement("button", {
-      key: dk,
-      onClick: () => openPdf(doc),
-      style: {
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        gap: 5,
-        padding: "7px 6px",
-        borderRadius: 8,
-        background: th.tag,
-        border: `0.5px solid ${th.bdr}`,
-        fontSize: 11,
-        color: th.acc,
-        cursor: "pointer",
-        fontWeight: 500
-      }
-    }, /*#__PURE__*/React.createElement(Ico, null), " ", short) : null;
-  }))));
+  }, d.linkGuide && customBtn(ICO_DOC, "Resort guide", d.linkGuide), d.linkWebsite && customBtn(ICO_GLOBE, "Website", d.linkWebsite), d.linkMenus && customBtn(ICO_FORK, "Menus", d.linkMenus), d.linkSpa && customBtn(ICO_LOTUS, "Spa", d.linkSpa))));
 };
 const NoteC = ({
   th,
@@ -4825,21 +4803,21 @@ function App() {
         r.checkOutDate = dd[id].co;
       }
     }
-    if (!r.linkGuide && ACCOM_DOCS[id]) {
+    if (r.linkGuide === undefined && ACCOM_DOCS[id]) {
       const gk = ACCOM_DOCS[id].find(k => k.startsWith("guide_"));
-      if (gk && docs[gk]) r.linkGuide = docs[gk].path || "";
+      if (gk && docs[gk]) r.linkGuide = docs[gk].file || docs[gk].path || "";
     }
-    if (!r.linkMenus && ACCOM_DOCS[id]) {
-      const mk = ACCOM_DOCS[id].find(k => k.includes("menu") && !k.includes("spa") && !k.includes("_pp"));
-      if (mk && docs[mk]) r.linkMenus = docs[mk].path || "";
+    if (r.linkMenus === undefined && ACCOM_DOCS[id]) {
+      const mk = ACCOM_DOCS[id].find(k => k.includes("menu") && !k.includes("spa") && k !== "menu_pp");
+      if (mk && docs[mk]) r.linkMenus = docs[mk].file || docs[mk].path || "";
     }
-    if (!r.linkSpa && ACCOM_DOCS[id]) {
+    if (r.linkSpa === undefined && ACCOM_DOCS[id]) {
       const sk = ACCOM_DOCS[id].find(k => k.includes("spa"));
-      if (sk && docs[sk]) r.linkSpa = docs[sk].path || "";
+      if (sk && docs[sk]) r.linkSpa = docs[sk].file || docs[sk].path || "";
     }
-    if (!r.linkWebsite && ACCOM_DOCS[id]) {
+    if (r.linkWebsite === undefined && ACCOM_DOCS[id]) {
       const wk = ACCOM_DOCS[id].find(k => k === "menu_pp");
-      if (wk && docs[wk]) r.linkWebsite = docs[wk].path || "";
+      if (wk && docs[wk]) r.linkWebsite = docs[wk].file || docs[wk].path || "";
     }
     if (!r.linkMap && LOCS[id]) r.linkMap = `${LOCS[id].lat},${LOCS[id].lng}`;
     return r;
