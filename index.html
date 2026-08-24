@@ -3952,6 +3952,134 @@ const ActEditM = ({
       marginBottom: 3,
       textTransform: "uppercase"
     }
+  }, "Actual Cost Paid (THB)"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 8,
+      alignItems: "center"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      flex: 1,
+      position: "relative"
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      position: "absolute",
+      left: 10,
+      top: "50%",
+      transform: "translateY(-50%)",
+      fontSize: 13,
+      color: th.mut
+    }
+  }, "฿"), /*#__PURE__*/React.createElement("input", {
+    value: f.actualCost || "",
+    onChange: e => u("actualCost", e.target.value.replace(/[^0-9]/g, "")),
+    placeholder: "0",
+    inputMode: "numeric",
+    autoComplete: "off",
+    style: {
+      width: "100%",
+      padding: "8px 10px 8px 24px",
+      borderRadius: 8,
+      border: `0.5px solid ${th.bdr}`,
+      background: th.inp,
+      color: th.text,
+      fontSize: 14,
+      fontWeight: 600,
+      boxSizing: "border-box",
+      outline: "none"
+    }
+  })), f.actualCost && /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12,
+      color: th.mut,
+      minWidth: 60,
+      textAlign: "right"
+    }
+  }, "≈ A$", Math.round(Number(f.actualCost) / (liveRate || 22.5)))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 9,
+      color: th.mut,
+      marginTop: 2
+    }
+  }, "Enter after the activity. Feeds into the budget tracker.")), /*#__PURE__*/React.createElement("div", {
+    style: {
+      marginBottom: 10
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 10,
+      color: th.mut,
+      marginBottom: 3,
+      textTransform: "uppercase"
+    }
+  }, "Website URL"), /*#__PURE__*/React.createElement("input", {
+    value: f.webUrl || "",
+    onChange: e => u("webUrl", e.target.value),
+    placeholder: "https://...",
+    autoComplete: "off",
+    style: {
+      width: "100%",
+      padding: "8px 10px",
+      borderRadius: 8,
+      border: `0.5px solid ${th.bdr}`,
+      background: th.inp,
+      color: th.text,
+      fontSize: 13,
+      boxSizing: "border-box",
+      outline: "none"
+    }
+  }), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 9,
+      color: th.mut,
+      marginTop: 2
+    }
+  }, "Shows a Website button on the card.")), /*#__PURE__*/React.createElement("div", {
+    style: {
+      marginBottom: 10
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 10,
+      color: th.mut,
+      marginBottom: 3,
+      textTransform: "uppercase"
+    }
+  }, "Booking / Tickets URL"), /*#__PURE__*/React.createElement("input", {
+    value: f.bookUrl || "",
+    onChange: e => u("bookUrl", e.target.value),
+    placeholder: "https://...",
+    autoComplete: "off",
+    style: {
+      width: "100%",
+      padding: "8px 10px",
+      borderRadius: 8,
+      border: `0.5px solid ${th.bdr}`,
+      background: th.inp,
+      color: th.text,
+      fontSize: 13,
+      boxSizing: "border-box",
+      outline: "none"
+    }
+  }), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 9,
+      color: th.mut,
+      marginTop: 2
+    }
+  }, "Shows a Book button on the card.")), /*#__PURE__*/React.createElement("div", {
+    style: {
+      marginBottom: 10
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 10,
+      color: th.mut,
+      marginBottom: 3,
+      textTransform: "uppercase"
+    }
   }, "Map Location (Google Maps search)"), /*#__PURE__*/React.createElement("input", {
     value: f.mapQuery || "",
     onChange: e => u("mapQuery", e.target.value),
@@ -5022,7 +5150,7 @@ function App() {
       }
     }, /*#__PURE__*/React.createElement("div", {
       style: {
-        width: prebooked / totalBudget * 100 + "%",
+        width: accom / totalBudget * 100 + "%",
         background: "#0c4a6e",
         display: "flex",
         alignItems: "center",
@@ -5034,10 +5162,43 @@ function App() {
         color: "#fff",
         fontWeight: 500
       }
-    }, "Pre-booked A$", prebooked.toLocaleString())), /*#__PURE__*/React.createElement("div", {
+    }, "Accom")), /*#__PURE__*/React.createElement("div", {
+      style: {
+        width: flights / totalBudget * 100 + "%",
+        background: "#155e75",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center"
+      }
+    }, /*#__PURE__*/React.createElement("span", {
+      style: {
+        fontSize: 7,
+        color: "#fff",
+        fontWeight: 500
+      }
+    }, "Flights")), /*#__PURE__*/React.createElement("div", {
+      style: {
+        width: transfers / totalBudget * 100 + "%",
+        background: "#14b8a6",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center"
+      }
+    }, /*#__PURE__*/React.createElement("span", {
+      style: {
+        fontSize: 7,
+        color: "#fff",
+        fontWeight: 500
+      }
+    }, "Xfers")), /*#__PURE__*/React.createElement("div", {
       style: {
         width: mealAud / totalBudget * 100 + "%",
         background: "#f59e0b"
+      }
+    }), actAud > 0 && /*#__PURE__*/React.createElement("div", {
+      style: {
+        width: actAud / totalBudget * 100 + "%",
+        background: "#8b5cf6"
       }
     }), /*#__PURE__*/React.createElement("div", {
       style: {
