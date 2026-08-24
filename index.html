@@ -2170,7 +2170,7 @@ const FIELDS = {
   layover: [["airport", "Airport"], ["dur", "Duration"], ["tip", "Tip"]],
   ferry: [["type", "Type"], ["from", "From"], ["to", "To"], ["dep", "Depart"], ["arr", "Arrive"], ["dur", "Duration"], ["date", "Date"], ["cost", "Cost"]],
   xfer: [["icon", "Icon"], ["from", "From"], ["to", "To"], ["time", "Time"], ["method", "Method"], ["cost", "Cost"]],
-  accom: [["name", "Name"], ["room", "Room Type"], ["checkIn", "Check-in"], ["checkOut", "Check-out"], ["nights", "Nights"], ["bfast", "Breakfast"], ["ppn", "Price/Night (A$)"], ["total", "Total (A$)"], ["feat", "Features (comma-separated)"]],
+  accom: [["name", "Name"], ["room", "Room Type"], ["dates", "Dates"], ["checkIn", "Check-in"], ["checkOut", "Check-out"], ["nights", "Nights"], ["bfast", "Breakfast"], ["wifi", "WiFi"], ["ppn", "Price/Night (A$)"], ["total", "Total (A$)"]],
   note: [["text", "Note Text"]]
 };
 
@@ -2210,6 +2210,27 @@ const TICO = {
 };
 
 /* ── GENERIC CARD EDIT MODAL ── */
+const ACCOM_LINK_TYPES = [{
+  key: "linkMap",
+  label: "View on map",
+  placeholder: "Google Maps URL or lat,lng"
+}, {
+  key: "linkGuide",
+  label: "Resort guide",
+  placeholder: "PDF path or URL"
+}, {
+  key: "linkWebsite",
+  label: "Website",
+  placeholder: "https://..."
+}, {
+  key: "linkMenus",
+  label: "Menus",
+  placeholder: "https:// or PDF path"
+}, {
+  key: "linkSpa",
+  label: "Spa",
+  placeholder: "https:// or PDF path"
+}];
 const CardEditM = ({
   th,
   data,
@@ -2222,6 +2243,13 @@ const CardEditM = ({
     ...data
   });
   const hasTimes = type === "ferry" || type === "flight";
+  const [shownLinks, setShownLinks] = useState(() => {
+    const s = {};
+    ACCOM_LINK_TYPES.forEach(l => {
+      if (data[l.key]) s[l.key] = true;
+    });
+    return s;
+  });
   const u = (k, v) => {
     sF(p => {
       const n = {
@@ -2237,6 +2265,17 @@ const CardEditM = ({
       }
       return n;
     });
+  };
+  const inpStyle = {
+    width: "100%",
+    padding: "8px 10px",
+    borderRadius: 8,
+    border: `1px solid ${th.bdr}`,
+    background: th.inp,
+    color: th.text,
+    fontSize: 13,
+    boxSizing: "border-box",
+    outline: "none"
   };
   return /*#__PURE__*/React.createElement("div", {
     style: {
@@ -2274,7 +2313,7 @@ const CardEditM = ({
       fontWeight: 700,
       color: th.text
     }
-  }, "Edit ", type.charAt(0).toUpperCase() + type.slice(1)), /*#__PURE__*/React.createElement("button", {
+  }, "Edit ", type === "accom" ? "accommodation" : type.charAt(0).toUpperCase() + type.slice(1)), /*#__PURE__*/React.createElement("button", {
     onClick: onClose,
     style: {
       background: th.inp,
@@ -2286,7 +2325,258 @@ const CardEditM = ({
       color: th.text,
       cursor: "pointer"
     }
-  }, "✕")), fields.map(([k, label]) => /*#__PURE__*/React.createElement("div", {
+  }, "✕")), type === "accom" ? /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+    style: {
+      marginBottom: 12
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 10,
+      color: th.mut,
+      marginBottom: 3,
+      textTransform: "uppercase"
+    }
+  }, "Name"), /*#__PURE__*/React.createElement("input", {
+    value: f.name || "",
+    onChange: e => u("name", e.target.value),
+    style: {
+      ...inpStyle,
+      fontSize: 14,
+      fontWeight: 500
+    }
+  })), /*#__PURE__*/React.createElement("div", {
+    style: {
+      marginBottom: 12
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 10,
+      color: th.mut,
+      marginBottom: 3,
+      textTransform: "uppercase"
+    }
+  }, "Room type"), /*#__PURE__*/React.createElement("input", {
+    value: f.room || "",
+    onChange: e => u("room", e.target.value),
+    style: inpStyle
+  })), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 8,
+      marginBottom: 8
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      flex: 1
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 10,
+      color: th.mut,
+      marginBottom: 3,
+      textTransform: "uppercase"
+    }
+  }, "Check-in date"), /*#__PURE__*/React.createElement("input", {
+    type: "date",
+    value: f.checkInDate || "",
+    onChange: e => {
+      const ci = e.target.value;
+      sF(p => {
+        const n = {
+          ...p,
+          checkInDate: ci
+        };
+        if (ci && p.checkOutDate) {
+          n.nights = calcNights(ci, p.checkOutDate);
+          n.dates = fmtDateRange(ci, p.checkOutDate);
+          if (n.total) n.ppn = (Math.round(Number(n.total) / n.nights * 100) / 100).toString();
+        }
+        return n;
+      });
+    },
+    style: inpStyle
+  })), /*#__PURE__*/React.createElement("div", {
+    style: {
+      flex: 1
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 10,
+      color: th.mut,
+      marginBottom: 3,
+      textTransform: "uppercase"
+    }
+  }, "Check-out date"), /*#__PURE__*/React.createElement("input", {
+    type: "date",
+    value: f.checkOutDate || "",
+    onChange: e => {
+      const co = e.target.value;
+      sF(p => {
+        const n = {
+          ...p,
+          checkOutDate: co
+        };
+        if (p.checkInDate && co) {
+          n.nights = calcNights(p.checkInDate, co);
+          n.dates = fmtDateRange(p.checkInDate, co);
+          if (n.total) n.ppn = (Math.round(Number(n.total) / n.nights * 100) / 100).toString();
+        }
+        return n;
+      });
+    },
+    style: inpStyle
+  }))), f.dates && /*#__PURE__*/React.createElement("div", {
+    style: {
+      background: "rgba(14,116,144,0.10)",
+      padding: "8px 12px",
+      borderRadius: 8,
+      marginBottom: 14
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 12,
+      color: th.acc,
+      fontWeight: 500
+    }
+  }, f.dates, " · ", f.nights, " nights")), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 8,
+      marginBottom: 14
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      flex: 1
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 10,
+      color: th.mut,
+      marginBottom: 3,
+      textTransform: "uppercase"
+    }
+  }, "Check-in time"), /*#__PURE__*/React.createElement("input", {
+    value: f.checkIn || "",
+    onChange: e => u("checkIn", e.target.value),
+    placeholder: "3pm",
+    style: inpStyle
+  })), /*#__PURE__*/React.createElement("div", {
+    style: {
+      flex: 1
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 10,
+      color: th.mut,
+      marginBottom: 3,
+      textTransform: "uppercase"
+    }
+  }, "Check-out time"), /*#__PURE__*/React.createElement("input", {
+    value: f.checkOut || "",
+    onChange: e => u("checkOut", e.target.value),
+    placeholder: "12pm",
+    style: inpStyle
+  }))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      marginBottom: 14
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 10,
+      color: th.mut,
+      marginBottom: 6,
+      textTransform: "uppercase"
+    }
+  }, "Breakfast"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 6
+    }
+  }, ["Included", "Not included"].map(v => {
+    const isNot = v === "Not included";
+    const active = f.bfast && (isNot ? f.bfast.toLowerCase().includes("not") : !f.bfast.toLowerCase().includes("not"));
+    return /*#__PURE__*/React.createElement("button", {
+      key: v,
+      onClick: () => u("bfast", v),
+      style: {
+        padding: "8px 16px",
+        borderRadius: 20,
+        border: active ? "none" : `0.5px solid ${th.bdr}`,
+        background: active ? th.acc : th.inp,
+        fontSize: 12,
+        color: active ? "#fff" : th.sub,
+        cursor: "pointer"
+      }
+    }, v);
+  }))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      marginBottom: 14
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 10,
+      color: th.mut,
+      marginBottom: 6,
+      textTransform: "uppercase"
+    }
+  }, "WiFi"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 6
+    }
+  }, ["Free", "Paid"].map(v => {
+    const active = (f.wifi || "Free") === v;
+    return /*#__PURE__*/React.createElement("button", {
+      key: v,
+      onClick: () => u("wifi", v),
+      style: {
+        padding: "8px 16px",
+        borderRadius: 20,
+        border: active ? "none" : `0.5px solid ${th.bdr}`,
+        background: active ? th.acc : th.inp,
+        fontSize: 12,
+        color: active ? "#fff" : th.sub,
+        cursor: "pointer"
+      }
+    }, v);
+  }))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      marginBottom: 4
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 10,
+      color: th.mut,
+      marginBottom: 3,
+      textTransform: "uppercase"
+    }
+  }, "Total price (A$)"), /*#__PURE__*/React.createElement("input", {
+    value: f.total || "",
+    onChange: e => {
+      const t = e.target.value.replace(/[^0-9.]/g, "");
+      sF(p => {
+        const n = {
+          ...p,
+          total: t
+        };
+        if (t && p.nights) n.ppn = (Math.round(Number(t) / Number(p.nights) * 100) / 100).toString();
+        return n;
+      });
+    },
+    placeholder: "4396",
+    inputMode: "decimal",
+    style: {
+      ...inpStyle,
+      fontSize: 14,
+      fontWeight: 500
+    }
+  })), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 11,
+      color: th.mut,
+      marginBottom: 14
+    }
+  }, "Per night: A$", f.ppn || "—", " (auto-calculated)")) : fields.map(([k, label]) => /*#__PURE__*/React.createElement("div", {
     key: k,
     style: {
       marginBottom: 10
@@ -2303,37 +2593,107 @@ const CardEditM = ({
     onChange: e => u(k, e.target.value),
     rows: k === "text" ? 3 : 2,
     style: {
-      width: "100%",
-      padding: "8px 10px",
-      borderRadius: 8,
-      border: `1px solid ${th.bdr}`,
-      background: th.inp,
-      color: th.text,
-      fontSize: 13,
-      boxSizing: "border-box",
-      outline: "none",
+      ...inpStyle,
       resize: "vertical",
       fontFamily: "inherit"
     }
   }) : /*#__PURE__*/React.createElement("input", {
     value: f[k] || "",
     onChange: e => u(k, e.target.value),
+    style: inpStyle
+  }))), type === "accom" && /*#__PURE__*/React.createElement("div", {
     style: {
-      width: "100%",
-      padding: "8px 10px",
-      borderRadius: 8,
-      border: `1px solid ${th.bdr}`,
-      background: th.inp,
-      color: th.text,
-      fontSize: 13,
-      boxSizing: "border-box",
-      outline: "none"
+      marginTop: 14,
+      paddingTop: 14,
+      borderTop: `0.5px solid ${th.bdr}`
     }
-  }))), /*#__PURE__*/React.createElement("div", {
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 11,
+      color: th.mut,
+      marginBottom: 8,
+      textTransform: "uppercase"
+    }
+  }, "Card buttons"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      flexWrap: "wrap",
+      gap: 6,
+      marginBottom: shownLinks && Object.keys(shownLinks).some(k => shownLinks[k]) ? 10 : 0
+    }
+  }, ACCOM_LINK_TYPES.filter(l => !shownLinks[l.key]).map(l => /*#__PURE__*/React.createElement("button", {
+    key: l.key,
+    onClick: () => setShownLinks(p => ({
+      ...p,
+      [l.key]: true
+    })),
+    style: {
+      padding: "7px 12px",
+      borderRadius: 8,
+      background: th.inp,
+      border: `1px dashed ${th.bdr}`,
+      fontSize: 12,
+      color: th.acc,
+      cursor: "pointer"
+    }
+  }, "+ ", l.label))), ACCOM_LINK_TYPES.filter(l => shownLinks[l.key]).map(l => /*#__PURE__*/React.createElement("div", {
+    key: l.key,
+    style: {
+      display: "flex",
+      gap: 6,
+      alignItems: "center",
+      marginBottom: 8
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      flex: 1
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 10,
+      color: th.mut,
+      marginBottom: 3,
+      textTransform: "uppercase"
+    }
+  }, l.label), /*#__PURE__*/React.createElement("input", {
+    value: f[l.key] || "",
+    onChange: e => u(l.key, e.target.value),
+    placeholder: l.placeholder,
+    autoComplete: "off",
+    style: inpStyle
+  })), /*#__PURE__*/React.createElement("button", {
+    onClick: () => {
+      u(l.key, "");
+      setShownLinks(p => {
+        const n = {
+          ...p
+        };
+        delete n[l.key];
+        return n;
+      });
+    },
+    style: {
+      fontSize: 11,
+      color: th.mut,
+      background: "transparent",
+      border: "none",
+      cursor: "pointer",
+      padding: "4px 6px",
+      whiteSpace: "nowrap",
+      alignSelf: "flex-end",
+      marginBottom: 8
+    }
+  }, "− Hide"))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 10,
+      color: th.mut,
+      marginTop: 4
+    }
+  }, "Overrides the built-in map and doc buttons. Leave off to use the defaults.")), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       gap: 10,
-      marginTop: 6
+      marginTop: 14
     }
   }, /*#__PURE__*/React.createElement("button", {
     onClick: () => {
@@ -3127,6 +3487,29 @@ const ICO_GLOBE = () => /*#__PURE__*/React.createElement("svg", {
 }), /*#__PURE__*/React.createElement("path", {
   d: "M2 12h20"
 }));
+/* ── DATE HELPERS ── */
+const DAY_NAMES = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+const MONTH_NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+const fmtDateRange = (ci, co) => {
+  try {
+    const d1 = new Date(ci + "T00:00");
+    const d2 = new Date(co + "T00:00");
+    if (isNaN(d1) || isNaN(d2)) return "";
+    const m1 = MONTH_NAMES[d1.getMonth()];
+    const m2 = MONTH_NAMES[d2.getMonth()];
+    return `${DAY_NAMES[d1.getDay()]} ${d1.getDate()}${m1 !== m2 ? " " + m1 : ""} – ${DAY_NAMES[d2.getDay()]} ${d2.getDate()} ${m2}`;
+  } catch {
+    return "";
+  }
+};
+const calcNights = (ci, co) => {
+  try {
+    const ms = new Date(co + "T00:00").getTime() - new Date(ci + "T00:00").getTime();
+    return Math.max(1, Math.round(ms / 86400000));
+  } catch {
+    return 0;
+  }
+};
 const AccC = ({
   th,
   d,
@@ -3137,13 +3520,44 @@ const AccC = ({
 }) => {
   const base = window.location.href.replace(/\/[^\/]*$/, '/');
   const heroUrl = d._hero ? d._hero.startsWith('http') ? d._hero : base + d._hero : null;
+  const openLink = u => {
+    if (!u) return;
+    if (u.startsWith('http') || u.startsWith('/')) window.open(u, '_blank');else window.open(base + u, '_blank');
+  };
+  const openMap = () => {
+    if (d.linkMap) {
+      if (d.linkMap.startsWith('http')) window.open(d.linkMap, '_blank');else {
+        const [la, ln] = d.linkMap.split(',');
+        if (la && ln) viewMap(la.trim(), ln.trim(), d.name);else window.open(d.linkMap, '_blank');
+      }
+    } else if (d._loc) viewMap(d._loc.lat, d._loc.lng, d.name);
+  };
+  const customBtn = (Ico, label, url) => /*#__PURE__*/React.createElement("button", {
+    key: label,
+    onClick: () => openLink(url),
+    style: {
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      gap: 5,
+      padding: "7px 6px",
+      borderRadius: 8,
+      background: th.tag,
+      border: `0.5px solid ${th.bdr}`,
+      fontSize: 11,
+      color: th.acc,
+      cursor: "pointer",
+      fontWeight: 500
+    }
+  }, /*#__PURE__*/React.createElement(Ico, null), " ", label);
   return /*#__PURE__*/React.createElement("div", {
     style: {
       background: th.card,
       borderRadius: 16,
       overflow: "hidden",
       boxShadow: th.sh,
-      marginBottom: 16
+      marginBottom: 16,
+      position: "relative"
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
@@ -3171,7 +3585,43 @@ const AccC = ({
       inset: 0,
       background: "linear-gradient(to top, rgba(12,74,110,0.85) 0%, rgba(12,74,110,0.3) 50%, transparent 100%)"
     }
-  }), edit && /*#__PURE__*/React.createElement(Pen, {
+  }), (d.linkMap || d._loc) && /*#__PURE__*/React.createElement("div", {
+    onClick: openMap,
+    style: {
+      position: "absolute",
+      top: 12,
+      right: edit ? 52 : 12,
+      display: "flex",
+      alignItems: "center",
+      gap: 4,
+      background: "rgba(255,255,255,0.92)",
+      padding: "5px 10px",
+      borderRadius: 12,
+      cursor: "pointer",
+      boxShadow: "0 1px 3px rgba(0,0,0,0.15)"
+    }
+  }, /*#__PURE__*/React.createElement("svg", {
+    width: "11",
+    height: "11",
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "#0e7490",
+    strokeWidth: "2",
+    strokeLinecap: "round",
+    strokeLinejoin: "round"
+  }, /*#__PURE__*/React.createElement("path", {
+    d: "M12 21c-4.97-5.03-8-8.5-8-12a8 8 0 1 1 16 0c0 3.5-3.03 6.97-8 12z"
+  }), /*#__PURE__*/React.createElement("circle", {
+    cx: "12",
+    cy: "9",
+    r: "2.5"
+  })), /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 10,
+      color: "#0e7490",
+      fontWeight: 500
+    }
+  }, "Map")), edit && /*#__PURE__*/React.createElement(Pen, {
     onClick: onEdit,
     abs: true
   }), /*#__PURE__*/React.createElement("div", {
@@ -3233,28 +3683,32 @@ const AccC = ({
   }, "A$", d.ppn, "/night"))), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "grid",
-      gridTemplateColumns: "1fr 1fr 1fr 1fr",
+      gridTemplateColumns: "1fr 1fr",
       gap: 4,
       marginBottom: 12
     }
-  }, [["IN", d.checkIn], ["OUT", d.checkOut], ["BFAST", d.bfast], ["WIFI", d.wifi || "Free"]].map(([l, v], i) => /*#__PURE__*/React.createElement("div", {
+  }, [["CHECK-IN", d.checkIn], ["CHECK-OUT", d.checkOut], ["BREAKFAST", d.bfast], ["WIFI", d.wifi || "Free"]].map(([l, v], i) => /*#__PURE__*/React.createElement("div", {
     key: i,
     style: {
       background: th.inp,
       borderRadius: 6,
-      padding: "6px 8px",
-      textAlign: "center"
+      padding: "6px 10px",
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "center"
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 9,
-      color: th.mut
+      color: th.mut,
+      letterSpacing: 0.3
     }
   }, l), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 12,
       fontWeight: 600,
-      color: th.text
+      color: th.text,
+      textAlign: "right"
     }
   }, v)))), /*#__PURE__*/React.createElement("div", {
     style: {
@@ -3262,23 +3716,7 @@ const AccC = ({
       gridTemplateColumns: "1fr 1fr",
       gap: 6
     }
-  }, d._loc && /*#__PURE__*/React.createElement("button", {
-    onClick: () => viewMap(d._loc.lat, d._loc.lng, d.name),
-    style: {
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      gap: 5,
-      padding: "7px 6px",
-      borderRadius: 8,
-      background: th.tag,
-      border: `0.5px solid ${th.bdr}`,
-      fontSize: 11,
-      color: th.acc,
-      cursor: "pointer",
-      fontWeight: 500
-    }
-  }, /*#__PURE__*/React.createElement(ICO_PIN, null), " View on map"), d._docs && d._docs.map(dk => {
+  }, d.linkGuide && customBtn(ICO_DOC, "Resort guide", d.linkGuide), d.linkWebsite && customBtn(ICO_GLOBE, "Website", d.linkWebsite), d.linkMenus && customBtn(ICO_FORK, "Menus", d.linkMenus), d.linkSpa && customBtn(ICO_LOTUS, "Spa", d.linkSpa), !d.linkGuide && !d.linkWebsite && !d.linkMenus && !d.linkSpa && d._docs && d._docs.map(dk => {
     const doc = docs[dk];
     const short = dk.startsWith("guide_") ? "Resort guide" : dk.includes("spa") ? "Spa" : dk.includes("menu_sm_tent") || dk.includes("menu_pk_sala") ? "Menus" : dk.includes("menu_pp") ? "Website" : "Info";
     const Ico = dk.startsWith("guide_") ? ICO_DOC : dk.includes("spa") ? ICO_LOTUS : dk.includes("menu") ? ICO_FORK : ICO_GLOBE;
@@ -4367,6 +4805,43 @@ function App() {
       };
       if (dd[id]) r.dates = dd[id];
     }
+    if (!r.checkInDate) {
+      const dd = {
+        a_pp: {
+          ci: "2027-02-12",
+          co: "2027-02-15"
+        },
+        a_sm: {
+          ci: "2027-02-15",
+          co: "2027-02-21"
+        },
+        a_pk: {
+          ci: "2027-02-21",
+          co: "2027-02-25"
+        }
+      };
+      if (dd[id]) {
+        r.checkInDate = dd[id].ci;
+        r.checkOutDate = dd[id].co;
+      }
+    }
+    if (!r.linkGuide && ACCOM_DOCS[id]) {
+      const gk = ACCOM_DOCS[id].find(k => k.startsWith("guide_"));
+      if (gk && docs[gk]) r.linkGuide = docs[gk].path || "";
+    }
+    if (!r.linkMenus && ACCOM_DOCS[id]) {
+      const mk = ACCOM_DOCS[id].find(k => k.includes("menu") && !k.includes("spa") && !k.includes("_pp"));
+      if (mk && docs[mk]) r.linkMenus = docs[mk].path || "";
+    }
+    if (!r.linkSpa && ACCOM_DOCS[id]) {
+      const sk = ACCOM_DOCS[id].find(k => k.includes("spa"));
+      if (sk && docs[sk]) r.linkSpa = docs[sk].path || "";
+    }
+    if (!r.linkWebsite && ACCOM_DOCS[id]) {
+      const wk = ACCOM_DOCS[id].find(k => k === "menu_pp");
+      if (wk && docs[wk]) r.linkWebsite = docs[wk].path || "";
+    }
+    if (!r.linkMap && LOCS[id]) r.linkMap = `${LOCS[id].lat},${LOCS[id].lng}`;
     return r;
   };
   const updCard = (id, data) => setCards(p => ({
