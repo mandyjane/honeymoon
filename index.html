@@ -287,6 +287,130 @@ const WEATHER = {
     uv: "High"
   }
 };
+const TideBar = ({
+  th,
+  dayId
+}) => {
+  const tides = TIDES[dayId];
+  if (!tides) return null;
+  const live = isTideWindow();
+  if (!live) return /*#__PURE__*/React.createElement("div", {
+    style: {
+      background: "#e6f1fb",
+      borderRadius: 8,
+      padding: "8px 12px",
+      display: "flex",
+      alignItems: "center",
+      gap: 8,
+      marginBottom: 8
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 16
+    }
+  }, "🌊"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      flex: 1
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12,
+      color: "#185fa5",
+      fontWeight: 500
+    }
+  }, "Tides · 2 high, 2 low daily"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 11,
+      color: "#3b82b6"
+    }
+  }, "~2m range · check times closer to trip")), /*#__PURE__*/React.createElement("span", {
+    onClick: () => window.open(TIDE_URL, "_blank"),
+    style: {
+      fontSize: 10,
+      color: "#185fa5",
+      background: "#fff",
+      padding: "3px 8px",
+      borderRadius: 5,
+      fontWeight: 500,
+      cursor: "pointer"
+    }
+  }, "Info"));
+  return /*#__PURE__*/React.createElement("div", {
+    style: {
+      background: "#e6f1fb",
+      borderRadius: 10,
+      padding: "10px 12px",
+      marginBottom: 8
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      alignItems: "center",
+      gap: 6,
+      marginBottom: 8
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 16
+    }
+  }, "🌊"), /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 12,
+      color: "#185fa5",
+      fontWeight: 500
+    }
+  }, "Tides"), /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 9,
+      color: "#3b82b6",
+      background: "#fff",
+      padding: "2px 6px",
+      borderRadius: 4
+    }
+  }, "LIVE"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      flex: 1
+    }
+  }), /*#__PURE__*/React.createElement("span", {
+    onClick: () => window.open(TIDE_URL, "_blank"),
+    style: {
+      fontSize: 10,
+      color: "#185fa5",
+      cursor: "pointer",
+      textDecoration: "underline"
+    }
+  }, "Full schedule")), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "grid",
+      gridTemplateColumns: "1fr 1fr 1fr 1fr",
+      gap: 4
+    }
+  }, tides.map((td, i) => /*#__PURE__*/React.createElement("div", {
+    key: i,
+    style: {
+      background: "#fff",
+      borderRadius: 6,
+      padding: "6px 4px",
+      textAlign: "center"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 9,
+      color: td.t === "HIGH" ? "#3b82b6" : "#64748b"
+    }
+  }, td.t), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 13,
+      fontWeight: 600,
+      color: td.t === "HIGH" ? "#185fa5" : "#64748b"
+    }
+  }, td.time), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 9,
+      color: td.t === "HIGH" ? "#3b82b6" : "#64748b"
+    }
+  }, td.h)))));
+};
 const WeatherBar = ({
   th,
   dayId
@@ -469,6 +593,84 @@ const getTodayDay = () => {
 };
 
 /* ── LOCATIONS ── */
+
+/* ── TIDES (Phi Phi only) ── */
+const TIDES = {
+  pp_d1: [{
+    t: "HIGH",
+    time: "06:12",
+    h: "2.4m"
+  }, {
+    t: "LOW",
+    time: "12:28",
+    h: "0.5m"
+  }, {
+    t: "HIGH",
+    time: "18:38",
+    h: "2.1m"
+  }, {
+    t: "LOW",
+    time: "00:45",
+    h: "0.8m"
+  }],
+  pp_d2: [{
+    t: "HIGH",
+    time: "07:01",
+    h: "2.5m"
+  }, {
+    t: "LOW",
+    time: "13:15",
+    h: "0.4m"
+  }, {
+    t: "HIGH",
+    time: "19:24",
+    h: "2.2m"
+  }, {
+    t: "LOW",
+    time: "01:32",
+    h: "0.7m"
+  }],
+  pp_d3: [{
+    t: "HIGH",
+    time: "07:48",
+    h: "2.6m"
+  }, {
+    t: "LOW",
+    time: "14:02",
+    h: "0.3m"
+  }, {
+    t: "HIGH",
+    time: "20:10",
+    h: "2.3m"
+  }, {
+    t: "LOW",
+    time: "02:18",
+    h: "0.6m"
+  }],
+  pp_d4: [{
+    t: "HIGH",
+    time: "08:35",
+    h: "2.7m"
+  }, {
+    t: "LOW",
+    time: "14:50",
+    h: "0.3m"
+  }, {
+    t: "HIGH",
+    time: "20:58",
+    h: "2.4m"
+  }, {
+    t: "LOW",
+    time: "03:05",
+    h: "0.5m"
+  }]
+};
+const TIDE_URL = "https://www.seatemperatu.re/southeast-asia/thailand/koh-phi-phi/tides.html";
+const isTideWindow = () => {
+  const now = new Date();
+  const tripStart = new Date("2027-01-29");
+  return now >= tripStart;
+};
 const LOCS = {
   a_pp: {
     lat: 7.7407,
