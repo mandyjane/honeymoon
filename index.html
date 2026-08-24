@@ -2288,6 +2288,10 @@ const ACCOM_LINK_TYPES = [{
   key: "linkSpa",
   label: "Spa",
   placeholder: "https:// or PDF path"
+}, {
+  key: "linkDrinks",
+  label: "Drinks",
+  placeholder: "https:// or PDF path"
 }];
 const CardEditM = ({
   th,
@@ -3956,6 +3960,18 @@ const ICO_GLOBE = () => /*#__PURE__*/React.createElement("svg", {
 }), /*#__PURE__*/React.createElement("path", {
   d: "M2 12h20"
 }));
+const ICO_GLASS = () => /*#__PURE__*/React.createElement("svg", {
+  width: "13",
+  height: "13",
+  viewBox: "38 103 220 213",
+  xmlns: "http://www.w3.org/2000/svg"
+}, /*#__PURE__*/React.createElement("g", {
+  transform: "translate(0,400) scale(0.1,-0.1)",
+  fill: "currentColor",
+  stroke: "none"
+}, /*#__PURE__*/React.createElement("path", {
+  d: "M2046 2880 c-14 -17 -63 -106 -110 -199 l-86 -170 -567 -3 c-313 -2 -576 -7 -585 -12 -24 -11 -31 -41 -17 -67 6 -12 47 -67 90 -123 76 -97 210 -271 449 -586 l110 -145 -2 -203 -3 -204 -172 -95 -173 -96 0 -37 c0 -25 5 -40 16 -44 9 -3 228 -6 489 -6 514 0 500 -2 493 56 -2 21 -16 34 -68 64 -36 20 -112 64 -170 97 l-105 61 0 209 0 209 121 155 c66 84 170 219 230 299 61 80 151 199 201 265 95 124 114 163 91 182 -7 6 -75 13 -155 15 -79 3 -145 7 -148 10 -3 3 33 81 80 173 47 92 85 174 85 181 0 14 -38 44 -56 44 -7 0 -24 -14 -38 -30z m77 -493 c-4 -7 -30 -41 -57 -75 l-49 -62 -374 0 c-239 0 -381 -4 -394 -10 -12 -7 -19 -21 -19 -40 0 -19 7 -33 19 -40 13 -6 142 -10 350 -10 206 0 331 -4 331 -10 0 -5 -13 -24 -28 -42 -48 -55 -332 -428 -353 -462 -17 -28 -19 -52 -19 -278 l0 -248 103 -60 102 -60 -252 0 c-139 0 -253 2 -253 4 0 2 42 27 93 56 50 29 95 58 100 64 4 6 6 121 5 256 l-3 246 -45 61 c-25 34 -146 194 -270 355 -124 160 -238 309 -253 330 l-29 38 652 0 c525 0 649 -2 643 -13z M1605 2042 c-20 -14 -126 -235 -123 -256 4 -25 52 -45 74 -31 18 12 163 277 157 288 -5 9 -95 9 -108 -1z"
+})));
 /* ── DATE HELPERS ── */
 const DAY_NAMES = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 const MONTH_NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -4186,7 +4202,7 @@ const AccC = ({
       gridTemplateColumns: "1fr 1fr",
       gap: 6
     }
-  }, d.linkGuide && customBtn(ICO_DOC, "Resort guide", d.linkGuide), d.linkWebsite && customBtn(ICO_GLOBE, "Website", d.linkWebsite), d.linkMenus && customBtn(ICO_FORK, "Menus", d.linkMenus), d.linkSpa && customBtn(ICO_LOTUS, "Spa", d.linkSpa))));
+  }, d.linkGuide && customBtn(ICO_DOC, "Resort guide", d.linkGuide), d.linkWebsite && customBtn(ICO_GLOBE, "Website", d.linkWebsite), d.linkMenus && customBtn(ICO_FORK, "Menus", d.linkMenus), d.linkSpa && customBtn(ICO_LOTUS, "Spa", d.linkSpa), d.linkDrinks && customBtn(ICO_GLASS, "Drinks", d.linkDrinks))));
 };
 const NoteC = ({
   th,
