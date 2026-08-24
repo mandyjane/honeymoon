@@ -3343,7 +3343,42 @@ const ActC = ({
     borderLeft: `3px solid ${th.actBdr}`,
     position: "relative"
   }
-}, edit && /*#__PURE__*/React.createElement("div", {
+}, act.mapQuery && /*#__PURE__*/React.createElement("div", {
+  onClick: () => window.open("https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(act.mapQuery), "_blank"),
+  style: {
+    position: "absolute",
+    top: 12,
+    right: edit ? 72 : 12,
+    display: "flex",
+    alignItems: "center",
+    gap: 4,
+    background: th.dark ? "rgba(14,116,144,0.15)" : "rgba(14,116,144,0.08)",
+    padding: "4px 10px",
+    borderRadius: 12,
+    cursor: "pointer"
+  }
+}, /*#__PURE__*/React.createElement("svg", {
+  width: "11",
+  height: "11",
+  viewBox: "0 0 24 24",
+  fill: "none",
+  stroke: th.acc,
+  strokeWidth: "2",
+  strokeLinecap: "round",
+  strokeLinejoin: "round"
+}, /*#__PURE__*/React.createElement("path", {
+  d: "M12 21c-4.97-5.03-8-8.5-8-12a8 8 0 1 1 16 0c0 3.5-3.03 6.97-8 12z"
+}), /*#__PURE__*/React.createElement("circle", {
+  cx: "12",
+  cy: "9",
+  r: "2.5"
+})), /*#__PURE__*/React.createElement("span", {
+  style: {
+    fontSize: 10,
+    color: th.acc,
+    fontWeight: 500
+  }
+}, "Map")), edit && /*#__PURE__*/React.createElement("div", {
   style: {
     position: "absolute",
     top: 8,
@@ -3462,18 +3497,7 @@ const ActC = ({
     borderRadius: 6,
     fontWeight: 500
   }
-}, "✓ ฿", Number(act.actualCost).toLocaleString()), act.mapQuery && /*#__PURE__*/React.createElement("span", {
-  onClick: () => window.open("https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(act.mapQuery), "_blank"),
-  style: {
-    fontSize: 10,
-    background: "#e6f1fb",
-    color: "#185fa5",
-    padding: "2px 7px",
-    borderRadius: 6,
-    cursor: "pointer",
-    fontWeight: 500
-  }
-}, "📍 Map")), (act.webUrl || act.bookUrl) && /*#__PURE__*/React.createElement("div", {
+}, "✓ ฿", Number(act.actualCost).toLocaleString())), (act.webUrl || act.bookUrl) && /*#__PURE__*/React.createElement("div", {
   style: {
     display: "flex",
     gap: 6,
