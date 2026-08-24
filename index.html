@@ -464,6 +464,8 @@ const WeatherBar = ({
     }
   }, w.lo, "°")));
 };
+
+/* ── HERO IMAGE OPTIONS ── */
 const QUICK_AMTS = [100, 500, 1000, 2000, 5000, 10000];
 
 /* ── THAI PHRASES ── */
@@ -4160,6 +4162,20 @@ const AddM = ({
 }, "+"))))));
 
 /* ── MAIN ── */
+
+const HERO_OPTIONS = [{
+  id: "hero-thailand",
+  label: "Longtail boats",
+  file: "images/hero-thailand.jpg"
+}, {
+  id: "hero-thailand-2",
+  label: "Railay sunset",
+  file: "images/hero-thailand-2.jpg"
+}, {
+  id: "hero-thailand-3",
+  label: "Longtail & karst",
+  file: "images/hero-thailand-3.jpg"
+}];
 function App() {
   const [tab, setTab] = useState("overview");
   const [dark, setDark] = useState(false);
@@ -4180,6 +4196,10 @@ function App() {
   const [budgetTotal, setBudgetTotal] = useState(() => {
     const s = load();
     return s && s.budgetTotal ? s.budgetTotal : 14000;
+  });
+  const [heroImg, setHeroImg] = useState(() => {
+    const s = load();
+    return s && s.heroImg ? s.heroImg : "hero-thailand";
   });
   const [packing, setPacking] = useState(() => {
     const s = load();
@@ -4212,6 +4232,7 @@ function App() {
       if (s.meals) setMeals(s.meals);
       if (s.packing) setPacking(s.packing);
       if (s.budgetTotal) setBudgetTotal(s.budgetTotal);
+      if (s.heroImg) setHeroImg(s.heroImg);
       if (s.dark !== undefined) setDark(s.dark);
     }
     setLoaded(true);
@@ -4225,9 +4246,10 @@ function App() {
       meals,
       packing,
       budgetTotal,
+      heroImg,
       dark
     });
-  }, [cards, docs, acts, standby, meals, packing, budgetTotal, dark, loaded]);
+  }, [cards, docs, acts, standby, meals, packing, budgetTotal, heroImg, dark, loaded]);
   useEffect(() => {
     document.body.className = dark ? "dark" : "";
   }, [dark]);
@@ -4725,7 +4747,7 @@ function App() {
       zIndex: 0
     }
   }, /*#__PURE__*/React.createElement("img", {
-    src: window.location.href.replace(/\/[^\/]*$/, "/") + "images/hero-thailand.jpg",
+    src: window.location.href.replace(/\/[^\/]*$/, "/") + (HERO_OPTIONS.find(h => h.id === heroImg) || HERO_OPTIONS[0]).file,
     style: {
       width: "100%",
       height: "100%",
@@ -5785,7 +5807,57 @@ function App() {
       fontSize: 14,
       color: th.acc
     }
-  }, "Open")), [["🌙", "Dark Mode", "Light and dark theme", dark, () => setDark(!dark)], ["✏️", "Edit Mode", "Modify all cards and documents", edit, () => setEdit(!edit)]].map(([ico, t, s, on, fn], i) => /*#__PURE__*/React.createElement("div", {
+  }, "Open")), /*#__PURE__*/React.createElement("div", {
+    style: {
+      background: th.card,
+      borderRadius: 16,
+      padding: "14px 16px",
+      boxShadow: th.sh,
+      marginBottom: 16
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 14,
+      fontWeight: 600,
+      color: th.text,
+      marginBottom: 10
+    }
+  }, "Home hero image"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 8
+    }
+  }, HERO_OPTIONS.map(h => {
+    const base = window.location.href.replace(/\/[^\/]*$/, '/');
+    return /*#__PURE__*/React.createElement("div", {
+      key: h.id,
+      onClick: () => setHeroImg(h.id),
+      style: {
+        flex: 1,
+        cursor: "pointer",
+        borderRadius: 10,
+        overflow: "hidden",
+        border: heroImg === h.id ? `2px solid ${th.acc}` : "2px solid transparent"
+      }
+    }, /*#__PURE__*/React.createElement("img", {
+      src: base + h.file,
+      style: {
+        width: "100%",
+        height: 60,
+        objectFit: "cover",
+        display: "block"
+      },
+      alt: h.label
+    }), /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 10,
+        color: heroImg === h.id ? th.acc : th.mut,
+        textAlign: "center",
+        padding: "4px 2px",
+        fontWeight: heroImg === h.id ? 600 : 400
+      }
+    }, h.label));
+  }))), [["🌙", "Dark Mode", "Light and dark theme", dark, () => setDark(!dark)], ["✏️", "Edit Mode", "Modify all cards and documents", edit, () => setEdit(!edit)]].map(([ico, t, s, on, fn], i) => /*#__PURE__*/React.createElement("div", {
     key: i,
     style: {
       background: th.card,
