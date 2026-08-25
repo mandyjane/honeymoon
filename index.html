@@ -5616,6 +5616,8 @@ function App() {
   });
   const [mDay, setMDay] = useState(getTodayDay);
   const [homeView, setHomeView] = useState("overview");
+  const [brefOpen, setBrefOpen] = useState(false);
+  const [travelDocs, setTravelDocs] = useState({ tdacReceived: false, tdac: [], passport_amanda: [], passport_liam: [] });
   const [liveRate, setLiveRate] = useState(null);
   const [rateTime, setRateTime] = useState(null);
   const [aDay, sADay] = useState(null);
@@ -5644,6 +5646,7 @@ function App() {
       if (s.heroImg) setHeroImg(s.heroImg);
       if (s.dark !== undefined) setDark(s.dark);
       if (s.showFab !== undefined) setShowFab(s.showFab);
+      if (s.travelDocs) setTravelDocs({ tdacReceived: false, tdac: [], passport_amanda: [], passport_liam: [], ...s.travelDocs });
     }
     setLoaded(true);
   }, []);
@@ -5658,9 +5661,10 @@ function App() {
       budgetTotal,
       heroImg,
       dark,
-      showFab
+      showFab,
+      travelDocs
     });
-  }, [cards, docs, acts, standby, meals, packing, budgetTotal, heroImg, dark, showFab, loaded]);
+  }, [cards, docs, acts, standby, meals, packing, budgetTotal, heroImg, dark, showFab, travelDocs, loaded]);
   useEffect(() => {
     document.body.className = dark ? "dark" : "";
   }, [dark]);
@@ -5759,6 +5763,34 @@ function App() {
     }
   }));
   const onEditDoc = k => sDe(k);
+  const attachTravelDoc = async (slot, files) => {
+    const added = [];
+    for (const file of files) {
+      if (file.size > MAX_TICKET_MB * 1024 * 1024) {
+        alert(file.name + " is too large (max " + MAX_TICKET_MB + "MB)");
+        continue;
+      }
+      const id = genTid();
+      try {
+        await putTicket({
+          id,
+          activityId: slot,
+          name: file.name,
+          type: file.type || "application/octet-stream",
+          blob: file,
+          addedAt: Date.now()
+        });
+        added.push({ id, name: file.name, type: file.type || "application/octet-stream" });
+      } catch (err) {
+        alert("Couldn't save " + file.name + ": " + err.message);
+      }
+    }
+    if (added.length) setTravelDocs(p => ({ ...p, [slot]: [...(p[slot] || []), ...added] }));
+  };
+  const removeTravelDoc = (slot, id) => {
+    try { delTicket(id); } catch (e) {}
+    setTravelDocs(p => ({ ...p, [slot]: (p[slot] || []).filter(t => t.id !== id) }));
+  };
   const saveMeal = m => {
     setMeals(p => {
       const idx = p.findIndex(x => x.id === m.id);
@@ -6401,9 +6433,30 @@ function App() {
       fontSize: 12,
       color: th.sub
     }
-  }, x.s)))), /*#__PURE__*/React.createElement(Sec, {
-    th: th
-  }, "Booking References"), /*#__PURE__*/React.createElement("div", {
+  }, x.s)))), /*#__PURE__*/React.createElement("div", {
+    onClick: () => setBrefOpen(!brefOpen),
+    style: {
+      fontSize: 13,
+      fontWeight: 700,
+      textTransform: "uppercase",
+      letterSpacing: 1.5,
+      color: th.acc,
+      marginTop: 22,
+      marginBottom: brefOpen ? 10 : 0,
+      display: "flex",
+      alignItems: "center",
+      gap: 8,
+      cursor: "pointer"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: { width: 20, height: 2, background: th.acc, borderRadius: 1 }
+  }), /*#__PURE__*/React.createElement("span", { style: { flex: 1 } }, "Booking References"), /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 12,
+      transform: brefOpen ? "rotate(180deg)" : "rotate(0deg)",
+      transition: "transform 0.2s"
+    }
+  }, "▾")), brefOpen && /*#__PURE__*/React.createElement("div", {
     style: {
       background: th.card,
       borderRadius: 14,
@@ -6575,62 +6628,56 @@ function App() {
     edit && /*#__PURE__*/React.createElement("div", {
       style: { fontSize: 11, color: th.mut, textAlign: "center", lineHeight: 1.5, padding: "8px 4px 0" }
     }, "Add transfers in each destination's Getting There / Departure section."))
-  })(), /*#__PURE__*/React.createElement(Sec, {
-    th: th
-  }, "Before You Fly"), /*#__PURE__*/React.createElement("div", {
-    style: {
-      background: th.card,
-      borderRadius: 16,
-      overflow: "hidden",
-      boxShadow: th.sh,
-      marginBottom: 12
-    }
-  }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      background: "linear-gradient(135deg,#dc2626,#b91c1c)",
-      padding: "14px 18px",
-      color: "#fff"
-    }
-  }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 15,
-      fontWeight: 700
-    }
-  }, "🇹🇭 Thailand Digital Arrival Card"), /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 12,
-      opacity: .85,
-      marginTop: 4
-    }
-  }, "Must be submitted at least 2 days before arrival")), /*#__PURE__*/React.createElement("div", {
-    style: {
-      padding: "14px 18px"
-    }
-  }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 12,
-      color: th.sub,
-      lineHeight: 1.5,
-      marginBottom: 12
-    }
-  }, "Both travellers need to complete this online form before landing in Thailand. You'll need your passport details and flight info."), /*#__PURE__*/React.createElement("button", {
-    onClick: () => window.open("https://tdac.immigration.go.th/arrival-card/#/home", "_blank"),
-    style: {
-      width: "100%",
-      padding: "12px",
-      borderRadius: 12,
-      border: "none",
-      background: th.acc,
-      color: "#fff",
-      fontSize: 14,
-      fontWeight: 700,
-      cursor: "pointer",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      gap: 8
-    }
-  }, "Open Arrival Card ↗"))), /*#__PURE__*/React.createElement(Sec, {
+  })(),
+    /*#__PURE__*/React.createElement(Sec, { th: th }, travelDocs.tdacReceived ? "Thailand Digital Arrival Card" : "Before You Fly"),
+    edit && /*#__PURE__*/React.createElement("div", {
+      style: { display: "flex", alignItems: "center", gap: 8, marginBottom: 8, padding: "8px 12px", background: th.inp, borderRadius: 8 }
+    }, /*#__PURE__*/React.createElement("span", { style: { fontSize: 12, color: th.sub, flex: 1 } }, "Arrival cards status"),
+       /*#__PURE__*/React.createElement("div", { style: { display: "flex", gap: 4 } },
+         [["To submit", false], ["Received", true]].map(([lab, val]) => /*#__PURE__*/React.createElement("button", {
+           key: lab,
+           onClick: () => setTravelDocs(p => ({ ...p, tdacReceived: val })),
+           style: {
+             padding: "5px 12px", borderRadius: 14, fontSize: 11,
+             border: travelDocs.tdacReceived === val ? "none" : "0.5px solid " + th.bdr,
+             background: travelDocs.tdacReceived === val ? th.acc : th.card,
+             color: travelDocs.tdacReceived === val ? "#fff" : th.sub,
+             fontWeight: travelDocs.tdacReceived === val ? 500 : 400, cursor: "pointer"
+           }
+         }, lab)))),
+    /*#__PURE__*/React.createElement("div", {
+      style: { background: th.card, borderRadius: 16, overflow: "hidden", boxShadow: th.sh, marginBottom: 12 }
+    }, /*#__PURE__*/React.createElement("div", {
+      style: { background: travelDocs.tdacReceived ? "linear-gradient(135deg,#0f9d58,#0b8043)" : "linear-gradient(135deg,#dc2626,#b91c1c)", padding: "14px 18px", color: "#fff" }
+    }, /*#__PURE__*/React.createElement("div", { style: { fontSize: 15, fontWeight: 700 } }, travelDocs.tdacReceived ? "\u2705 Arrival cards received" : "\ud83c\uddf9\ud83c\udded Thailand Digital Arrival Card"),
+       /*#__PURE__*/React.createElement("div", { style: { fontSize: 12, opacity: .85, marginTop: 4 } }, travelDocs.tdacReceived ? "Saved on this device \u00b7 ready on arrival" : "Must be submitted at least 2 days before arrival")),
+    /*#__PURE__*/React.createElement("div", { style: { padding: "14px 18px" } },
+      travelDocs.tdacReceived ? /*#__PURE__*/React.createElement(React.Fragment, null,
+        (travelDocs.tdac || []).length > 0 ? /*#__PURE__*/React.createElement("div", { style: { marginBottom: 12 } },
+          travelDocs.tdac.map(t => /*#__PURE__*/React.createElement("div", {
+            key: t.id,
+            style: { display: "flex", alignItems: "center", gap: 8, padding: "9px 0", borderBottom: "0.5px solid " + th.bdr }
+          }, /*#__PURE__*/React.createElement("span", { style: { fontSize: 15 } }, t.type && t.type.indexOf("image") === 0 ? "\ud83d\uddbc\ufe0f" : "\ud83d\udcc4"),
+             /*#__PURE__*/React.createElement("span", { style: { fontSize: 13, color: th.text, flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" } }, t.name),
+             /*#__PURE__*/React.createElement("span", { onClick: () => setTicketsView(travelDocs.tdac), style: { fontSize: 11, color: th.acc, fontWeight: 500, cursor: "pointer" } }, "View"),
+             edit && /*#__PURE__*/React.createElement("span", { onClick: () => removeTravelDoc("tdac", t.id), style: { fontSize: 11, color: "#ef4444", cursor: "pointer" } }, "Remove")))) :
+          /*#__PURE__*/React.createElement("div", { style: { fontSize: 12, color: th.mut, marginBottom: 12 } }, "No arrival cards attached yet."),
+        /*#__PURE__*/React.createElement("label", {
+          style: { display: "block", width: "100%", padding: "12px", borderRadius: 12, border: "1px dashed " + th.acc, background: "transparent", color: th.acc, fontSize: 13, fontWeight: 500, cursor: "pointer", textAlign: "center", boxSizing: "border-box" }
+        }, "+ Attach arrival card", /*#__PURE__*/React.createElement("input", {
+          type: "file", accept: "image/*,application/pdf", multiple: true, style: { display: "none" },
+          onChange: e => { const files = Array.from(e.target.files || []); if (files.length) attachTravelDoc("tdac", files); e.target.value = ""; }
+        })),
+        /*#__PURE__*/React.createElement("button", {
+          onClick: () => window.open("https://tdac.immigration.go.th/arrival-card/#/home", "_blank"),
+          style: { width: "100%", marginTop: 8, padding: "10px", borderRadius: 12, border: "0.5px solid " + th.bdr, background: "transparent", color: th.sub, fontSize: 12, cursor: "pointer" }
+        }, "Open Arrival Card site \u2197")
+      ) : /*#__PURE__*/React.createElement(React.Fragment, null,
+        /*#__PURE__*/React.createElement("div", { style: { fontSize: 12, color: th.sub, lineHeight: 1.5, marginBottom: 12 } }, "Both travellers need to complete this online form before landing in Thailand. You'll need your passport details and flight info."),
+        /*#__PURE__*/React.createElement("button", {
+          onClick: () => window.open("https://tdac.immigration.go.th/arrival-card/#/home", "_blank"),
+          style: { width: "100%", padding: "12px", borderRadius: 12, border: "none", background: th.acc, color: "#fff", fontSize: 14, fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }
+        }, "Open Arrival Card \u2197")))), /*#__PURE__*/React.createElement(Sec, {
     th: th
   }, "Travel Insurance"), /*#__PURE__*/React.createElement("div", {
     style: {
@@ -6699,7 +6746,7 @@ function App() {
         color: th.text
       }
     }, "✏️")) : null;
-  })))), tab === "phiphi" && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+  }))), /*#__PURE__*/React.createElement(Sec, { th: th }, "Passports"), /*#__PURE__*/React.createElement("div", { style: { fontSize: 11, color: th.mut, marginBottom: 10, lineHeight: 1.4 } }, "\ud83d\udd12 Stored only on this device (offline). Not included in JSON backup."), [["passport_amanda", "Amanda"], ["passport_liam", "Liam"]].map(([slot, name]) => /*#__PURE__*/React.createElement("div", { key: slot, style: { background: th.card, borderRadius: 14, border: "0.5px solid " + th.bdr, padding: "12px 14px", marginBottom: 8, boxShadow: th.sh } }, /*#__PURE__*/React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 8, marginBottom: 10 } }, /*#__PURE__*/React.createElement("span", { style: { width: 30, height: 30, borderRadius: 15, background: th.tag, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14 } }, "\ud83d\udc64"), /*#__PURE__*/React.createElement("span", { style: { fontSize: 14, fontWeight: 500, color: th.text } }, name)), (travelDocs[slot] || []).length > 0 && /*#__PURE__*/React.createElement("div", { style: { marginBottom: 10 } }, travelDocs[slot].map(t => /*#__PURE__*/React.createElement("div", { key: t.id, style: { display: "flex", alignItems: "center", gap: 8, padding: "7px 0", borderBottom: "0.5px solid " + th.bdr } }, /*#__PURE__*/React.createElement("span", { style: { fontSize: 14 } }, t.type && t.type.indexOf("image") === 0 ? "\ud83d\uddbc\ufe0f" : "\ud83d\udcc4"), /*#__PURE__*/React.createElement("span", { style: { fontSize: 12, color: th.text, flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" } }, t.name), /*#__PURE__*/React.createElement("span", { onClick: () => setTicketsView(travelDocs[slot]), style: { fontSize: 11, color: th.acc, fontWeight: 500, cursor: "pointer" } }, "View"), /*#__PURE__*/React.createElement("span", { onClick: () => removeTravelDoc(slot, t.id), style: { fontSize: 11, color: "#ef4444", cursor: "pointer" } }, "Remove")))), /*#__PURE__*/React.createElement("label", { style: { display: "block", width: "100%", padding: "10px", borderRadius: 10, border: "1px dashed " + th.acc, background: "transparent", color: th.acc, fontSize: 12, fontWeight: 500, cursor: "pointer", textAlign: "center", boxSizing: "border-box" } }, "+ Add passport photo / PDF", /*#__PURE__*/React.createElement("input", { type: "file", accept: "image/*,application/pdf", multiple: true, style: { display: "none" }, onChange: e => { const files = Array.from(e.target.files || []); if (files.length) attachTravelDoc(slot, files); e.target.value = ""; } }))))), tab === "phiphi" && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 22,
       fontWeight: 800,
