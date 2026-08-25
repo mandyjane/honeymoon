@@ -1873,6 +1873,7 @@ const INIT_CARDS = {
     arr: "07:50",
     flight: "SQ-724",
     carrier: "Singapore Airlines",
+    bref: "DIE356",
     notes: "737-8 MAX"
   },
   f_pg1: {
@@ -1923,6 +1924,7 @@ const INIT_CARDS = {
     arr: "07:15+1",
     flight: "SQ-235",
     carrier: "Singapore Airlines",
+    bref: "DIE356",
     notes: "A350-900 · Arrive BNE Fri 26 Feb 🎉"
   },
   l_sin1: {
@@ -1947,6 +1949,8 @@ const INIT_CARDS = {
     dur: "2 hours",
     date: "Fri 12 Feb",
     cost: "A$102 (both)",
+    carrier: "Andaman Wave Master",
+    bref: "AWM-026657",
     pdfKeys: ["ferry_pp"]
   },
   fe_2: {
@@ -1959,6 +1963,8 @@ const INIT_CARDS = {
     dur: "1 hour",
     date: "Mon 15 Feb",
     cost: "A$102 (both)",
+    carrier: "Andaman Wave Master",
+    bref: "AWM-026656",
     pdfKeys: ["speed_krabi"]
   },
   x_1: {
@@ -2226,7 +2232,7 @@ const INIT_PACKING = [{
 const FIELDS = {
   flight: [["from", "From"], ["to", "To"], ["date", "Date"], ["dep", "Depart"], ["arr", "Arrive"], ["flight", "Flight #"], ["carrier", "Airline"], ["bref", "Booking Ref"], ["notes", "Notes"]],
   layover: [["airport", "Airport"], ["dur", "Duration"], ["tip", "Tip"]],
-  ferry: [["type", "Type"], ["from", "From"], ["to", "To"], ["dep", "Depart"], ["arr", "Arrive"], ["dur", "Duration"], ["date", "Date"], ["cost", "Cost"]],
+  ferry: [["type", "Type"], ["from", "From"], ["to", "To"], ["dep", "Depart"], ["arr", "Arrive"], ["dur", "Duration"], ["date", "Date"], ["cost", "Cost"], ["carrier", "Operator"], ["bref", "Booking Ref"]],
   xfer: [["icon", "Icon"], ["from", "From"], ["to", "To"], ["time", "Time"], ["method", "Method"], ["cost", "Cost"]],
   accom: [["name", "Name"], ["room", "Room Type"], ["dates", "Dates"], ["checkIn", "Check-in"], ["checkOut", "Check-out"], ["nights", "Nights"], ["bfast", "Breakfast"], ["wifi", "WiFi"], ["ppn", "Price/Night (A$)"], ["total", "Total (A$)"]],
   note: [["text", "Note Text"]]
@@ -3853,7 +3859,33 @@ const FerryC = ({
     fontSize: 12,
     opacity: .8
   }
-}, d.to))), /*#__PURE__*/React.createElement("div", {
+}, d.to))), (d.carrier || d.bref) && /*#__PURE__*/React.createElement("div", {
+  style: {
+    display: "flex",
+    flexWrap: "wrap",
+    alignItems: "center",
+    gap: 6,
+    marginBottom: 8
+  }
+}, d.carrier && /*#__PURE__*/React.createElement("span", {
+  style: {
+    fontSize: 11,
+    opacity: .85
+  }
+}, d.carrier), d.carrier && d.bref && /*#__PURE__*/React.createElement("span", {
+  style: {
+    fontSize: 11,
+    opacity: .5
+  }
+}, "·"), d.bref && /*#__PURE__*/React.createElement("span", {
+  style: {
+    fontSize: 11,
+    background: "rgba(255,255,255,.2)",
+    padding: "2px 8px",
+    borderRadius: 6,
+    fontWeight: 500
+  }
+}, "Ref: ", d.bref)), /*#__PURE__*/React.createElement("div", {
   style: {
     display: "flex",
     gap: 6
@@ -5449,6 +5481,7 @@ function App() {
   const [tab, setTab] = useState("overview");
   const [dark, setDark] = useState(false);
   const [edit, setEdit] = useState(false);
+  const [showFab, setShowFab] = useState(false);
   const [cards, setCards] = useState(INIT_CARDS);
   const [docs, setDocs] = useState(INIT_DOCS);
   const [acts, setActs] = useState(() => addMaps(INIT_ACTS));
@@ -5505,6 +5538,7 @@ function App() {
       if (s.budgetTotal) setBudgetTotal(s.budgetTotal);
       if (s.heroImg) setHeroImg(s.heroImg);
       if (s.dark !== undefined) setDark(s.dark);
+      if (s.showFab !== undefined) setShowFab(s.showFab);
     }
     setLoaded(true);
   }, []);
@@ -5518,9 +5552,10 @@ function App() {
       packing,
       budgetTotal,
       heroImg,
-      dark
+      dark,
+      showFab
     });
-  }, [cards, docs, acts, standby, meals, packing, budgetTotal, heroImg, dark, loaded]);
+  }, [cards, docs, acts, standby, meals, packing, budgetTotal, heroImg, dark, showFab, loaded]);
   useEffect(() => {
     document.body.className = dark ? "dark" : "";
   }, [dark]);
@@ -7208,7 +7243,7 @@ function App() {
         fontWeight: heroImg === h.id ? 600 : 400
       }
     }, h.label));
-  }))), [["🌙", "Dark Mode", "Light and dark theme", dark, () => setDark(!dark)], ["✏️", "Edit Mode", "Modify all cards and documents", edit, () => setEdit(!edit)]].map(([ico, t, s, on, fn], i) => /*#__PURE__*/React.createElement("div", {
+  }))), [["🌙", "Dark Mode", "Light and dark theme", dark, () => setDark(!dark)], ["✏️", "Edit Mode", "Modify all cards and documents", edit, () => setEdit(!edit)], ["🖊️", "Edit Shortcut Button", "Floating edit button on destination tabs", showFab, () => setShowFab(!showFab)]].map(([ico, t, s, on, fn], i) => /*#__PURE__*/React.createElement("div", {
     key: i,
     style: {
       background: th.card,
@@ -7590,7 +7625,52 @@ function App() {
       sADay(null);
       sADst(null);
     }
-  }), /*#__PURE__*/React.createElement("div", {
+  }), showFab && (tab === "phiphi" || tab === "samui" || tab === "phuket") && /*#__PURE__*/React.createElement("button", {
+    onClick: () => setEdit(!edit),
+    "aria-label": edit ? "Exit edit mode" : "Enter edit mode",
+    style: {
+      position: "fixed",
+      bottom: "calc(env(safe-area-inset-bottom,8px) + 62px)",
+      left: "50%",
+      transform: "translateX(calc(min(50vw, 240px) - 60px))",
+      width: 48,
+      height: 48,
+      borderRadius: 24,
+      background: edit ? th.acc : th.card,
+      border: edit ? "none" : `1.5px solid ${th.acc}`,
+      boxShadow: "0 2px 8px rgba(0,0,0,0.25)",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      cursor: "pointer",
+      zIndex: 101,
+      padding: 0
+    }
+  }, edit ? /*#__PURE__*/React.createElement("svg", {
+    width: "20",
+    height: "20",
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "#fff",
+    strokeWidth: "2.5",
+    strokeLinecap: "round",
+    strokeLinejoin: "round"
+  }, /*#__PURE__*/React.createElement("path", {
+    d: "M18 6 6 18M6 6l12 12"
+  })) : /*#__PURE__*/React.createElement("svg", {
+    width: "20",
+    height: "20",
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: th.acc,
+    strokeWidth: "2",
+    strokeLinecap: "round",
+    strokeLinejoin: "round"
+  }, /*#__PURE__*/React.createElement("path", {
+    d: "M12 20h9"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"
+  }))), /*#__PURE__*/React.createElement("div", {
     style: {
       position: "fixed",
       bottom: 0,
