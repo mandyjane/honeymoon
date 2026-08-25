@@ -2772,7 +2772,15 @@ const CardEditM = ({
     style: { ...inpStyle, flex: 1 }
   })), /*#__PURE__*/React.createElement("div", {
     style: { fontSize: 10, color: th.mut, marginBottom: 5, textTransform: "uppercase" }
-  }, "Time · optional"), /*#__PURE__*/React.createElement("input", {
+  }, "Leave time · optional"), /*#__PURE__*/React.createElement("input", {
+    value: f.leave || "",
+    onChange: e => u("leave", e.target.value),
+    placeholder: "e.g. 7:00 AM",
+    autoComplete: "off",
+    style: { ...inpStyle, marginBottom: 14 }
+  }), /*#__PURE__*/React.createElement("div", {
+    style: { fontSize: 10, color: th.mut, marginBottom: 5, textTransform: "uppercase" }
+  }, "Duration · optional"), /*#__PURE__*/React.createElement("input", {
     value: f.time || "",
     onChange: e => u("time", e.target.value),
     placeholder: "e.g. 40 min",
@@ -4048,7 +4056,7 @@ const XferC = ({
     color: th.mut,
     fontSize: 11
   }
-}, d.method, " · ", d.time)), d.cost && /*#__PURE__*/React.createElement("div", {
+}, [d.leave ? "🕐 Leave " + d.leave : null, d.method, d.time].filter(Boolean).join(" · "))), d.cost && /*#__PURE__*/React.createElement("div", {
   style: {
     fontWeight: 700,
     color: th.coral,
