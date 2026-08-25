@@ -4493,6 +4493,90 @@ const NoteC = ({
   th: th,
   onClick: onEdit
 }));
+const ActMag = ({
+  th,
+  act,
+  edit,
+  idx,
+  onEdit,
+  onLogCost
+}) => {
+  const photoLeft = idx % 2 === 0;
+  const hasPhoto = !!act.photo;
+  const openMap = () => act.mapQuery && window.open("https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(act.mapQuery), "_blank");
+  const photoEl = /*#__PURE__*/React.createElement("div", {
+    onClick: edit ? onEdit ? () => onEdit(act) : undefined : undefined,
+    style: {
+      width: 78,
+      height: 78,
+      borderRadius: "50%",
+      flexShrink: 0,
+      backgroundColor: th.dark ? "#2a3a38" : "#ece8e2",
+      backgroundImage: hasPhoto ? `url(${act.photo})` : "none",
+      backgroundSize: "cover",
+      backgroundPosition: "center",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      fontSize: 26,
+      cursor: edit ? "pointer" : "default"
+    }
+  }, !hasPhoto && (act.emoji || "📷"));
+  const align = photoLeft ? "right" : "left";
+  const justify = photoLeft ? "flex-end" : "flex-start";
+  const bodyEl = /*#__PURE__*/React.createElement("div", {
+    style: { flex: 1, minWidth: 0, textAlign: align }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: { fontFamily: "'Fraunces',Georgia,serif", fontWeight: 600, fontSize: 17, color: th.text, lineHeight: 1.2 }
+  }, act.title), act.desc && /*#__PURE__*/React.createElement("div", {
+    style: { fontSize: 12, color: th.mut, lineHeight: 1.45, margin: "3px 0 7px" }
+  }, act.desc), /*#__PURE__*/React.createElement("div", {
+    style: { display: "flex", flexWrap: "wrap", gap: "5px 10px", fontSize: 11, color: th.mut, alignItems: "center", justifyContent: justify }
+  }, act.startTime && /*#__PURE__*/React.createElement("span", null, act.startTime), act.dur && /*#__PURE__*/React.createElement("span", null, "🕐 ", act.dur), act.how && /*#__PURE__*/React.createElement("span", null, act.howIcon || "", " ", act.how), act.price && /*#__PURE__*/React.createElement("span", {
+    style: { color: th.acc, fontWeight: 500 }
+  }, act.actualCost ? "฿" + Number(act.actualCost).toLocaleString() : act.price), act.mapQuery && /*#__PURE__*/React.createElement("span", {
+    onClick: openMap,
+    style: { color: th.acc, fontWeight: 500, cursor: "pointer" }
+  }, "📍 Map")), act.tag && /*#__PURE__*/React.createElement("div", {
+    style: { display: "flex", gap: 5, marginTop: 5, justifyContent: justify }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 9,
+      fontWeight: 600,
+      padding: "1px 7px",
+      borderRadius: 6,
+      textTransform: "uppercase",
+      letterSpacing: .4,
+      background: act.tag === "meal" ? "rgba(220,38,38,.1)" : "rgba(124,58,237,.1)",
+      color: act.tag === "meal" ? "#dc2626" : "#7c3aed"
+    }
+  }, act.tag === "meal" ? "Meal" : "Drinks")));
+  return /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      flexDirection: photoLeft ? "row" : "row-reverse",
+      gap: 14,
+      alignItems: "center",
+      padding: "16px 4px",
+      borderBottom: `1px solid ${th.bdr}`,
+      position: "relative"
+    }
+  }, photoEl, bodyEl, edit && /*#__PURE__*/React.createElement("button", {
+    onClick: () => onEdit && onEdit(act),
+    style: {
+      position: "absolute",
+      top: 8,
+      right: 8,
+      width: 26,
+      height: 26,
+      borderRadius: 7,
+      border: "none",
+      background: th.inp,
+      fontSize: 12,
+      cursor: "pointer"
+    }
+  }, "✏️"));
+};
 const ActC = ({
   th,
   act,
@@ -4500,8 +4584,21 @@ const ActC = ({
   onEdit,
   onRm,
   onOpenTickets,
-  onLogCost
-}) => /*#__PURE__*/React.createElement("div", {
+  onLogCost,
+  layout,
+  idx
+}) => {
+  if (layout === "magazine") {
+    return /*#__PURE__*/React.createElement(ActMag, {
+      th: th,
+      act: act,
+      edit: edit,
+      idx: idx || 0,
+      onEdit: onEdit,
+      onLogCost: onLogCost
+    });
+  }
+  return /*#__PURE__*/React.createElement("div", {
   style: {
     background: th.card,
     borderRadius: 14,
@@ -4732,6 +4829,7 @@ const ActC = ({
     fontWeight: 600
   }
 }, "🎟️ ", act.tickets.length, " ticket", act.tickets.length > 1 ? "s" : "")))));
+};
 const Sec = ({
   th,
   children
@@ -5044,6 +5142,15 @@ const ActEditM = ({
       marginBottom: 14,
       resize: "vertical",
       fontFamily: "inherit"
+    }
+  }), lbl("Photo URL"), /*#__PURE__*/React.createElement("input", {
+    value: f.photo || "",
+    onChange: e => u("photo", e.target.value),
+    placeholder: "https://... (shows as circle in Magazine layout)",
+    autoComplete: "off",
+    style: {
+      ...inpStyle,
+      marginBottom: 14
     }
   }), lbl("Links"), /*#__PURE__*/React.createElement("div", {
     style: {
@@ -5595,6 +5702,7 @@ function App() {
   const [dark, setDark] = useState(false);
   const [edit, setEdit] = useState(false);
   const [showFab, setShowFab] = useState(false);
+  const [layoutMode, setLayoutMode] = useState("current");
   const [cards, setCards] = useState(INIT_CARDS);
   const [docs, setDocs] = useState(INIT_DOCS);
   const [acts, setActs] = useState(() => addMaps(INIT_ACTS));
@@ -5657,6 +5765,7 @@ function App() {
       if (s.heroImg) setHeroImg(s.heroImg);
       if (s.dark !== undefined) setDark(s.dark);
       if (s.showFab !== undefined) setShowFab(s.showFab);
+      if (s.layoutMode) setLayoutMode(s.layoutMode);
       if (s.travelDocs) setTravelDocs({ tdacReceived: false, tdac: [], passport_amanda: [], passport_liam: [], ...s.travelDocs });
     }
     setLoaded(true);
@@ -5673,9 +5782,10 @@ function App() {
       heroImg,
       dark,
       showFab,
-      travelDocs
+      travelDocs,
+      layoutMode
     });
-  }, [cards, docs, acts, standby, meals, packing, budgetTotal, heroImg, dark, showFab, travelDocs, loaded]);
+  }, [cards, docs, acts, standby, meals, packing, budgetTotal, heroImg, dark, showFab, travelDocs, layoutMode, loaded]);
   useEffect(() => {
     document.body.className = dark ? "dark" : "";
   }, [dark]);
@@ -5902,11 +6012,13 @@ function App() {
       text: day.note
     },
     edit: false
-  }), day.acts.map(a => /*#__PURE__*/React.createElement(ActC, {
+  }), day.acts.map((a, ai) => /*#__PURE__*/React.createElement(ActC, {
     key: a.id,
     th: th,
     act: a,
     edit: edit,
+    layout: layoutMode,
+    idx: ai,
     onEdit: a => {
       sEa(a);
       sEd(day.id);
@@ -7358,7 +7470,29 @@ function App() {
       transition: "left .3s",
       boxShadow: "0 1px 3px rgba(0,0,0,.2)"
     }
-  }))))), standby.length > 0 && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(Sec, {
+  }))))), /*#__PURE__*/React.createElement("div", {
+    style: { background: th.card, borderRadius: 16, padding: 16, boxShadow: th.sh, marginBottom: 12 }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: { fontSize: 14, fontWeight: 600, color: th.text, marginBottom: 2 }
+  }, "🎨 Itinerary Layout"), /*#__PURE__*/React.createElement("div", {
+    style: { fontSize: 12, color: th.mut, marginBottom: 12 }
+  }, "How activities appear on destination pages"), /*#__PURE__*/React.createElement("div", {
+    style: { display: "flex", gap: 6 }
+  }, [["current", "Cards"], ["magazine", "Magazine"]].map(([val, label]) => /*#__PURE__*/React.createElement("button", {
+    key: val,
+    onClick: () => setLayoutMode(val),
+    style: {
+      flex: 1,
+      padding: "10px 8px",
+      borderRadius: 10,
+      border: layoutMode === val ? `1.5px solid ${th.acc}` : `1px solid ${th.bdr}`,
+      background: layoutMode === val ? (th.dark ? "rgba(14,116,144,0.15)" : "rgba(14,116,144,0.08)") : "transparent",
+      color: layoutMode === val ? th.acc : th.sub,
+      fontSize: 13,
+      fontWeight: layoutMode === val ? 600 : 400,
+      cursor: "pointer"
+    }
+  }, label)))), standby.length > 0 && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(Sec, {
     th: th
   }, "Standby List (", standby.length, ")"), /*#__PURE__*/React.createElement(NoteC, {
     th: th,
