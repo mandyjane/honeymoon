@@ -8,7 +8,7 @@
 <title>Thailand Honeymoon 2027</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,700&display=swap" rel="stylesheet">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-192.png">
 <meta name="theme-color" content="#0c4a6e">
@@ -4884,25 +4884,31 @@ const Sec = ({
   children
 }) => /*#__PURE__*/React.createElement("div", {
   style: {
-    fontSize: 13,
-    fontWeight: 700,
+    fontSize: 11,
+    fontWeight: 600,
     textTransform: "uppercase",
-    letterSpacing: 1.5,
+    letterSpacing: 2,
     color: th.acc,
-    marginTop: 22,
-    marginBottom: 10,
+    marginTop: 24,
+    marginBottom: 16,
     display: "flex",
     alignItems: "center",
-    gap: 8
+    gap: 10
   }
 }, /*#__PURE__*/React.createElement("div", {
   style: {
-    width: 20,
-    height: 2,
-    background: th.acc,
-    borderRadius: 1
+    flex: "0 0 18px",
+    height: 1.5,
+    background: th.acc
   }
-}), children);
+}), /*#__PURE__*/React.createElement("span", null, children), /*#__PURE__*/React.createElement("div", {
+  style: {
+    flex: 1,
+    height: 0.5,
+    background: th.acc,
+    opacity: 0.4
+  }
+}));
 
 /* ── ACTIVITY EDIT MODAL ── */
 const TRANSPORT_CHIPS = [["🚤", "Boat"], ["🚕", "Taxi/Grab"], ["🚶", "Walk"], ["🛵", "Scooter"], ["🚐", "Pickup"], ["🎫", "Part of tour"], ["🏠", "On-site"], ["🚙", "Drive"], ["🚌", "Bus"], ["✈️", "Fly"]];
@@ -6433,85 +6439,76 @@ function App() {
         marginTop: 8
       }
     }, "+ Log a meal"));
-  })(), homeView === "overview" && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+  })(), homeView === "overview" && /*#__PURE__*/React.createElement(React.Fragment, null,
+  /* -- MINIMAL LUXE HERO -- */
+  /*#__PURE__*/React.createElement("div", {
     style: {
-      borderRadius: 20,
-      padding: "28px 22px",
-      color: "#fff",
-      marginBottom: 20,
       position: "relative",
-      overflow: "hidden"
+      height: 370,
+      overflow: "hidden",
+      margin: "0 -16px"
     }
   }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      position: "absolute",
-      inset: 0,
-      zIndex: 0
-    }
+    style: { position: "absolute", inset: 0, zIndex: 0 }
   }, /*#__PURE__*/React.createElement("img", {
-    src: window.location.href.replace(/\/[^\/]*$/, "/") + (HERO_OPTIONS.find(h => h.id === heroImg) || HERO_OPTIONS[0]).file,
-    style: {
-      width: "100%",
-      height: "100%",
-      objectFit: "cover"
-    },
+    src: window.location.href.replace(/\/[^\/]*$/, "/") + (HERO_OPTIONS.find(function(h){ return h.id === heroImg; }) || HERO_OPTIONS[0]).file,
+    style: { width: "100%", height: "100%", objectFit: "cover" },
     alt: ""
   })), /*#__PURE__*/React.createElement("div", {
     style: {
-      position: "absolute",
-      inset: 0,
-      background: "linear-gradient(135deg, rgba(12,74,110,0.75) 0%, rgba(14,116,144,0.6) 50%, rgba(20,184,166,0.5) 100%)",
-      zIndex: 1
+      position: "absolute", inset: 0, zIndex: 1,
+      background: dark
+        ? "linear-gradient(160deg, rgba(30,41,59,0.85) 0%, rgba(12,74,110,0.75) 50%, rgba(15,118,110,0.7) 100%)"
+        : "linear-gradient(160deg, rgba(12,74,110,0.8) 0%, rgba(14,116,144,0.65) 40%, rgba(20,184,166,0.55) 100%)"
     }
   }), /*#__PURE__*/React.createElement("div", {
     style: {
-      position: "relative",
-      zIndex: 2
+      position: "absolute", inset: 0, zIndex: 2,
+      display: "flex", flexDirection: "column", justifyContent: "flex-end",
+      padding: "32px 28px", color: "#fff"
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
-      position: "absolute",
-      top: -20,
-      right: -20,
-      fontSize: 80,
-      opacity: .1
+      fontFamily: "'Fraunces',Georgia,serif", fontSize: 42, fontWeight: 300,
+      lineHeight: 1.05, marginBottom: 10, letterSpacing: -0.5
     }
-  }, "🌺"), /*#__PURE__*/React.createElement("div", {
+  }, /*#__PURE__*/React.createElement("em", {
+    style: { fontWeight: 700, fontStyle: "italic" }
+  }, "Thailand"), /*#__PURE__*/React.createElement("br", null), "Honeymoon"),
+  /*#__PURE__*/React.createElement("div", {
+    style: { width: 36, height: 2, background: "rgba(255,255,255,.5)", marginBottom: 10 }
+  }),
+  /*#__PURE__*/React.createElement("div", {
+    style: { fontSize: 12, opacity: .7, letterSpacing: 0.5 }
+  }, "February 2027 \u00b7 14 nights \u00b7 3 destinations"),
+  /*#__PURE__*/React.createElement("div", {
+    style: { display: "flex", gap: 8, marginTop: 16 }
+  }, ["Phi Phi Islands", "Koh Samui", "Phuket"].map(function(d, i) {
+    return /*#__PURE__*/React.createElement("span", {
+      key: i,
+      style: {
+        fontSize: 11, padding: "6px 14px", borderRadius: 100,
+        border: "1px solid rgba(255,255,255,.25)", color: "rgba(255,255,255,.9)",
+        background: "rgba(255,255,255,.06)"
+      }
+    }, d);
+  })))),
+  /* -- COUNTDOWN BAR -- */
+  /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 12,
-      textTransform: "uppercase",
-      letterSpacing: 2,
-      opacity: .7,
-      marginBottom: 6
+      display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+      padding: "13px 24px", margin: "0 -16px",
+      background: dark ? "rgba(14,116,144,.35)" : th.acc,
+      color: dark ? th.acc : "#fff",
+      borderTop: dark ? "0.5px solid rgba(125,211,252,.15)" : "none"
     }
-  }, "February 2027"), /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 26,
-      fontWeight: 800,
-      lineHeight: 1.2,
-      marginBottom: 4
-    }
-  }, "Thailand", /*#__PURE__*/React.createElement("br", null), "Honeymoon"), /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 13,
-      opacity: .8
-    }
-  }, "14 nights · 3 destinations · 2 travellers"), /*#__PURE__*/React.createElement("div", {
-    style: {
-      display: "flex",
-      gap: 6,
-      marginTop: 14,
-      flexWrap: "wrap"
-    }
-  }, ["Phi Phi Islands", "Koh Samui", "Phuket"].map((d, i) => /*#__PURE__*/React.createElement("span", {
-    key: i,
-    style: {
-      fontSize: 11,
-      background: "rgba(255,255,255,.2)",
-      padding: "4px 10px",
-      borderRadius: 20
-    }
-  }, d))))), /*#__PURE__*/React.createElement(Sec, {
+  }, /*#__PURE__*/React.createElement("span", {
+    style: { fontFamily: "'Fraunces',serif", fontSize: 20, fontWeight: 700 }
+  }, Math.max(0, Math.ceil((new Date("2027-02-11") - new Date()) / 864e5))),
+  /*#__PURE__*/React.createElement("span", {
+    style: { fontSize: 12, opacity: .8 }
+  }, "days until your honeymoon")),
+  /*#__PURE__*/React.createElement(Sec, {
     th: th
   }, "Trip Timeline"), [{
     d: "Thu 11 – Fri 12 Feb",
@@ -6552,76 +6549,45 @@ function App() {
     s: "Phuket → SIN → Brisbane",
     i: "🏠",
     t: 1
-  }].map((x, i) => /*#__PURE__*/React.createElement("div", {
+  }].map(function(x, i, arr) { return /*#__PURE__*/React.createElement("div", {
     key: i,
-    style: {
-      display: "flex",
-      gap: 12,
-      marginBottom: 2
-    }
+    style: { display: "flex", gap: 14 }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: { display: "flex", flexDirection: "column", alignItems: "center", width: 16, flexShrink: 0 }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
-      display: "flex",
-      flexDirection: "column",
-      alignItems: "center",
-      width: 28,
-      flexShrink: 0
+      width: 8, height: 8, borderRadius: "50%", flexShrink: 0, marginTop: 5,
+      background: x.t ? "transparent" : th.teal,
+      border: x.t ? "1.5px solid " + th.bdr : "none"
     }
-  }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      width: 28,
-      height: 28,
-      borderRadius: "50%",
-      background: x.t ? th.tag : `linear-gradient(135deg,${th.coral},${th.sandDk})`,
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      fontSize: 13
-    }
-  }, x.i), i < 6 && /*#__PURE__*/React.createElement("div", {
-    style: {
-      width: 2,
-      flex: 1,
-      background: th.bdr,
-      minHeight: 20
-    }
+  }), i < arr.length - 1 && /*#__PURE__*/React.createElement("div", {
+    style: { width: 1, flex: 1, background: dark ? "#1e293b" : "#e2e8f0", minHeight: 14 }
   })), /*#__PURE__*/React.createElement("div", {
-    style: {
-      paddingBottom: 16
-    }
-  }, /*#__PURE__*/React.createElement("div", {
+    style: { paddingBottom: 20 }
+  }, x.t ? /*#__PURE__*/React.createElement("div", {
+    style: { fontWeight: 400, fontSize: 12, color: th.mut }
+  }, x.l, " \u00b7 ", x.s) : /*#__PURE__*/React.createElement(React.Fragment, null,
+    /*#__PURE__*/React.createElement("div", { style: { fontSize: 15, fontWeight: 600, color: th.text } }, x.l),
+    /*#__PURE__*/React.createElement("div", { style: { fontSize: 11, color: th.mut, marginTop: 2 } }, x.s)),
+  /*#__PURE__*/React.createElement("div", {
+    style: { fontSize: 10, color: dark ? "#475569" : "#b0b8c4", marginTop: 1 }
+  }, x.d))); }), /*#__PURE__*/React.createElement("div", {
+    onClick: function() { setBrefOpen(!brefOpen); },
     style: {
       fontSize: 11,
-      color: th.mut
-    }
-  }, x.d), /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontWeight: 700,
-      fontSize: 14,
-      color: th.text
-    }
-  }, x.l), /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 12,
-      color: th.sub
-    }
-  }, x.s)))), /*#__PURE__*/React.createElement("div", {
-    onClick: () => setBrefOpen(!brefOpen),
-    style: {
-      fontSize: 13,
-      fontWeight: 700,
+      fontWeight: 600,
       textTransform: "uppercase",
-      letterSpacing: 1.5,
+      letterSpacing: 2,
       color: th.acc,
-      marginTop: 22,
-      marginBottom: brefOpen ? 10 : 0,
+      marginTop: 24,
+      marginBottom: brefOpen ? 16 : 0,
       display: "flex",
       alignItems: "center",
-      gap: 8,
+      gap: 10,
       cursor: "pointer"
     }
   }, /*#__PURE__*/React.createElement("div", {
-    style: { width: 20, height: 2, background: th.acc, borderRadius: 1 }
+    style: { flex: "0 0 18px", height: 1.5, background: th.acc }
   }), /*#__PURE__*/React.createElement("span", { style: { flex: 1 } }, "Booking References"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 12,
@@ -6734,7 +6700,8 @@ function App() {
         if (v && !isNaN(Number(v))) setBudgetTotal(Number(v));
       },
       style: {
-        fontSize: 15,
+        fontFamily: "'Fraunces',serif",
+        fontSize: 20,
         fontWeight: 700,
         color: th.text,
         cursor: "pointer",
@@ -6742,19 +6709,20 @@ function App() {
       }
     }, "A$", budgetTotal.toLocaleString(), " ✏️") : /*#__PURE__*/React.createElement("span", {
       style: {
-        fontSize: 15,
+        fontFamily: "'Fraunces',serif",
+        fontSize: 20,
         fontWeight: 700,
         color: th.text
       }
     }, "A$", budgetTotal.toLocaleString())), /*#__PURE__*/React.createElement("div", {
-      style: { fontSize: 11, color: th.mut, marginBottom: 12 }
+      style: { fontSize: 11, color: th.mut, marginBottom: 16 }
     }, "A$", prebooked.toLocaleString(), " pre-booked \u00b7 A$", spendBudget.toLocaleString(), " to spend"),
     /*#__PURE__*/React.createElement("div", {
       style: { display: "flex", justifyContent: "space-between", marginBottom: 6 }
     }, /*#__PURE__*/React.createElement("span", { style: { fontSize: 11, fontWeight: 600, color: th.sub } }, "\u2460 Pre-booked (paid)"),
        /*#__PURE__*/React.createElement("span", { style: { fontSize: 11, fontWeight: 600, color: th.sub } }, "A$", prebooked.toLocaleString())),
     /*#__PURE__*/React.createElement("div", {
-      style: { display: "flex", borderRadius: 6, overflow: "hidden", height: 22, marginBottom: 8 }
+      style: { display: "flex", borderRadius: 4, overflow: "hidden", height: 18, marginBottom: 8 }
     }, /*#__PURE__*/React.createElement("div", {
       style: { width: accom / prebooked * 100 + "%", background: "#0c4a6e", display: "flex", alignItems: "center", justifyContent: "center" }
     }, /*#__PURE__*/React.createElement("span", { style: { fontSize: 7, color: "#fff", fontWeight: 500 } }, "Accom A$", accom.toLocaleString())),
@@ -6776,7 +6744,7 @@ function App() {
     }, /*#__PURE__*/React.createElement("span", { style: { fontSize: 11, fontWeight: 600, color: th.sub } }, "\u2461 To spend"),
        /*#__PURE__*/React.createElement("span", { style: { fontSize: 11, fontWeight: 600, color: th.sub } }, "A$", spent.toLocaleString(), " of A$", spendBudget.toLocaleString())),
     /*#__PURE__*/React.createElement("div", {
-      style: { display: "flex", borderRadius: 6, overflow: "hidden", height: 22, marginBottom: 10, background: th.tag }
+      style: { display: "flex", borderRadius: 4, overflow: "hidden", height: 18, marginBottom: 10, background: th.tag }
     }, transfers > 0 && /*#__PURE__*/React.createElement("div", { style: { width: transfers / spendBudget * 100 + "%", background: "#14b8a6" } }),
        mealAud > 0 && /*#__PURE__*/React.createElement("div", { style: { width: mealAud / spendBudget * 100 + "%", background: "#f59e0b" } }),
        actAud > 0 && /*#__PURE__*/React.createElement("div", { style: { width: actAud / spendBudget * 100 + "%", background: "#8b5cf6" } })),
