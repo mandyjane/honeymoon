@@ -4258,10 +4258,12 @@ const AccC = ({
   return /*#__PURE__*/React.createElement("div", {
     style: {
       background: th.card,
-      borderRadius: 16,
+      borderRadius: 0,
       overflow: "hidden",
       boxShadow: th.sh,
       marginBottom: 16,
+      marginLeft: -16,
+      marginRight: -16,
       position: "relative"
     }
   }, /*#__PURE__*/React.createElement("div", {
@@ -4345,7 +4347,8 @@ const AccC = ({
     }
   }, "Your accommodation"), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 18,
+      fontFamily: "'Fraunces',Georgia,serif",
+      fontSize: 20,
       fontWeight: 700
     }
   }, d.name))), /*#__PURE__*/React.createElement("div", {
@@ -4361,7 +4364,8 @@ const AccC = ({
     }
   }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 13,
+      fontFamily: "'Fraunces',Georgia,serif",
+      fontSize: 14,
       fontWeight: 600,
       color: th.text
     }
@@ -4407,7 +4411,8 @@ const AccC = ({
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 15,
+      fontFamily: "'Fraunces',Georgia,serif",
+      fontSize: 16,
       fontWeight: 700,
       color: th.acc
     }
@@ -6719,7 +6724,7 @@ function App() {
     }, "A$", prebooked.toLocaleString(), " pre-booked \u00b7 A$", spendBudget.toLocaleString(), " to spend"),
     /*#__PURE__*/React.createElement("div", {
       style: { display: "flex", justifyContent: "space-between", marginBottom: 6 }
-    }, /*#__PURE__*/React.createElement("span", { style: { fontSize: 11, fontWeight: 600, color: th.sub } }, "\u2460 Pre-booked (paid)"),
+    }, /*#__PURE__*/React.createElement("span", { style: { fontSize: 11, fontWeight: 600, color: th.sub } }, "Pre-booked (paid)"),
        /*#__PURE__*/React.createElement("span", { style: { fontSize: 11, fontWeight: 600, color: th.sub } }, "A$", prebooked.toLocaleString())),
     /*#__PURE__*/React.createElement("div", {
       style: { display: "flex", borderRadius: 4, overflow: "hidden", height: 18, marginBottom: 8 }
@@ -6741,7 +6746,7 @@ function App() {
        /*#__PURE__*/React.createElement("span", { style: { fontSize: 12, fontWeight: 600, color: th.text } }, "A$", flights.toLocaleString()))),
     /*#__PURE__*/React.createElement("div", {
       style: { display: "flex", justifyContent: "space-between", marginBottom: 6 }
-    }, /*#__PURE__*/React.createElement("span", { style: { fontSize: 11, fontWeight: 600, color: th.sub } }, "\u2461 To spend"),
+    }, /*#__PURE__*/React.createElement("span", { style: { fontSize: 11, fontWeight: 600, color: th.sub } }, "To spend"),
        /*#__PURE__*/React.createElement("span", { style: { fontSize: 11, fontWeight: 600, color: th.sub } }, "A$", spent.toLocaleString(), " of A$", spendBudget.toLocaleString())),
     /*#__PURE__*/React.createElement("div", {
       style: { display: "flex", borderRadius: 4, overflow: "hidden", height: 18, marginBottom: 10, background: th.tag }
@@ -6885,8 +6890,10 @@ function App() {
     }, "✏️")) : null;
   }))), /*#__PURE__*/React.createElement(Sec, { th: th }, "Passports"), /*#__PURE__*/React.createElement("div", { style: { fontSize: 11, color: th.mut, marginBottom: 10, lineHeight: 1.4 } }, "\ud83d\udd12 Stored only on this device (offline). Not included in JSON backup."), [["passport_amanda", "Amanda"], ["passport_liam", "Liam"]].map(([slot, name]) => /*#__PURE__*/React.createElement("div", { key: slot, style: { background: th.card, borderRadius: 14, border: "0.5px solid " + th.bdr, padding: "12px 14px", marginBottom: 8, boxShadow: th.sh } }, /*#__PURE__*/React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 8, marginBottom: 10 } }, /*#__PURE__*/React.createElement("span", { style: { width: 30, height: 30, borderRadius: 15, background: th.tag, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14 } }, "\ud83d\udc64"), /*#__PURE__*/React.createElement("span", { style: { fontSize: 14, fontWeight: 500, color: th.text } }, name)), (travelDocs[slot] || []).length > 0 && /*#__PURE__*/React.createElement("div", { style: { marginBottom: 10 } }, travelDocs[slot].map(t => /*#__PURE__*/React.createElement("div", { key: t.id, style: { display: "flex", alignItems: "center", gap: 8, padding: "7px 0", borderBottom: "0.5px solid " + th.bdr } }, /*#__PURE__*/React.createElement("span", { style: { fontSize: 14 } }, t.type && t.type.indexOf("image") === 0 ? "\ud83d\uddbc\ufe0f" : "\ud83d\udcc4"), /*#__PURE__*/React.createElement("span", { style: { fontSize: 12, color: th.text, flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" } }, t.name), /*#__PURE__*/React.createElement("span", { onClick: () => setTicketsView(travelDocs[slot]), style: { fontSize: 11, color: th.acc, fontWeight: 500, cursor: "pointer" } }, "View"), edit && /*#__PURE__*/React.createElement("span", { onClick: () => removeTravelDoc(slot, t.id), style: { fontSize: 11, color: "#ef4444", cursor: "pointer" } }, "Remove")))), (edit || (travelDocs[slot] || []).length === 0) && /*#__PURE__*/React.createElement("label", { style: { display: "block", width: "100%", padding: "10px", borderRadius: 10, border: "1px dashed " + th.acc, background: "transparent", color: th.acc, fontSize: 12, fontWeight: 500, cursor: "pointer", textAlign: "center", boxSizing: "border-box" } }, "+ Add passport photo / PDF", /*#__PURE__*/React.createElement("input", { type: "file", accept: "image/*,application/pdf", multiple: true, style: { display: "none" }, onChange: e => { const files = Array.from(e.target.files || []); if (files.length) attachTravelDoc(slot, files); e.target.value = ""; } }))))), tab === "phiphi" && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 22,
-      fontWeight: 800,
+      fontFamily: "'Fraunces',Georgia,serif",
+      fontSize: 24,
+      fontWeight: 700,
+      fontStyle: "italic",
       color: th.text
     }
   }, "Koh Phi Phi 🏝️"), /*#__PURE__*/React.createElement("div", {
@@ -6903,8 +6910,10 @@ function App() {
     th: th
   }, "Departure — Mon 15 Feb"), rn("n_pp_dep"), rfe("fe_2"), rx("x_2"), rn("n_krabi"), /*#__PURE__*/React.createElement(FG, null, rf("f_pg1")), rx("x_3"), rCustomXfers("phiphi:dep"), rAddXfer("phiphi:dep")), tab === "samui" && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 22,
-      fontWeight: 800,
+      fontFamily: "'Fraunces',Georgia,serif",
+      fontSize: 24,
+      fontWeight: 700,
+      fontStyle: "italic",
       color: th.text
     }
   }, "Koh Samui 🌴"), /*#__PURE__*/React.createElement("div", {
@@ -6919,8 +6928,10 @@ function App() {
     th: th
   }, "Departure — Sat 21 Feb"), rn("n_sm_dep"), rx("x_4"), /*#__PURE__*/React.createElement(FG, null, rf("f_pg2")), rx("x_5"), rCustomXfers("samui:dep"), rAddXfer("samui:dep")), tab === "phuket" && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 22,
-      fontWeight: 800,
+      fontFamily: "'Fraunces',Georgia,serif",
+      fontSize: 24,
+      fontWeight: 700,
+      fontStyle: "italic",
       color: th.text
     }
   }, "Phuket ⛱️"), /*#__PURE__*/React.createElement("div", {
@@ -6942,8 +6953,10 @@ function App() {
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 22,
-      fontWeight: 800,
+      fontFamily: "'Fraunces',Georgia,serif",
+      fontSize: 24,
+      fontWeight: 700,
+      fontStyle: "italic",
       color: th.text
     }
   }, "Meals 🍽️"), /*#__PURE__*/React.createElement("button", {
@@ -7174,8 +7187,10 @@ function App() {
     }, "A$", Math.round(dayTotal / r))))));
   })()), tab === "currency" && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 22,
-      fontWeight: 800,
+      fontFamily: "'Fraunces',Georgia,serif",
+      fontSize: 24,
+      fontWeight: 700,
+      fontStyle: "italic",
       color: th.text
     }
   }, "Currency 💱"), /*#__PURE__*/React.createElement("div", {
@@ -7337,8 +7352,10 @@ function App() {
     }
   }, pron)))))))), tab === "settings" && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 22,
-      fontWeight: 800,
+      fontFamily: "'Fraunces',Georgia,serif",
+      fontSize: 24,
+      fontWeight: 700,
+      fontStyle: "italic",
       color: th.text
     }
   }, "Settings ⚙️"), /*#__PURE__*/React.createElement("div", {
