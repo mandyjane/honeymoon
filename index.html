@@ -4408,7 +4408,10 @@ const AccC = ({
       fontWeight: 700,
       color: th.acc
     }
-  }, "A$", d.total), /*#__PURE__*/React.createElement("div", {
+  }, "A$", (() => {
+    const n = Number(String(d.total).replace(/[^0-9.]/g, ""));
+    return isNaN(n) || !d.total ? d.total : n.toLocaleString();
+  })()), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 11,
       color: th.mut
