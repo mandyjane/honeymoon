@@ -172,7 +172,7 @@ const INIT_DOCS = {
 };
 
 /* ── TRANSPORT ICONS ── */
-const TRANSPORT_ICONS = [["🚶", "Walk"], ["🚕", "Taxi/Grab"], ["🚤", "Boat"], ["🚐", "Pickup"], ["🎫", "Part of tour"], ["🏠", "On-site"], ["🚙", "Drive"], ["🛵", "Scooter"], ["🚌", "Bus"], ["🚂", "Train"], ["✈️", "Fly"]];
+const TRANSPORT_ICONS = [["🚶", "Walk"], ["🚕", "Taxi/Grab"], ["🚤", "Boat"], ["🚐", "Pickup"], ["🎫", "Part of tour"], ["🏠", "On-site"], ["🚙", "Drive"], ["🛵", "Scooter"], ["🚌", "Bus"], ["✈️", "Fly"]];
 const guessIcon = how => {
   if (!how) return "🚗";
   const h = how.toLowerCase();
@@ -4341,7 +4341,7 @@ const ActC = ({
     padding: "14px 16px",
     marginBottom: 10,
     boxShadow: th.sh,
-    borderLeft: `3px solid ${th.actBdr}`,
+    borderLeft: `3px solid ${act.tag === "meal" ? "#dc2626" : act.tag === "drinks" ? "#7c3aed" : th.actBdr}`,
     position: "relative"
   }
 }, act.mapQuery && /*#__PURE__*/React.createElement("div", {
@@ -4481,7 +4481,16 @@ const ActC = ({
     padding: "2px 7px",
     borderRadius: 6
   }
-}, act.howIcon || guessIcon(act.how), " ", act.how), act.price && /*#__PURE__*/React.createElement("span", {
+}, act.howIcon || guessIcon(act.how), " ", act.how), act.tag && /*#__PURE__*/React.createElement("span", {
+  style: {
+    fontSize: 10,
+    background: act.tag === "meal" ? "rgba(239,68,68,0.08)" : "rgba(168,85,247,0.08)",
+    color: act.tag === "meal" ? "#dc2626" : "#7c3aed",
+    padding: "2px 7px",
+    borderRadius: 6,
+    fontWeight: 500
+  }
+}, act.tag === "meal" ? "🍽️ Meal" : "🍸 Drinks"), act.price && /*#__PURE__*/React.createElement("span", {
   onClick: () => onLogCost && onLogCost(act),
   style: {
     fontSize: 10,
@@ -4582,7 +4591,7 @@ const Sec = ({
 }), children);
 
 /* ── ACTIVITY EDIT MODAL ── */
-const TRANSPORT_CHIPS = [["🚤", "Boat"], ["🚕", "Taxi/Grab"], ["🚶", "Walk"], ["🛵", "Scooter"], ["🚐", "Pickup"], ["🎫", "Part of tour"], ["🏠", "On-site"], ["🚙", "Drive"], ["🚌", "Bus"], ["🚂", "Train"], ["✈️", "Fly"]];
+const TRANSPORT_CHIPS = [["🚤", "Boat"], ["🚕", "Taxi/Grab"], ["🚶", "Walk"], ["🛵", "Scooter"], ["🚐", "Pickup"], ["🎫", "Part of tour"], ["🏠", "On-site"], ["🚙", "Drive"], ["🚌", "Bus"], ["✈️", "Fly"]];
 const DURATION_PRESETS = ["1-2 hrs", "Half day", "Full day", "Evening"];
 const ActEditM = ({
   th,
@@ -4604,6 +4613,8 @@ const ActEditM = ({
   const [secMap, setSecMap] = useState(false);
   const [secMore, setSecMore] = useState(false);
   const [durCustom, setDurCustom] = useState(!DURATION_PRESETS.includes(act.dur));
+  const [showTransport, setShowTransport] = useState(!!act.how);
+  const [showTag, setShowTag] = useState(!!act.tag);
   const u = (k, v) => sF(p => ({
     ...p,
     [k]: v
@@ -4745,7 +4756,21 @@ const ActEditM = ({
       fontSize: 15,
       fontWeight: 500
     }
-  })), lbl("Getting there"), /*#__PURE__*/React.createElement("div", {
+  })), /*#__PURE__*/React.createElement("div", {
+    onClick: () => setShowTransport(!showTransport),
+    style: {
+      fontSize: 12,
+      color: th.acc,
+      fontWeight: 500,
+      cursor: "pointer",
+      marginBottom: showTransport ? 8 : 0,
+      display: "flex",
+      alignItems: "center",
+      gap: 4
+    }
+  }, showTransport ? "- Hide transport" : "+ Transport", !showTransport && f.how && /*#__PURE__*/React.createElement("span", {
+    style: { color: "#22c55e", fontSize: 13 }
+  }, " ✓")), showTransport && /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       flexWrap: "wrap",
@@ -4757,11 +4782,63 @@ const ActEditM = ({
     return /*#__PURE__*/React.createElement("button", {
       key: ico,
       onClick: () => {
-        u("howIcon", ico);
-        u("how", label);
+        if (active) { u("howIcon", ""); u("how", ""); }
+        else { u("howIcon", ico); u("how", label); }
       },
       style: chip(active)
     }, ico, " ", label);
+  })), /*#__PURE__*/React.createElement("div", {
+    onClick: () => setShowTag(!showTag),
+    style: {
+      fontSize: 12,
+      color: th.acc,
+      fontWeight: 500,
+      cursor: "pointer",
+      marginBottom: showTag ? 8 : 12,
+      display: "flex",
+      alignItems: "center",
+      gap: 4
+    }
+  }, showTag ? "- Hide" : "+ Tag as meal / drinks", !showTag && f.tag && /*#__PURE__*/React.createElement("span", {
+    style: { color: "#22c55e", fontSize: 13 }
+  }, " ✓")), showTag && /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 8,
+      marginBottom: 12
+    }
+  }, [["meal", "🍽️ Meal", "#dc2626"], ["drinks", "🍸 Drinks", "#7c3aed"]].map(([val, label, col]) => {
+    const active = f.tag === val;
+    return /*#__PURE__*/React.createElement("button", {
+      key: val,
+      onClick: () => u("tag", active ? "" : val),
+      style: {
+        display: "flex",
+        alignItems: "center",
+        gap: 6,
+        padding: "8px 14px",
+        borderRadius: 20,
+        border: active ? `1.5px solid ${col}` : `1.5px solid ${th.bdr}`,
+        background: active ? (col === "#dc2626" ? "rgba(239,68,68,0.08)" : "rgba(168,85,247,0.08)") : th.inp,
+        color: active ? col : th.sub,
+        fontSize: 12,
+        fontWeight: 500,
+        cursor: "pointer"
+      }
+    }, /*#__PURE__*/React.createElement("span", {
+      style: {
+        width: 16,
+        height: 16,
+        borderRadius: 4,
+        border: active ? `1.5px solid ${col}` : `1.5px solid ${th.bdr}`,
+        background: active ? col : "transparent",
+        display: "inline-flex",
+        alignItems: "center",
+        justifyContent: "center",
+        fontSize: 10,
+        color: "#fff"
+      }
+    }, active ? "✓" : ""), label);
   })), lbl("How long"), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
@@ -4995,7 +5072,7 @@ const ActEditM = ({
       cursor: "pointer",
       padding: "4px 6px"
     }
-  }, "Remove")))), secHead("💰", "Price & cost", secPrice, () => setSecPrice(!secPrice), !!f.price || !!f.actualCost), secPrice && /*#__PURE__*/React.createElement("div", {
+  }, "Remove")))), secHead("💰", "Price & cost", secPrice, () => setSecPrice(!secPrice), !!f.price), secPrice && /*#__PURE__*/React.createElement("div", {
     style: {
       paddingBottom: 10
     }
@@ -5076,44 +5153,7 @@ const ActEditM = ({
       color: th.sub,
       marginBottom: 8
     }
-  }, "Estimate: ", f.price), lbl("Actual paid (THB)"), /*#__PURE__*/React.createElement("div", {
-    style: {
-      display: "flex",
-      gap: 8,
-      alignItems: "center"
-    }
-  }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      flex: 1,
-      position: "relative"
-    }
-  }, /*#__PURE__*/React.createElement("span", {
-    style: {
-      position: "absolute",
-      left: 10,
-      top: "50%",
-      transform: "translateY(-50%)",
-      fontSize: 13,
-      color: th.mut
-    }
-  }, "฿"), /*#__PURE__*/React.createElement("input", {
-    value: f.actualCost || "",
-    onChange: e => u("actualCost", e.target.value.replace(/[^0-9]/g, "")),
-    placeholder: "0",
-    inputMode: "numeric",
-    style: {
-      ...inpStyle,
-      paddingLeft: 24,
-      fontWeight: 600
-    }
-  })), f.actualCost && /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 12,
-      color: th.mut,
-      minWidth: 56,
-      textAlign: "right"
-    }
-  }, "≈ A$", Math.round(Number(f.actualCost) / (liveRate || 22.5))))), secHead("📍", "Map & timing", secMap, () => setSecMap(!secMap), !!f.mapQuery || !!f.startTime), secMap && /*#__PURE__*/React.createElement("div", {
+  }, "Estimate: ", f.price)), secHead("📍", "Map & timing", secMap, () => setSecMap(!secMap), !!f.mapQuery || !!f.startTime), secMap && /*#__PURE__*/React.createElement("div", {
     style: {
       paddingBottom: 10
     }
