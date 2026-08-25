@@ -4058,7 +4058,8 @@ const AccC = ({
   const heroUrl = d._hero ? d._hero.startsWith('http') ? d._hero : base + d._hero : null;
   const openLink = u => {
     if (!u) return;
-    if (u.startsWith('http') || u.startsWith('/')) window.open(u, '_blank');else window.open(base + u, '_blank');
+    const bust = u.includes('?') ? '&_cb=' + Date.now() : '?_cb=' + Date.now();
+    if (u.startsWith('http') || u.startsWith('/')) window.open(u, '_blank');else window.open(base + u + bust, '_blank');
   };
   const openMap = () => {
     if (d.linkMap) {
