@@ -6410,30 +6410,35 @@ function App() {
       overflow: "hidden",
       boxShadow: th.sh
     }
-  }, [{
-    ref: "DIE356",
-    cc: "Singapore Airlines",
-    route: "BNE ↔ HKT"
-  }, {
-    ref: "D5VC6X",
-    cc: "Bangkok Airways",
-    route: "KBV → USM"
-  }, {
-    ref: "D64QO5",
-    cc: "Bangkok Airways",
-    route: "USM → HKT"
-  }].map(({
+  }, [(() => {
+    const base = [
+      { ref: "DIE356", cc: "Singapore Airlines", route: "BNE ↔ HKT" },
+      { ref: "D5VC6X", cc: "Bangkok Airways", route: "KBV → USM" },
+      { ref: "D64QO5", cc: "Bangkok Airways", route: "USM → HKT" }
+    ];
+    const seen = {};
+    base.forEach(b => { seen[b.ref] = true; });
+    const extra = [];
+    Object.values(cards).forEach(cd => {
+      if (!cd || !cd.bref) return;
+      if (cd._t !== "ferry" && cd._t !== "xfer") return;
+      if (seen[cd.bref]) return;
+      seen[cd.bref] = true;
+      extra.push({ ref: cd.bref, cc: cd.carrier || "", route: (cd.from || "") + " → " + (cd.to || "") });
+    });
+    return [...base, ...extra];
+  })()].flat().map(({
     ref,
     cc,
     route
-  }, i) => /*#__PURE__*/React.createElement("div", {
+  }, i, arr) => /*#__PURE__*/React.createElement("div", {
     key: i,
     style: {
       display: "flex",
       justifyContent: "space-between",
       alignItems: "center",
       padding: "10px 14px",
-      borderBottom: i < 2 ? "0.5px solid " + th.bdr : "none"
+      borderBottom: i < arr.length - 1 ? "0.5px solid " + th.bdr : "none"
     }
   }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     style: {
