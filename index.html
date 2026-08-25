@@ -944,35 +944,16 @@ const LocCard = ({
 }, loc.name)), /*#__PURE__*/React.createElement("button", {
   onClick: () => viewMap(loc.lat, loc.lng, loc.name),
   style: {
-    background: th.dark ? "rgba(14,116,144,0.2)" : "rgba(14,116,144,0.08)",
-    border: "none",
-    borderRadius: 12,
-    padding: "6px 10px",
-    fontSize: 10,
+    background: th.tag,
+    border: `0.5px solid ${th.bdr}`,
+    borderRadius: 8,
+    padding: "6px 8px",
+    fontSize: 11,
     color: th.acc,
     cursor: "pointer",
-    flexShrink: 0,
-    display: "flex",
-    alignItems: "center",
-    gap: 4,
-    fontWeight: 500
+    flexShrink: 0
   }
-}, /*#__PURE__*/React.createElement("svg", {
-  width: "11",
-  height: "11",
-  viewBox: "0 0 24 24",
-  fill: "none",
-  stroke: th.acc,
-  strokeWidth: "2",
-  strokeLinecap: "round",
-  strokeLinejoin: "round"
-}, /*#__PURE__*/React.createElement("path", {
-  d: "M12 21c-4.97-5.03-8-8.5-8-12a8 8 0 1 1 16 0c0 3.5-3.03 6.97-8 12z"
-}), /*#__PURE__*/React.createElement("circle", {
-  cx: "12",
-  cy: "9",
-  r: "2.5"
-})), "Map"), /*#__PURE__*/React.createElement("button", {
+}, "📍 Map"), /*#__PURE__*/React.createElement("button", {
   onClick: () => navTo(loc.lat, loc.lng, loc.name),
   style: {
     background: th.acc,
@@ -3939,18 +3920,40 @@ const XferC = ({
     color: th.coral,
     fontSize: 13
   }
-}, d.cost), /*#__PURE__*/React.createElement("span", {
+}, d.cost), /*#__PURE__*/React.createElement("div", {
   onClick: () => window.open("https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(d.to), "_blank"),
   style: {
-    fontSize: 10,
-    background: "#e6f1fb",
-    color: "#185fa5",
-    padding: "3px 7px",
-    borderRadius: 6,
+    display: "flex",
+    alignItems: "center",
+    gap: 4,
+    background: th.dark ? "rgba(14,116,144,0.2)" : "rgba(14,116,144,0.08)",
+    padding: "5px 9px",
+    borderRadius: 12,
     cursor: "pointer",
+    flexShrink: 0
+  }
+}, /*#__PURE__*/React.createElement("svg", {
+  width: "11",
+  height: "11",
+  viewBox: "0 0 24 24",
+  fill: "none",
+  stroke: th.acc,
+  strokeWidth: "2",
+  strokeLinecap: "round",
+  strokeLinejoin: "round"
+}, /*#__PURE__*/React.createElement("path", {
+  d: "M12 21c-4.97-5.03-8-8.5-8-12a8 8 0 1 1 16 0c0 3.5-3.03 6.97-8 12z"
+}), /*#__PURE__*/React.createElement("circle", {
+  cx: "12",
+  cy: "9",
+  r: "2.5"
+})), /*#__PURE__*/React.createElement("span", {
+  style: {
+    fontSize: 10,
+    color: th.acc,
     fontWeight: 500
   }
-}, "📍"), edit && /*#__PURE__*/React.createElement(PenD, {
+}, "Map")), edit && /*#__PURE__*/React.createElement(PenD, {
   th: th,
   onClick: onEdit
 }));
@@ -4151,18 +4154,18 @@ const AccC = ({
       display: "flex",
       alignItems: "center",
       gap: 4,
-      background: "transparent",
-      border: th.dark ? "0.5px solid rgba(45,212,191,0.3)" : "0.5px solid rgba(14,116,144,0.25)",
+      background: "rgba(255,255,255,0.92)",
       padding: "5px 10px",
       borderRadius: 12,
-      cursor: "pointer"
+      cursor: "pointer",
+      boxShadow: "0 1px 3px rgba(0,0,0,0.15)"
     }
   }, /*#__PURE__*/React.createElement("svg", {
     width: "11",
     height: "11",
     viewBox: "0 0 24 24",
     fill: "none",
-    stroke: th.acc,
+    stroke: "#0e7490",
     strokeWidth: "2",
     strokeLinecap: "round",
     strokeLinejoin: "round"
@@ -4175,7 +4178,7 @@ const AccC = ({
   })), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 10,
-      color: th.acc,
+      color: "#0e7490",
       fontWeight: 500
     }
   }, "Map")), edit && /*#__PURE__*/React.createElement(Pen, {
