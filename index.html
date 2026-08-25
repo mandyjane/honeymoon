@@ -2304,12 +2304,14 @@ const CardEditM = ({
   data,
   type,
   onSave,
-  onClose
+  onClose,
+  onDelete
 }) => {
   const fields = FIELDS[type] || [];
   const [f, sF] = useState({
     ...data
   });
+  const savedRef = React.useRef(false);
   const hasTimes = type === "ferry" || type === "flight";
   const [shownLinks, setShownLinks] = useState(() => {
     const s = {};
@@ -2381,8 +2383,8 @@ const CardEditM = ({
       fontWeight: 700,
       color: th.text
     }
-  }, "Edit ", type === "accom" ? "accommodation" : type.charAt(0).toUpperCase() + type.slice(1)), /*#__PURE__*/React.createElement("button", {
-    onClick: onClose,
+  }, type === "accom" ? "Edit accommodation" : type === "xfer" ? "Transfer" : "Edit " + type.charAt(0).toUpperCase() + type.slice(1)), /*#__PURE__*/React.createElement("button", {
+    onClick: () => onClose(false),
     style: {
       background: th.inp,
       border: "none",
@@ -2695,7 +2697,106 @@ const CardEditM = ({
       resize: "vertical",
       fontFamily: "inherit"
     }
-  }))) : fields.map(([k, label]) => /*#__PURE__*/React.createElement("div", {
+  }))) : type === "xfer" ? /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+    style: { fontSize: 10, color: th.mut, marginBottom: 5, textTransform: "uppercase" }
+  }, "Route"), /*#__PURE__*/React.createElement("div", {
+    style: { display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }
+  }, /*#__PURE__*/React.createElement("input", {
+    value: f.from || "",
+    onChange: e => u("from", e.target.value),
+    placeholder: "From",
+    autoComplete: "off",
+    style: { ...inpStyle, flex: 1 }
+  }), /*#__PURE__*/React.createElement("span", {
+    style: { color: th.mut, fontSize: 16, flexShrink: 0 }
+  }, "→"), /*#__PURE__*/React.createElement("input", {
+    value: f.to || "",
+    onChange: e => u("to", e.target.value),
+    placeholder: "To",
+    autoComplete: "off",
+    style: { ...inpStyle, flex: 1 }
+  })), /*#__PURE__*/React.createElement("div", {
+    style: { fontSize: 10, color: th.mut, marginBottom: 5, textTransform: "uppercase" }
+  }, "Type"), /*#__PURE__*/React.createElement("div", {
+    style: { display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 14 }
+  }, ["🚕", "🚗", "🚐", "🚌", "🚂", "⛴️", "✈️"].map(ic => /*#__PURE__*/React.createElement("button", {
+    key: ic,
+    onClick: () => u("icon", ic),
+    style: {
+      width: 40,
+      height: 40,
+      borderRadius: 10,
+      background: f.icon === ic ? (th.dark ? "rgba(14,116,144,0.15)" : "rgba(14,116,144,0.08)") : th.inp,
+      border: f.icon === ic ? `1.5px solid ${th.acc}` : `0.5px solid ${th.bdr}`,
+      fontSize: 18,
+      cursor: "pointer",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center"
+    }
+  }, ic))), /*#__PURE__*/React.createElement("div", {
+    style: { fontSize: 10, color: th.mut, marginBottom: 5, textTransform: "uppercase" }
+  }, "Method"), /*#__PURE__*/React.createElement("div", {
+    style: { display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 8 }
+  }, ["Grab / Bolt", "Taxi", "Private car", "Shuttle", "Own car"].map(m => /*#__PURE__*/React.createElement("button", {
+    key: m,
+    onClick: () => u("method", m),
+    style: {
+      padding: "7px 12px",
+      borderRadius: 16,
+      background: f.method === m ? th.acc : th.inp,
+      border: f.method === m ? "none" : `0.5px solid ${th.bdr}`,
+      fontSize: 12,
+      color: f.method === m ? "#fff" : th.sub,
+      cursor: "pointer",
+      fontWeight: f.method === m ? 500 : 400
+    }
+  }, m))), /*#__PURE__*/React.createElement("input", {
+    value: f.method || "",
+    onChange: e => u("method", e.target.value),
+    placeholder: "Or type your own",
+    autoComplete: "off",
+    style: { ...inpStyle, marginBottom: 14 }
+  }), /*#__PURE__*/React.createElement("div", {
+    style: { fontSize: 10, color: th.mut, marginBottom: 5, textTransform: "uppercase" }
+  }, "Cost (A$)"), /*#__PURE__*/React.createElement("div", {
+    style: { display: "flex", alignItems: "center", gap: 6, marginBottom: 14 }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: { fontSize: 15, color: th.sub }
+  }, "A$"), /*#__PURE__*/React.createElement("input", {
+    value: (f.cost || "").replace(/^A\$\s*/, ""),
+    onChange: e => u("cost", e.target.value ? "A$" + e.target.value.replace(/^A\$\s*/, "") : ""),
+    placeholder: "45",
+    inputMode: "decimal",
+    autoComplete: "off",
+    style: { ...inpStyle, flex: 1 }
+  })), /*#__PURE__*/React.createElement("div", {
+    style: { fontSize: 10, color: th.mut, marginBottom: 5, textTransform: "uppercase" }
+  }, "Time · optional"), /*#__PURE__*/React.createElement("input", {
+    value: f.time || "",
+    onChange: e => u("time", e.target.value),
+    placeholder: "e.g. 40 min",
+    autoComplete: "off",
+    style: inpStyle
+  }), onDelete && /*#__PURE__*/React.createElement("button", {
+    onClick: () => {
+      savedRef.current = true;
+      onDelete();
+      onClose(true);
+    },
+    style: {
+      width: "100%",
+      marginTop: 14,
+      padding: "10px",
+      borderRadius: 8,
+      border: "1px solid #ef4444",
+      background: "transparent",
+      color: "#ef4444",
+      fontSize: 12,
+      fontWeight: 500,
+      cursor: "pointer"
+    }
+  }, "Remove transfer")) : fields.map(([k, label]) => /*#__PURE__*/React.createElement("div", {
     key: k,
     style: {
       marginBottom: 10
@@ -2816,8 +2917,9 @@ const CardEditM = ({
     }
   }, /*#__PURE__*/React.createElement("button", {
     onClick: () => {
+      savedRef.current = true;
       onSave(f);
-      onClose();
+      onClose(true);
     },
     style: {
       flex: 1,
@@ -2831,7 +2933,7 @@ const CardEditM = ({
       cursor: "pointer"
     }
   }, "Save"), /*#__PURE__*/React.createElement("button", {
-    onClick: onClose,
+    onClick: () => onClose(false),
     style: {
       padding: "12px 20px",
       borderRadius: 12,
@@ -5646,23 +5748,6 @@ function App() {
     id,
     type: (cards[id] || INIT_CARDS[id])._t
   });
-  const onAddXfer = () => {
-    const id = "x_new_" + Date.now();
-    setCards(p => ({
-      ...p,
-      [id]: {
-        _t: "xfer",
-        icon: "🚕",
-        from: "",
-        to: "",
-        time: "",
-        method: "",
-        cost: "",
-        _dest: "extra"
-      }
-    }));
-    sCe({ id, type: "xfer" });
-  };
   const updDoc = (key, data) => setDocs(p => ({
     ...p,
     [key]: {
@@ -5838,8 +5923,8 @@ function App() {
     edit: edit,
     onEdit: () => editCard(id)
   });
-  const rCustomXfers = dest => {
-    const ids = Object.keys(cards).filter(k => k.startsWith("x_new_") && cards[k]._dest === dest);
+  const rCustomXfers = slot => {
+    const ids = Object.keys(cards).filter(k => k.startsWith("x_new_") && cards[k]._dest === slot);
     return ids.map(id => /*#__PURE__*/React.createElement(XferC, {
       key: id,
       th: th,
@@ -5848,12 +5933,12 @@ function App() {
       onEdit: () => editCard(id)
     }));
   };
-  const rAddXfer = dest => edit && /*#__PURE__*/React.createElement("button", {
+  const rAddXfer = slot => edit && /*#__PURE__*/React.createElement("button", {
     onClick: () => {
       const id = "x_new_" + Date.now();
       setCards(p => ({
         ...p,
-        [id]: { _t: "xfer", icon: "🚕", from: "", to: "", time: "", method: "", cost: "", _dest: dest }
+        [id]: { _t: "xfer", icon: "🚕", from: "", to: "", time: "", method: "", cost: "", _dest: slot }
       }));
       sCe({ id, type: "xfer" });
     },
@@ -6471,10 +6556,9 @@ function App() {
     /*#__PURE__*/React.createElement("div", {
       style: { fontSize: 11, color: th.sub, textAlign: "right", marginBottom: edit ? 10 : 0 }
     }, "A$", remaining > 0 ? remaining.toLocaleString() : 0, " remaining"),
-    edit && /*#__PURE__*/React.createElement("button", {
-      onClick: onAddXfer,
-      style: { width: "100%", padding: "10px", borderRadius: 8, border: "1px dashed " + th.acc, background: "transparent", color: th.acc, fontSize: 12, fontWeight: 500, cursor: "pointer" }
-    }, "+ Add transfer"))
+    edit && /*#__PURE__*/React.createElement("div", {
+      style: { fontSize: 11, color: th.mut, textAlign: "center", lineHeight: 1.5, padding: "8px 4px 0" }
+    }, "Add transfers in each destination's Getting There / Departure section."))
   })(), /*#__PURE__*/React.createElement(Sec, {
     th: th
   }, "Before You Fly"), /*#__PURE__*/React.createElement("div", {
@@ -6613,11 +6697,11 @@ function App() {
     }
   }, "Fri 12 – Mon 15 Feb · 3 nights"), /*#__PURE__*/React.createElement(Sec, {
     th: th
-  }, "Getting There"), /*#__PURE__*/React.createElement(FG, null, rf("f_sq1"), rl("l_sin1"), rf("f_sq2")), rx("x_1"), rn("n_pier"), rfe("fe_1"), /*#__PURE__*/React.createElement(Sec, {
+  }, "Getting There"), /*#__PURE__*/React.createElement(FG, null, rf("f_sq1"), rl("l_sin1"), rf("f_sq2")), rx("x_1"), rn("n_pier"), rfe("fe_1"), rCustomXfers("phiphi:arr"), rAddXfer("phiphi:arr"), /*#__PURE__*/React.createElement(Sec, {
     th: th
   }, "Your Stay"), ra("a_pp"), renderDays("phiphi"), /*#__PURE__*/React.createElement(Sec, {
     th: th
-  }, "Departure — Mon 15 Feb"), rn("n_pp_dep"), rfe("fe_2"), rx("x_2"), rn("n_krabi"), /*#__PURE__*/React.createElement(FG, null, rf("f_pg1")), rx("x_3"), rCustomXfers("phiphi"), rAddXfer("phiphi")), tab === "samui" && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+  }, "Departure — Mon 15 Feb"), rn("n_pp_dep"), rfe("fe_2"), rx("x_2"), rn("n_krabi"), /*#__PURE__*/React.createElement(FG, null, rf("f_pg1")), rx("x_3"), rCustomXfers("phiphi:dep"), rAddXfer("phiphi:dep")), tab === "samui" && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 22,
       fontWeight: 800,
@@ -6629,11 +6713,11 @@ function App() {
       color: th.mut,
       marginBottom: 16
     }
-  }, "Mon 15 – Sat 21 Feb · 6 nights"), /*#__PURE__*/React.createElement(Sec, {
+  }, "Mon 15 – Sat 21 Feb · 6 nights"), rCustomXfers("samui:arr"), rAddXfer("samui:arr"), /*#__PURE__*/React.createElement(Sec, {
     th: th
   }, "Your Stay"), ra("a_sm"), rn("n_sm_stay"), renderDays("samui"), /*#__PURE__*/React.createElement(Sec, {
     th: th
-  }, "Departure — Sat 21 Feb"), rn("n_sm_dep"), rx("x_4"), /*#__PURE__*/React.createElement(FG, null, rf("f_pg2")), rx("x_5"), rCustomXfers("samui"), rAddXfer("samui")), tab === "phuket" && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+  }, "Departure — Sat 21 Feb"), rn("n_sm_dep"), rx("x_4"), /*#__PURE__*/React.createElement(FG, null, rf("f_pg2")), rx("x_5"), rCustomXfers("samui:dep"), rAddXfer("samui:dep")), tab === "phuket" && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 22,
       fontWeight: 800,
@@ -6645,11 +6729,11 @@ function App() {
       color: th.mut,
       marginBottom: 16
     }
-  }, "Sat 21 – Wed 25 Feb · 4 nights"), /*#__PURE__*/React.createElement(Sec, {
+  }, "Sat 21 – Wed 25 Feb · 4 nights"), rCustomXfers("phuket:arr"), rAddXfer("phuket:arr"), /*#__PURE__*/React.createElement(Sec, {
     th: th
   }, "Your Stay"), ra("a_pk"), rn("n_pk_stay"), renderDays("phuket"), /*#__PURE__*/React.createElement(Sec, {
     th: th
-  }, "Going Home — Wed 25 Feb"), rx("x_6"), /*#__PURE__*/React.createElement(FG, null, rf("f_sq3"), rl("l_sin2"), rf("f_sq4")), rCustomXfers("phuket"), rCustomXfers("extra"), rAddXfer("phuket")), tab === "meals" && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+  }, "Going Home — Wed 25 Feb"), rx("x_6"), /*#__PURE__*/React.createElement(FG, null, rf("f_sq3"), rl("l_sin2"), rf("f_sq4")), rCustomXfers("phuket:dep"), rAddXfer("phuket:dep")), tab === "meals" && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       justifyContent: "space-between",
@@ -7519,7 +7603,26 @@ function App() {
     data: c(ce.id),
     type: ce.type,
     onSave: d => updCard(ce.id, d),
-    onClose: () => sCe(null)
+    onDelete: ce.id.startsWith("x_new_") ? () => {
+      setCards(p => {
+        const n = { ...p };
+        delete n[ce.id];
+        return n;
+      });
+    } : null,
+    onClose: saved => {
+      if (!saved && ce.id.startsWith("x_new_")) {
+        const cur = cards[ce.id];
+        if (cur && !cur.from && !cur.to && !cur.cost) {
+          setCards(p => {
+            const n = { ...p };
+            delete n[ce.id];
+            return n;
+          });
+        }
+      }
+      sCe(null);
+    }
   }), de && /*#__PURE__*/React.createElement(DocEditM, {
     th: th,
     docKey: de,
