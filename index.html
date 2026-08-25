@@ -5625,10 +5625,13 @@ function App() {
   useEffect(() => {
     const s = load();
     if (s) {
-      if (s.cards) setCards({
-        ...INIT_CARDS,
-        ...s.cards
-      });
+      if (s.cards) {
+        const merged = { ...INIT_CARDS };
+        Object.keys(s.cards).forEach(k => {
+          merged[k] = INIT_CARDS[k] ? { ...INIT_CARDS[k], ...s.cards[k] } : s.cards[k];
+        });
+        setCards(merged);
+      }
       if (s.docs) setDocs({
         ...INIT_DOCS,
         ...s.docs
@@ -5924,7 +5927,15 @@ function App() {
     onEdit: () => editCard(id)
   });
   const rCustomXfers = slot => {
-    const ids = Object.keys(cards).filter(k => k.startsWith("x_new_") && cards[k]._dest === slot);
+    const known = ["phiphi:arr", "phiphi:dep", "samui:arr", "samui:dep", "phuket:arr", "phuket:dep"];
+    const ids = Object.keys(cards).filter(k => {
+      if (!k.startsWith("x_new_")) return false;
+      const dst = cards[k]._dest;
+      if (dst === slot) return true;
+      // Orphaned transfers (legacy "extra" or unknown slot) fall into phuket:dep as a catch-all
+      if (slot === "phuket:dep" && !known.includes(dst)) return true;
+      return false;
+    });
     return ids.map(id => /*#__PURE__*/React.createElement(XferC, {
       key: id,
       th: th,
@@ -7505,10 +7516,13 @@ function App() {
       r.onload = ev => {
         try {
           const d = JSON.parse(ev.target.result);
-          if (d.cards) setCards(c => ({
-            ...INIT_CARDS,
-            ...d.cards
-          }));
+          if (d.cards) {
+            const merged = { ...INIT_CARDS };
+            Object.keys(d.cards).forEach(k => {
+              merged[k] = INIT_CARDS[k] ? { ...INIT_CARDS[k], ...d.cards[k] } : d.cards[k];
+            });
+            setCards(merged);
+          }
           if (d.docs) setDocs(c => ({
             ...INIT_DOCS,
             ...d.docs
