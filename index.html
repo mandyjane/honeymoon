@@ -210,6 +210,26 @@ const calcDur = (dep, arr) => {
  return "";
   }
 };
+const fmtTime = t => {
+  if (!t || !t.includes(":")) return t || "";
+  const [h, m] = t.split(":").map(Number);
+  if (isNaN(h)) return t;
+  const ap = h >= 12 ? "PM" : "AM";
+  const h12 = h % 12 || 12;
+  return m === 0 ? h12 + " " + ap : h12 + ":" + String(m).padStart(2, "0") + " " + ap;
+};
+const fmtBfastRange = (from, to) => {
+  if (!from && !to) return "Included";
+  const fH = parseInt(from), tH = parseInt(to);
+  if (isNaN(fH) || isNaN(tH)) return "Included";
+  const fAP = fH >= 12 ? "PM" : "AM", tAP = tH >= 12 ? "PM" : "AM";
+  const f12 = fH % 12 || 12, t12 = tH % 12 || 12;
+  const fM = from.split(":")[1], tM = to.split(":")[1];
+  const fS = fM === "00" ? f12 : f12 + ":" + fM;
+  const tS = tM === "00" ? t12 : t12 + ":" + tM;
+  if (fAP === tAP) return "Inc. " + fS + "\u2013" + tS + " " + tAP;
+  return "Inc. " + fS + " " + fAP + "\u2013" + tS + " " + tAP;
+};
 /* ── PRICE HELPERS ── */
 const RATE = 22.5;
 const thbToAud = s => {
@@ -2021,10 +2041,12 @@ const INIT_CARDS = {
  _t: "accom",
  name: "Phi Phi CoCo Beach Resort",
  room: "Pool Beach Bungalow",
- checkIn: "Fri 12 Feb",
- checkOut: "Mon 15 Feb",
+ checkIn: "14:00",
+ checkOut: "11:00",
  nights: "3",
  bfast: "Included",
+ bfastFrom: "07:00",
+ bfastTo: "10:00",
  ppn: "538.67",
  total: "1,616",
  feat: "🏖️ Beach, 🏊 Pool, 🛶 Kayaks, 💆 Massage, 📶 WiFi, 🎬 Movies"
@@ -2033,8 +2055,8 @@ const INIT_CARDS = {
  _t: "accom",
  name: "SALA Samui Chaweng Beach",
  room: "Oceanfront Balcony Pool Suite",
- checkIn: "Mon 15 Feb",
- checkOut: "Sun 21 Feb",
+ checkIn: "14:00",
+ checkOut: "12:00",
  nights: "6",
  bfast: "Not included",
  ppn: "732.70",
@@ -2045,10 +2067,12 @@ const INIT_CARDS = {
  _t: "accom",
  name: "Impiana Resort Patong",
  room: "Superior Ocean View",
- checkIn: "Sun 21 Feb",
- checkOut: "Thu 25 Feb",
+ checkIn: "14:00",
+ checkOut: "12:00",
  nights: "4",
  bfast: "Included",
+ bfastFrom: "06:30",
+ bfastTo: "10:30",
  ppn: "361.25",
  total: "1,445",
  feat: "🏖️ Beach, 🏊 Pool, 🧖 Spa, 🍽️ Sala Bua, 🍸 Bar, 📍 Bangla Rd"
@@ -2229,7 +2253,7 @@ const FIELDS = {
   layover: [["airport", "Airport"], ["dur", "Duration"], ["tip", "Tip"]],
   ferry: [["type", "Type"], ["from", "From"], ["to", "To"], ["dep", "Depart"], ["arr", "Arrive"], ["dur", "Duration"], ["date", "Date"], ["cost", "Cost"], ["carrier", "Operator"], ["bref", "Booking Ref"]],
   xfer: [["icon", "Icon"], ["from", "From"], ["to", "To"], ["time", "Time"], ["method", "Method"], ["cost", "Cost"]],
-  accom: [["name", "Name"], ["room", "Room Type"], ["dates", "Dates"], ["checkIn", "Check-in"], ["checkOut", "Check-out"], ["nights", "Nights"], ["bfast", "Breakfast"], ["wifi", "WiFi"], ["ppn", "Price/Night (A$)"], ["total", "Total (A$)"]],
+  accom: [["name", "Name"], ["room", "Room Type"], ["dates", "Dates"], ["checkIn", "Check-in"], ["checkOut", "Check-out"], ["nights", "Nights"], ["bfast", "Breakfast"], ["bfastFrom", "Breakfast From"], ["bfastTo", "Breakfast To"], ["wifi", "WiFi"], ["ppn", "Price/Night (A$)"], ["total", "Total (A$)"]],
   note: [["text", "Note Text"]]
 };
 /* ── STORAGE ── */
@@ -2519,9 +2543,9 @@ const CardEditM = ({
  textTransform: "uppercase"
  }
   }, "Check-in time"), /*#__PURE__*/React.createElement("input", {
+ type: "time",
  value: f.checkIn || "",
  onChange: e => u("checkIn", e.target.value),
- placeholder: "3pm",
  style: inpStyle
   })), /*#__PURE__*/React.createElement("div", {
  style: {
@@ -2535,9 +2559,9 @@ const CardEditM = ({
  textTransform: "uppercase"
  }
   }, "Check-out time"), /*#__PURE__*/React.createElement("input", {
+ type: "time",
  value: f.checkOut || "",
  onChange: e => u("checkOut", e.target.value),
- placeholder: "12pm",
  style: inpStyle
   }))), /*#__PURE__*/React.createElement("div", {
  style: {
@@ -2571,7 +2595,15 @@ const CardEditM = ({
  cursor: "pointer"
  }
  }, v);
-  }))), /*#__PURE__*/React.createElement("div", {
+  })), f.bfast && !f.bfast.toLowerCase().includes("not") && /*#__PURE__*/React.createElement("div", {
+ style: { display: "flex", gap: 8, alignItems: "center", marginTop: 10 }
+  }, /*#__PURE__*/React.createElement("div", { style: { flex: 1 } },
+ /*#__PURE__*/React.createElement("div", { style: { fontSize: 10, color: th.mut, marginBottom: 3, textTransform: "uppercase" } }, "From"),
+ /*#__PURE__*/React.createElement("input", { type: "time", value: f.bfastFrom || "", onChange: e => u("bfastFrom", e.target.value), style: inpStyle })),
+ /*#__PURE__*/React.createElement("div", { style: { fontSize: 12, color: th.mut, marginTop: 14 } }, "\u2013"),
+ /*#__PURE__*/React.createElement("div", { style: { flex: 1 } },
+ /*#__PURE__*/React.createElement("div", { style: { fontSize: 10, color: th.mut, marginBottom: 3, textTransform: "uppercase" } }, "To"),
+ /*#__PURE__*/React.createElement("input", { type: "time", value: f.bfastTo || "", onChange: e => u("bfastTo", e.target.value), style: inpStyle })))), /*#__PURE__*/React.createElement("div", {
  style: {
  marginBottom: 14
  }
@@ -4451,7 +4483,7 @@ const AccC = ({
  gap: 4,
  marginBottom: 12
  }
-  }, [["CHECK-IN", d.checkIn], ["CHECK-OUT", d.checkOut], ["BREAKFAST", d.bfast], ["WIFI", d.wifi || "Free"]].map(([l, v], i) => /*#__PURE__*/React.createElement("div", {
+  }, [["CHECK-IN", fmtTime(d.checkIn)], ["CHECK-OUT", fmtTime(d.checkOut)], ["BREAKFAST", d.bfast && !d.bfast.toLowerCase().includes("not") && d.bfastFrom && d.bfastTo ? fmtBfastRange(d.bfastFrom, d.bfastTo) : d.bfast], ["WIFI", d.wifi || "Free"]].map(([l, v], i) => /*#__PURE__*/React.createElement("div", {
  key: i,
  style: {
  background: th.inp,
