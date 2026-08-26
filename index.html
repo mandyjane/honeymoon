@@ -3863,7 +3863,7 @@ const LBarC = ({
   style: {
  fontSize: 14
   }
-}, /*#__PURE__*/React.createElement(Ico, { name: "clock", size: 16, color: th.mut, sw: 1.5 })), /*#__PURE__*/React.createElement("div", {
+}, /*#__PURE__*/React.createElement(Ico, { name: "hourglass", size: 16, color: th.mut, sw: 1.5 })), /*#__PURE__*/React.createElement("div", {
   style: {
  flex: 1
   }
@@ -4738,6 +4738,40 @@ const Sec = ({
  opacity: 0.4
   }
 }));
+/* ── TRANSPORT OPTIONS MODAL ── */
+const TransportOptsM = ({ th, hiddenTransport, onSave, onClose }) => {
+  const [tempHidden, setTempHidden] = useState([...hiddenTransport]);
+  const toggle = label => setTempHidden(p => p.includes(label) ? p.filter(x => x !== label) : [...p, label]);
+  return /*#__PURE__*/React.createElement("div", {
+ style: { position: "fixed", inset: 0, zIndex: 9999, background: "rgba(0,0,0,.45)", display: "flex", alignItems: "flex-end" },
+ onClick: e => { if (e.target === e.currentTarget) onClose(); }
+  }, /*#__PURE__*/React.createElement("div", {
+ style: { width: "100%", maxWidth: 600, margin: "0 auto", borderRadius: "20px 20px 0 0", background: th.card, padding: "20px 18px 32px" }
+  }, /*#__PURE__*/React.createElement("div", { style: { fontSize: 15, fontWeight: 700, color: th.text, marginBottom: 4 } }, "Transport Options"),
+ /*#__PURE__*/React.createElement("div", { style: { fontSize: 11, color: th.mut, marginBottom: 16 } }, "Tap to show or hide transport options in the activity editor"),
+ /*#__PURE__*/React.createElement("div", { style: { display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 16 } },
+ TRANSPORT_CHIPS.map(([ico, label]) => {
+ const hidden = tempHidden.includes(label);
+ return /*#__PURE__*/React.createElement("button", {
+ key: ico + label,
+ onClick: () => toggle(label),
+ style: { display: "flex", alignItems: "center", gap: 6, padding: "10px 14px", borderRadius: 0, fontSize: 13, cursor: "pointer",
+ border: hidden ? `1px solid ${th.bdr}` : `1px solid ${th.acc}`,
+ background: hidden ? th.inp : (th.dark ? "rgba(20,184,166,.12)" : "rgba(20,184,166,.08)"),
+ color: hidden ? th.mut : th.acc,
+ opacity: hidden ? 0.5 : 1 }
+ }, /*#__PURE__*/React.createElement(Ico, { name: ico, size: 14, color: hidden ? th.mut : th.acc, sw: 1.5 }), label);
+ })),
+ /*#__PURE__*/React.createElement("div", { style: { display: "flex", gap: 10 } },
+ /*#__PURE__*/React.createElement("button", {
+ onClick: () => { onSave(tempHidden); },
+ style: { flex: 1, padding: 13, borderRadius: 0, border: "none", background: th.acc, color: "#fff", fontSize: 14, fontWeight: 700, cursor: "pointer" }
+ }, "Done"),
+ /*#__PURE__*/React.createElement("button", {
+ onClick: onClose,
+ style: { padding: "13px 20px", borderRadius: 0, border: `1px solid ${th.bdr}`, background: "transparent", color: th.text, fontSize: 14, cursor: "pointer" }
+ }, "Cancel"))));
+};
 /* ── ACTIVITY EDIT MODAL ── */
 const TRANSPORT_CHIPS = [["car", "Taxi/Grab"], ["bus", "Pickup"], ["scooter", "Scooter"], ["bus", "Bus"], ["walk", "Walk"], ["car", "Drive"], ["ticket", "Part of tour"], ["home", "On-site"], ["sail", "Boat"], ["longtail", "Longtail"], ["plane", "Fly"], ["kayak", "Kayak"]];
 const DURATION_PRESETS = ["1-2 hrs", "Half day", "Full day", "Evening"];
@@ -6897,15 +6931,7 @@ function App() {
  marginBottom: 12
  }
   }, "Customise your itinerary"),
- /* Transport Options button */
- /*#__PURE__*/React.createElement("button", {
- onClick: () => setTransportPopup(true),
- style: { width: "100%", display: "flex", alignItems: "center", gap: 12, padding: "14px 16px", background: th.card, border: `0.5px solid ${th.bdr}`, borderRadius: 16, boxShadow: th.sh, marginBottom: 12, cursor: "pointer" }
- }, /*#__PURE__*/React.createElement(Ico, { name: "car", size: 20, color: th.acc, sw: 1.5 }),
- /*#__PURE__*/React.createElement("div", { style: { flex: 1, textAlign: "left" } },
- /*#__PURE__*/React.createElement("div", { style: { fontSize: 14, fontWeight: 600, color: th.text } }, "Transport Options"),
- /*#__PURE__*/React.createElement("div", { style: { fontSize: 11, color: th.mut } }, hiddenTransport.length > 0 ? hiddenTransport.length + " hidden" : "All visible")),
- /*#__PURE__*/React.createElement("span", { style: { fontSize: 16, color: th.mut } }, "›")),
+
  /*#__PURE__*/React.createElement("button", {
  onClick: () => setPackOpen(true),
  style: {
@@ -6916,7 +6942,7 @@ function App() {
  padding: "14px 16px",
  background: th.card,
  border: `0.5px solid ${th.bdr}`,
- borderRadius: 16,
+ borderRadius: 0,
  boxShadow: th.sh,
  marginBottom: 16,
  cursor: "pointer"
@@ -6946,10 +6972,13 @@ function App() {
  fontSize: 14,
  color: th.acc
  }
-  }, "Open")), /*#__PURE__*/React.createElement("div", {
+  }, "Open")), /*#__PURE__*/React.createElement("button", {
+ onClick: function() { setShowTravelDocs(true); },
+ style: { width: "100%", padding: 14, background: th.card, border: "0.5px solid " + th.bdr, borderRadius: 0, color: th.text, fontSize: 14, fontWeight: 600, cursor: "pointer", marginBottom: 12, display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }
+  }, /*#__PURE__*/React.createElement(Ico, { name: "ticket", size: 16, color: th.acc, sw: 1.5 }), "Travel Documents"), /*#__PURE__*/React.createElement("div", {
  style: {
  background: th.card,
- borderRadius: 16,
+ borderRadius: 0,
  padding: "14px 16px",
  boxShadow: th.sh,
  marginBottom: 16
@@ -6974,7 +7003,7 @@ function App() {
  style: {
  flex: 1,
  cursor: "pointer",
- borderRadius: 10,
+ borderRadius: 0,
  overflow: "hidden",
  border: heroImg === h.id ? `2px solid ${th.acc}` : "2px solid transparent"
  }
@@ -7000,7 +7029,7 @@ function App() {
  key: i,
  style: {
  background: th.card,
- borderRadius: 16,
+ borderRadius: 0,
  padding: 16,
  boxShadow: th.sh,
  marginBottom: 12
@@ -7046,7 +7075,16 @@ function App() {
  transition: "left .3s",
  boxShadow: "0 1px 3px rgba(0,0,0,.2)"
  }
-  }))))), /*#__PURE__*/React.createElement("div", {
+  }))))), /* Transport Options button */
+ /*#__PURE__*/React.createElement("button", {
+ onClick: () => setTransportPopup(true),
+ style: { width: "100%", display: "flex", alignItems: "center", gap: 12, padding: "14px 16px", background: th.card, border: `0.5px solid ${th.bdr}`, borderRadius: 0, boxShadow: th.sh, marginBottom: 12, cursor: "pointer" }
+ }, /*#__PURE__*/React.createElement(Ico, { name: "car", size: 20, color: th.acc, sw: 1.5 }),
+ /*#__PURE__*/React.createElement("div", { style: { flex: 1, textAlign: "left" } },
+ /*#__PURE__*/React.createElement("div", { style: { fontSize: 14, fontWeight: 600, color: th.text } }, "Transport Options"),
+ /*#__PURE__*/React.createElement("div", { style: { fontSize: 11, color: th.mut } }, hiddenTransport.length > 0 ? hiddenTransport.length + " hidden" : "All visible")),
+ /*#__PURE__*/React.createElement("span", { style: { fontSize: 16, color: th.mut } }, "›")),
+ /*#__PURE__*/React.createElement("div", {
  style: { fontSize: 14, fontWeight: 600, color: th.text, marginBottom: 2, marginTop: 12 }
   }, "\ud83d\udcc5 Day Divider Style"), /*#__PURE__*/React.createElement("div", {
  style: { fontSize: 12, color: th.mut, marginBottom: 12 }
@@ -7077,7 +7115,7 @@ function App() {
  padding: "12px 14px",
  background: th.card,
  border: `1px solid ${th.bdr}`,
- borderRadius: 12,
+ borderRadius: 0,
  marginBottom: 8,
  boxShadow: th.sh
  }
@@ -7112,10 +7150,7 @@ function App() {
  fontWeight: 600,
  cursor: "pointer"
  }
-  }, "Delete")))), /*#__PURE__*/React.createElement("button", {
- onClick: function() { setShowTravelDocs(true); },
- style: { width: "100%", padding: 14, background: th.card, border: "0.5px solid " + th.bdr, color: th.text, fontSize: 14, fontWeight: 600, cursor: "pointer", marginBottom: 12, display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }
-  }, /*#__PURE__*/React.createElement(Ico, { name: "ticket", size: 16, color: th.acc, sw: 1.5 }), "Travel Documents"), /*#__PURE__*/React.createElement(Sec, {
+  }, "Delete")))), /*#__PURE__*/React.createElement(Sec, {
  th: th
   }, "Backup & Sync"), /*#__PURE__*/React.createElement("div", {
  style: {
@@ -7146,7 +7181,7 @@ function App() {
  style: {
  flex: 1,
  padding: 12,
- borderRadius: 12,
+ borderRadius: 0,
  background: th.acc,
  color: "#fff",
  border: "none",
@@ -7158,7 +7193,7 @@ function App() {
  style: {
  flex: 1,
  padding: 12,
- borderRadius: 12,
+ borderRadius: 0,
  border: `1px solid ${th.acc}`,
  background: "transparent",
  color: th.acc,
@@ -7229,7 +7264,7 @@ function App() {
  style: {
  width: "100%",
  padding: 12,
- borderRadius: 12,
+ borderRadius: 0,
  border: `1px solid ${th.coral}`,
  background: "transparent",
  color: th.coral,
@@ -7242,39 +7277,12 @@ function App() {
  packing: packing,
  setPacking: setPacking,
  onClose: () => setPackOpen(false)
-  }), transportPopup && (() => {
- const [tempHidden, setTempHidden] = React.useState([...hiddenTransport]);
- const toggle = label => setTempHidden(p => p.includes(label) ? p.filter(x => x !== label) : [...p, label]);
- return /*#__PURE__*/React.createElement("div", {
- style: { position: "fixed", inset: 0, zIndex: 9999, background: "rgba(0,0,0,.45)", display: "flex", alignItems: "flex-end" },
- onClick: e => { if (e.target === e.currentTarget) setTransportPopup(false); }
- }, /*#__PURE__*/React.createElement("div", {
- style: { width: "100%", maxWidth: 600, margin: "0 auto", borderRadius: "20px 20px 0 0", background: th.card, padding: "20px 18px 32px" }
- }, /*#__PURE__*/React.createElement("div", { style: { fontSize: 15, fontWeight: 700, color: th.text, marginBottom: 4 } }, "Transport Options"),
- /*#__PURE__*/React.createElement("div", { style: { fontSize: 11, color: th.mut, marginBottom: 16 } }, "Tap to show or hide transport options in the activity editor"),
- /*#__PURE__*/React.createElement("div", { style: { display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 16 } },
- TRANSPORT_CHIPS.map(([ico, label]) => {
- const hidden = tempHidden.includes(label);
- return /*#__PURE__*/React.createElement("button", {
- key: ico + label,
- onClick: () => toggle(label),
- style: { display: "flex", alignItems: "center", gap: 6, padding: "10px 14px", borderRadius: 20, fontSize: 13, cursor: "pointer",
- border: hidden ? `1px solid ${th.bdr}` : `1px solid ${th.acc}`,
- background: hidden ? th.inp : (th.dark ? "rgba(20,184,166,.12)" : "rgba(20,184,166,.08)"),
- color: hidden ? th.mut : th.acc,
- opacity: hidden ? 0.5 : 1 }
- }, /*#__PURE__*/React.createElement(Ico, { name: ico, size: 14, color: hidden ? th.mut : th.acc, sw: 1.5 }), label);
- })),
- /*#__PURE__*/React.createElement("div", { style: { display: "flex", gap: 10 } },
- /*#__PURE__*/React.createElement("button", {
- onClick: () => { setHiddenTransport(tempHidden); setTransportPopup(false); },
- style: { flex: 1, padding: 13, borderRadius: 12, border: "none", background: th.acc, color: "#fff", fontSize: 14, fontWeight: 700, cursor: "pointer" }
- }, "Done"),
- /*#__PURE__*/React.createElement("button", {
- onClick: () => setTransportPopup(false),
- style: { padding: "13px 20px", borderRadius: 12, border: `1px solid ${th.bdr}`, background: "transparent", color: th.text, fontSize: 14, cursor: "pointer" }
- }, "Cancel"))));
- })(), ticketsView && /*#__PURE__*/React.createElement(TicketsM, {
+  }), transportPopup && /*#__PURE__*/React.createElement(TransportOptsM, {
+ th: th,
+ hiddenTransport: hiddenTransport,
+ onSave: h => { setHiddenTransport(h); setTransportPopup(false); },
+ onClose: () => setTransportPopup(false)
+  }), ticketsView && /*#__PURE__*/React.createElement(TicketsM, {
  th: th,
  tickets: ticketsView,
  onClose: () => setTicketsView(null)
@@ -7474,7 +7482,7 @@ function App() {
  transform: "translateX(calc(min(50vw, 240px) - 60px))",
  width: 48,
  height: 48,
- borderRadius: 24,
+ borderRadius: 0,
  background: edit ? th.acc : th.card,
  border: edit ? "none" : `1.5px solid ${th.acc}`,
  boxShadow: "0 2px 8px rgba(0,0,0,0.25)",
