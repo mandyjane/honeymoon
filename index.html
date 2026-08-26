@@ -4538,6 +4538,8 @@ const NoteC = ({
 }));
 const LU = {
   clock: [["circle", { cx: "12", cy: "12", r: "10" }], ["path", { d: "M12 6v6l4 2" }]],
+  chevUp: [["path", { d: "m18 15-6-6-6 6" }]],
+  chevDown: [["path", { d: "m6 9 6 6 6-6" }]],
   hourglass: [["path", { d: "M5 22h14" }], ["path", { d: "M5 2h14" }], ["path", { d: "M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22" }], ["path", { d: "M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.172V2" }]],
   wallet: [["path", { d: "M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1" }], ["path", { d: "M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4" }]],
   sail: [["path", { d: "M2 21c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1 .6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1" }], ["path", { d: "M19.38 20A11.6 11.6 0 0 0 21 14l-9-4-9 4c0 2.9.94 5.34 2.81 7.76" }], ["path", { d: "M19 13V7a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v6" }], ["path", { d: "M12 10v4" }], ["path", { d: "M12 2v3" }]],
@@ -4597,6 +4599,8 @@ const ActMag = ({
   act,
   edit,
   idx,
+  actCount,
+  onReorder,
   onEdit,
   onLogCost,
   onOpenTickets
@@ -4661,7 +4665,19 @@ const ActMag = ({
       color: act.tag === "meal" ? "#dc2626" : "#7c3aed"
     }
   }, act.tag === "meal" ? "Meal" : "Drinks")));
-  return /*#__PURE__*/React.createElement("div", {
+  var canUp = idx > 0;
+  var canDown = actCount > 0 && idx < actCount - 1;
+  var reorderBtns = edit && onReorder ? /*#__PURE__*/React.createElement("div", {
+    style: { display: "flex", flexDirection: "column", gap: 2, paddingTop: 8, flexShrink: 0 }
+  }, /*#__PURE__*/React.createElement("div", {
+    onClick: canUp ? function() { onReorder(-1); } : undefined,
+    style: { width: 28, height: 28, borderRadius: 6, background: th.dark ? "#1e293b" : "#f1f5f9", display: "flex", alignItems: "center", justifyContent: "center", cursor: canUp ? "pointer" : "default", opacity: canUp ? 1 : 0.3 }
+  }, /*#__PURE__*/React.createElement(Ico, { name: "chevUp", size: 14, color: canUp ? th.acc : th.sub, sw: 2 })),
+  /*#__PURE__*/React.createElement("div", {
+    onClick: canDown ? function() { onReorder(1); } : undefined,
+    style: { width: 28, height: 28, borderRadius: 6, background: th.dark ? "#1e293b" : "#f1f5f9", display: "flex", alignItems: "center", justifyContent: "center", cursor: canDown ? "pointer" : "default", opacity: canDown ? 1 : 0.3 }
+  }, /*#__PURE__*/React.createElement(Ico, { name: "chevDown", size: 14, color: canDown ? th.acc : th.sub, sw: 2 }))) : null;
+  return /*#__PURE__*/React.createElement("div", { style: { display: "flex", gap: 8, marginBottom: 2 } }, reorderBtns, /*#__PURE__*/React.createElement("div", { style: { flex: 1 } }, /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       flexDirection: photoLeft ? "row" : "row-reverse",
@@ -4685,7 +4701,7 @@ const ActMag = ({
       fontSize: 12,
       cursor: "pointer"
     }
-  }, "✏️"));
+  }, "✏️"))));
 };
 const ActC = ({
   th,
@@ -4695,6 +4711,8 @@ const ActC = ({
   onRm,
   onOpenTickets,
   onLogCost,
+  onReorder,
+  actCount,
   idx
 }) => {
   return /*#__PURE__*/React.createElement(ActMag, {
@@ -4702,6 +4720,8 @@ const ActC = ({
       act: act,
       edit: edit,
       idx: idx || 0,
+      actCount: actCount || 0,
+      onReorder: onReorder,
       onEdit: onEdit,
       onLogCost: onLogCost,
       onOpenTickets: onOpenTickets
@@ -5648,6 +5668,7 @@ function App() {
       if (s.heroImg) setHeroImg(s.heroImg);
       if (s.dark !== undefined) setDark(s.dark);
       if (s.showFab !== undefined) setShowFab(s.showFab);
+      if (s.homeView) setHomeView(s.homeView);
       if (s.travelDocs) setTravelDocs({ tdacReceived: false, tdac: [], passport_amanda: [], passport_liam: [], ...s.travelDocs });
     }
     setLoaded(true);
@@ -5665,8 +5686,9 @@ function App() {
       dark,
       showFab,
       travelDocs,
+      homeView
     });
-  }, [cards, docs, acts, standby, meals, packing, budgetTotal, heroImg, dark, showFab, travelDocs, loaded]);
+  }, [cards, docs, acts, standby, meals, packing, budgetTotal, heroImg, dark, showFab, travelDocs, homeView, loaded]);
   useEffect(() => {
     document.body.className = dark ? "dark" : "";
   }, [dark]);
@@ -5815,6 +5837,21 @@ function App() {
     if (!act) return;
     if (act.tickets) act.tickets.forEach(t => {
       delTicket(t.id).catch(() => {});
+const reorderAct = (dest, dayId, actIdx, dir) => {
+    setActs(prev => {
+      const nd = JSON.parse(JSON.stringify(prev));
+      const days = nd[dest];
+      if (!days) return prev;
+      const day = days.find(d => d.id === dayId);
+      if (!day || !day.acts) return prev;
+      const newIdx = actIdx + dir;
+      if (newIdx < 0 || newIdx >= day.acts.length) return prev;
+      const tmp = day.acts[actIdx];
+      day.acts[actIdx] = day.acts[newIdx];
+      day.acts[newIdx] = tmp;
+      return nd;
+    });
+  };
     });
     setStandby(s => [...s, {
       ...act,
@@ -5899,6 +5936,8 @@ function App() {
     act: a,
     edit: edit,
     idx: ai,
+    actCount: day.acts.length,
+    onReorder: dir => reorderAct(dest, day.id, ai, dir),
     onEdit: a => {
       sEa(a);
       sEd(day.id);
@@ -6064,205 +6103,80 @@ function App() {
       cursor: "pointer"
     }
   }, "Today")), homeView === "today" && (() => {
-    const todayId = getTodayDay();
-    const td = TRIP_DAYS.find(d => d.id === todayId);
-    const tripStart = new Date("2027-02-12");
-    const tripEnd = new Date("2027-02-25");
-    const now = new Date();
-    const dayNum = Math.max(1, Math.min(14, Math.floor((now - tripStart) / (1000 * 60 * 60 * 24)) + 1));
-    const todayActs = acts[td?.loc === "Phi Phi" ? "phiphi" : td?.loc === "Samui" ? "samui" : "phuket"] || [];
-    const todayDay = todayActs.find(d => d.id === "pp_d" + dayNum || d.id === "sm_d" + dayNum || d.id === "pk_d" + dayNum) || todayActs.find(d => {
-      const dn = parseInt(d.id.split("_d")[1] || "0");
-      return dn === dayNum;
-    }) || todayActs[0];
-    const todayMeals = meals.filter(m => m.day === todayId);
-    const daySpend = todayMeals.reduce((s, m) => s + m.total, 0);
-    const r = liveRate || 22.5;
-    const w = WEATHER[todayDay?.id];
-    return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
-      style: {
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-        marginBottom: 10
-      }
-    }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
-      style: {
-        fontSize: 20,
-        fontWeight: 800,
-        color: th.text
-      }
-    }, td ? td.label : "Today"), /*#__PURE__*/React.createElement("div", {
-      style: {
-        fontSize: 12,
-        color: th.mut
-      }
-    }, td ? td.loc : "")), w && /*#__PURE__*/React.createElement("div", {
-      style: {
-        textAlign: "right"
-      }
-    }, /*#__PURE__*/React.createElement("span", {
-      style: {
-        fontSize: 22
-      }
-    }, w.icon), /*#__PURE__*/React.createElement("div", {
-      style: {
-        fontSize: 11,
-        color: th.mut
-      }
-    }, w.hi, "° / ", w.lo, "°"))), /*#__PURE__*/React.createElement("div", {
-      style: {
-        display: "grid",
-        gridTemplateColumns: "1fr 1fr",
-        gap: 8,
-        marginBottom: 14
-      }
-    }, /*#__PURE__*/React.createElement("div", {
-      style: {
-        background: th.accBg,
-        borderRadius: 12,
-        padding: "10px 12px",
-        color: "#fff"
-      }
-    }, /*#__PURE__*/React.createElement("div", {
-      style: {
-        fontSize: 9,
-        opacity: .7
-      }
-    }, "TRIP PROGRESS"), /*#__PURE__*/React.createElement("div", {
-      style: {
-        fontSize: 16,
-        fontWeight: 700
-      }
-    }, "Day ", dayNum, " of 14"), /*#__PURE__*/React.createElement("div", {
-      style: {
-        background: "rgba(255,255,255,.2)",
-        borderRadius: 4,
-        height: 4,
-        marginTop: 6
-      }
-    }, /*#__PURE__*/React.createElement("div", {
-      style: {
-        background: "#fff",
-        borderRadius: 4,
-        height: 4,
-        width: dayNum / 14 * 100 + "%"
-      }
-    }))), /*#__PURE__*/React.createElement("div", {
-      style: {
-        background: th.ferryBg,
-        borderRadius: 12,
-        padding: "10px 12px",
-        color: "#fff"
-      }
-    }, /*#__PURE__*/React.createElement("div", {
-      style: {
-        fontSize: 9,
-        opacity: .7
-      }
-    }, "SPENT TODAY"), /*#__PURE__*/React.createElement("div", {
-      style: {
-        fontSize: 16,
-        fontWeight: 700
-      }
-    }, "฿", daySpend.toLocaleString()), /*#__PURE__*/React.createElement("div", {
-      style: {
-        fontSize: 10,
-        opacity: .8
-      }
-    }, "A$", Math.round(daySpend / r), " · ", todayMeals.length, " meal", todayMeals.length !== 1 ? "s" : ""))), todayDay && todayDay.acts && todayDay.acts.length > 0 && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(Sec, {
-      th: th
-    }, "Today's plan"), todayDay.acts.map(a => /*#__PURE__*/React.createElement("div", {
-      key: a.id,
-      style: {
-        display: "flex",
-        gap: 10,
-        padding: "10px 12px",
-        background: th.card,
-        border: `0.5px solid ${th.bdr}`,
-        borderRadius: 10,
-        borderLeft: `3px solid ${th.actBdr}`,
-        marginBottom: 6,
-        boxShadow: th.sh
-      }
-    }, /*#__PURE__*/React.createElement("span", {
-      style: {
-        fontSize: 18
-      }
-    }, a.emoji), /*#__PURE__*/React.createElement("div", {
-      style: {
-        flex: 1
-      }
-    }, /*#__PURE__*/React.createElement("div", {
-      style: {
-        fontSize: 13,
-        fontWeight: 500,
-        color: th.text
-      }
-    }, a.title), /*#__PURE__*/React.createElement("div", {
-      style: {
-        fontSize: 11,
-        color: th.mut
-      }
-    }, a.dur, a.price ? " · " + a.price : ""))))), todayMeals.length > 0 && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(Sec, {
-      th: th
-    }, "Meals logged"), todayMeals.map(m => /*#__PURE__*/React.createElement("div", {
-      key: m.id,
-      style: {
-        display: "flex",
-        justifyContent: "space-between",
-        padding: "8px 12px",
-        background: th.card,
-        border: `0.5px solid ${th.bdr}`,
-        borderRadius: 8,
-        marginBottom: 4
-      }
-    }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("span", {
-      style: {
-        fontSize: 14
-      }
-    }, m.type), " ", /*#__PURE__*/React.createElement("span", {
-      style: {
-        fontSize: 12,
-        fontWeight: 500,
-        color: th.text
-      }
-    }, m.typeName), /*#__PURE__*/React.createElement("div", {
-      style: {
-        fontSize: 10,
-        color: th.mut
-      }
-    }, m.where)), /*#__PURE__*/React.createElement("div", {
-      style: {
-        textAlign: "right"
-      }
-    }, /*#__PURE__*/React.createElement("div", {
-      style: {
-        fontSize: 12,
-        fontWeight: 500,
-        color: th.text
-      }
-    }, "฿", m.total.toLocaleString()), /*#__PURE__*/React.createElement("div", {
-      style: {
-        fontSize: 10,
-        color: th.acc
-      }
-    }, "A$", Math.round(m.total / r)))))), /*#__PURE__*/React.createElement("button", {
-      onClick: () => {
-        setTab("meals");
-      },
-      style: {
-        width: "100%",
-        padding: 10,
-        borderRadius: 10,
-        border: `1.5px dashed ${th.acc}`,
-        background: "transparent",
-        color: th.acc,
-        fontSize: 12,
-        fontWeight: 500,
-        cursor: "pointer",
-        marginTop: 8
-      }
+    var todayId = getTodayDay();
+    var td = TRIP_DAYS.find(function(d){ return d.id === todayId; });
+    var tripStart = new Date("2027-02-12");
+    var now = new Date();
+    var dayNum = Math.max(1, Math.min(14, Math.floor((now - tripStart) / (1000 * 60 * 60 * 24)) + 1));
+    var todayActs = acts[td && td.loc === "Phi Phi" ? "phiphi" : td && td.loc === "Samui" ? "samui" : "phuket"] || [];
+    var todayDay = todayActs.find(function(d){ return d.id === "pp_d" + dayNum || d.id === "sm_d" + dayNum || d.id === "pk_d" + dayNum; }) || todayActs[0];
+    var todayMeals = meals.filter(function(m){ return m.day === todayId; });
+    var daySpend = todayMeals.reduce(function(s, m){ return s + m.total; }, 0);
+    var r = liveRate || 22.5;
+    var w = WEATHER[todayDay && todayDay.id];
+    var heroDate = td ? td.label.replace(/^[A-Za-z]+ /, "").replace(" Feb", "feb") : "12feb";
+    var heroBase = window.location.href.replace(/\/[^\/]*$/, "/");
+    return React.createElement(React.Fragment, null,
+    React.createElement("div", {
+      style: { position: "relative", height: 200, overflow: "hidden", margin: "0 -16px" }
+    }, React.createElement("img", {
+      src: heroBase + "images/days/" + heroDate + ".jpg",
+      style: { width: "100%", height: "100%", objectFit: "cover" },
+      onError: function(e) { e.target.style.display = "none"; }
+    }), React.createElement("div", {
+      style: { position: "absolute", bottom: 0, left: 0, right: 0, height: 80, background: "linear-gradient(transparent," + (th.dark ? "#0f172a" : "#f8fafc") + ")" }
+    }), React.createElement("div", {
+      style: { position: "absolute", bottom: 12, left: 16, right: 16, display: "flex", justifyContent: "space-between", alignItems: "flex-end" }
+    }, React.createElement("div", null, React.createElement("div", {
+      style: { fontFamily: "'Fraunces',serif", fontSize: 24, fontWeight: 700, fontStyle: "italic", color: "#fff", textShadow: "0 2px 8px rgba(0,0,0,.3)" }
+    }, "Day ", dayNum), React.createElement("div", {
+      style: { fontSize: 12, color: "rgba(255,255,255,.8)" }
+    }, td ? td.label : "Today", " \u00b7 ", td ? td.loc : "")),
+    w ? React.createElement("div", { style: { textAlign: "right" } },
+      React.createElement("span", { style: { fontSize: 28, filter: "drop-shadow(0 2px 4px rgba(0,0,0,.3))" } }, w.icon),
+      React.createElement("div", { style: { fontSize: 11, color: "rgba(255,255,255,.7)" } }, w.hi, "\u00b0 / ", w.lo, "\u00b0")) : null)),
+    React.createElement("div", {
+      style: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: 0, margin: "0 -16px 14px" }
+    }, React.createElement("div", {
+      style: { background: "linear-gradient(135deg,#0c4a6e,#155e75)", padding: "12px 16px", color: "#fff" }
+    }, React.createElement("div", { style: { fontSize: 9, opacity: .7, letterSpacing: 1 } }, "TRIP PROGRESS"),
+    React.createElement("div", { style: { fontFamily: "'Fraunces',serif", fontSize: 18, fontWeight: 700, marginTop: 2 } }, "Day ", dayNum, " of 14"),
+    React.createElement("div", { style: { background: "rgba(255,255,255,.2)", borderRadius: 4, height: 4, marginTop: 6 } },
+      React.createElement("div", { style: { background: "#fff", borderRadius: 4, height: 4, width: (dayNum / 14 * 100) + "%" } }))),
+    React.createElement("div", {
+      style: { background: "linear-gradient(135deg,#0f766e,#14b8a6)", padding: "12px 16px", color: "#fff" }
+    }, React.createElement("div", { style: { fontSize: 9, opacity: .7, letterSpacing: 1 } }, "SPENT TODAY"),
+    React.createElement("div", { style: { fontFamily: "'Fraunces',serif", fontSize: 18, fontWeight: 700, marginTop: 2 } }, "\u0e3f", daySpend.toLocaleString()),
+    React.createElement("div", { style: { fontSize: 10, opacity: .8, marginTop: 2 } }, "A$", Math.round(daySpend / r), " \u00b7 ", todayMeals.length, " meal", todayMeals.length !== 1 ? "s" : ""))),
+    todayDay && todayDay.acts && todayDay.acts.length > 0 ? React.createElement(React.Fragment, null,
+      React.createElement(Sec, { th: th }, "Today\u2019s Plan"),
+      todayDay.acts.map(function(a, i) {
+        var isOdd = i % 2 === 1;
+        return React.createElement("div", {
+          key: a.id, style: { display: "flex", gap: 12, marginBottom: 10, alignItems: "flex-start", flexDirection: isOdd ? "row-reverse" : "row" }
+        }, React.createElement("div", {
+          style: { width: 56, height: 56, borderRadius: "50%", background: th.tag, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }
+        }, React.createElement("span", { style: { fontSize: 22 } }, a.emoji || "\ud83c\udf34")),
+        React.createElement("div", { style: { textAlign: isOdd ? "right" : "left" } },
+          React.createElement("div", { style: { fontFamily: "'Fraunces',serif", fontSize: 16, fontWeight: 700, fontStyle: "italic", color: th.text } }, a.title),
+          React.createElement("div", { style: { display: "flex", gap: 6, marginTop: 4, flexWrap: "wrap", justifyContent: isOdd ? "flex-end" : "flex-start" } },
+            a.dur ? React.createElement("span", { style: { fontSize: 10, background: th.tag, color: th.sub, padding: "2px 7px", borderRadius: 6 } }, a.dur) : null,
+            a.price ? React.createElement("span", { style: { fontSize: 10, background: th.dark ? "rgba(14,116,144,.15)" : "rgba(14,116,144,.08)", color: th.acc, padding: "2px 7px", borderRadius: 6 } }, a.price) : null)));
+      })) : null,
+    todayMeals.length > 0 ? React.createElement(React.Fragment, null,
+      React.createElement(Sec, { th: th }, "Meals Logged"),
+      todayMeals.map(function(m) { return React.createElement("div", {
+        key: m.id, style: { display: "flex", justifyContent: "space-between", padding: "8px 0", borderBottom: "0.5px solid " + th.bdr }
+      }, React.createElement("div", null,
+        React.createElement("span", { style: { fontSize: 13 } }, m.type), " ",
+        React.createElement("span", { style: { fontSize: 12, fontWeight: 500, color: th.text } }, m.typeName),
+        React.createElement("div", { style: { fontSize: 10, color: th.mut } }, m.where)),
+      React.createElement("div", { style: { textAlign: "right" } },
+        React.createElement("div", { style: { fontSize: 12, fontWeight: 500, color: th.text } }, "\u0e3f", m.total.toLocaleString()),
+        React.createElement("div", { style: { fontSize: 10, color: th.acc } }, "A$", Math.round(m.total / r)))); })) : null,
+    React.createElement("button", {
+      onClick: function() { setTab("meals"); },
+      style: { width: "100%", padding: 10, border: "1.5px dashed " + th.acc, background: "transparent", color: th.acc, fontSize: 12, fontWeight: 500, cursor: "pointer", marginTop: 10 }
     }, "+ Log a meal"));
   })(), homeView === "overview" && /*#__PURE__*/React.createElement(React.Fragment, null,
   /* -- MINIMAL LUXE HERO -- */
@@ -6708,7 +6622,7 @@ function App() {
         color: th.text
       }
     }, "✏️")) : null;
-  }))), /*#__PURE__*/React.createElement(Sec, { th: th }, "Passports"), /*#__PURE__*/React.createElement("div", { style: { fontSize: 11, color: th.mut, marginBottom: 10, lineHeight: 1.4 } }, "\ud83d\udd12 Stored only on this device (offline). Not included in JSON backup."), [["passport_amanda", "Amanda"], ["passport_liam", "Liam"]].map(([slot, name]) => /*#__PURE__*/React.createElement("div", { key: slot, style: { background: th.card, borderRadius: 14, border: "0.5px solid " + th.bdr, padding: "12px 14px", marginBottom: 8, boxShadow: th.sh } }, /*#__PURE__*/React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 8, marginBottom: 10 } }, /*#__PURE__*/React.createElement("span", { style: { width: 30, height: 30, borderRadius: 15, background: th.tag, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14 } }, "\ud83d\udc64"), /*#__PURE__*/React.createElement("span", { style: { fontSize: 14, fontWeight: 500, color: th.text } }, name)), (travelDocs[slot] || []).length > 0 && /*#__PURE__*/React.createElement("div", { style: { marginBottom: 10 } }, travelDocs[slot].map(t => /*#__PURE__*/React.createElement("div", { key: t.id, style: { display: "flex", alignItems: "center", gap: 8, padding: "7px 0", borderBottom: "0.5px solid " + th.bdr } }, /*#__PURE__*/React.createElement("span", { style: { fontSize: 14 } }, t.type && t.type.indexOf("image") === 0 ? "\ud83d\uddbc\ufe0f" : "\ud83d\udcc4"), /*#__PURE__*/React.createElement("span", { style: { fontSize: 12, color: th.text, flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" } }, t.name), /*#__PURE__*/React.createElement("span", { onClick: () => setTicketsView(travelDocs[slot]), style: { fontSize: 11, color: th.acc, fontWeight: 500, cursor: "pointer" } }, "View"), edit && /*#__PURE__*/React.createElement("span", { onClick: () => removeTravelDoc(slot, t.id), style: { fontSize: 11, color: "#ef4444", cursor: "pointer" } }, "Remove")))), (edit || (travelDocs[slot] || []).length === 0) && /*#__PURE__*/React.createElement("label", { style: { display: "block", width: "100%", padding: "10px", borderRadius: 10, border: "1px dashed " + th.acc, background: "transparent", color: th.acc, fontSize: 12, fontWeight: 500, cursor: "pointer", textAlign: "center", boxSizing: "border-box" } }, "+ Add passport photo / PDF", /*#__PURE__*/React.createElement("input", { type: "file", accept: "image/*,application/pdf", multiple: true, style: { display: "none" }, onChange: e => { const files = Array.from(e.target.files || []); if (files.length) attachTravelDoc(slot, files); e.target.value = ""; } }))))), tab === "phiphi" && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+  })))), tab === "phiphi" && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
     style: {
       fontFamily: "'Fraunces',Georgia,serif",
       fontSize: 24,
