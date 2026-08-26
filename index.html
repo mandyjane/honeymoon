@@ -3501,6 +3501,7 @@ const QuickCostM = ({
 };
 /* ── PENCIL BUTTONS ── */
 const Pen = ({
+  th,
   onClick,
   abs
 }) => /*#__PURE__*/React.createElement("button", {
@@ -3642,6 +3643,7 @@ const CurrencyWidget = ({
   }, convert()))));
 };
 const PdfBtns = ({
+  th,
   docs,
   keys,
   edit,
@@ -3739,6 +3741,7 @@ const FlightC = ({
  position: "relative"
   }
 }, edit && /*#__PURE__*/React.createElement(Pen, {
+  th: th,
   onClick: onEdit,
   abs: true
 }), /*#__PURE__*/React.createElement("div", {
@@ -3837,6 +3840,7 @@ const FlightC = ({
  fontStyle: "italic"
   }
 }, d.notes), /*#__PURE__*/React.createElement(PdfBtns, {
+  th: th,
   docs: docs,
   keys: d.pdfKeys,
   edit: edit,
@@ -3909,6 +3913,7 @@ const FerryC = ({
  position: "relative"
   }
 }, edit && /*#__PURE__*/React.createElement(Pen, {
+  th: th,
   onClick: onEdit,
   abs: true
 }), /*#__PURE__*/React.createElement("div", {
@@ -4035,6 +4040,7 @@ const FerryC = ({
  gap: 3
   }
 }, /*#__PURE__*/React.createElement(Ico, { name: "wallet", size: 10, color: "rgba(255,255,255,.7)", sw: 1.5 }), " ", d.cost)), /*#__PURE__*/React.createElement(PdfBtns, {
+  th: th,
   docs: docs,
   keys: d.pdfKeys,
   edit: edit,
@@ -4342,6 +4348,7 @@ const AccC = ({
  fontWeight: 500
  }
   }, "Map")), edit && /*#__PURE__*/React.createElement(Pen, {
+ th: th,
  onClick: onEdit,
  abs: true
   }), /*#__PURE__*/React.createElement("div", {
