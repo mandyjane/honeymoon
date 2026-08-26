@@ -5097,22 +5097,20 @@ const ActEditM = ({
  style: { width: 16, height: 16, borderRadius: 4, border: active ? `1.5px solid ${col}` : `1.5px solid ${th.bdr}`, background: active ? col : "transparent", display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: 10, color: "#fff" }
  }, active ? "✓" : ""), label);
   })), (f.tag === "meal" || f.tag === "both") && /*#__PURE__*/React.createElement("div", {
- style: { display: "flex", gap: 8, marginBottom: 6, alignItems: "center" }
-  }, /*#__PURE__*/React.createElement("span", { style: { fontSize: 14 } }, "\ud83c\udf7d\ufe0f"),
- /*#__PURE__*/React.createElement("input", {
+ style: { marginBottom: 8 }
+  }, lbl("Food menu URL"), /*#__PURE__*/React.createElement("input", {
  value: f.menuFood || "",
  onChange: e => u("menuFood", e.target.value),
- placeholder: "Food menu URL",
- style: { flex: 1, padding: "8px 10px", background: th.inp, border: "0.5px solid " + th.bdr, color: th.text, fontSize: 12, fontFamily: "'DM Sans'" }
+ placeholder: "https://...",
+ style: { ...inpStyle, fontSize: 12 }
   })),
  (f.tag === "drinks" || f.tag === "both") && /*#__PURE__*/React.createElement("div", {
- style: { display: "flex", gap: 8, marginBottom: 6, alignItems: "center" }
-  }, /*#__PURE__*/React.createElement("span", { style: { fontSize: 14 } }, "\ud83c\udf78"),
- /*#__PURE__*/React.createElement("input", {
+ style: { marginBottom: 8 }
+  }, lbl("Drinks menu URL"), /*#__PURE__*/React.createElement("input", {
  value: f.menuDrinks || "",
  onChange: e => u("menuDrinks", e.target.value),
- placeholder: "Drinks menu URL",
- style: { flex: 1, padding: "8px 10px", background: th.inp, border: "0.5px solid " + th.bdr, color: th.text, fontSize: 12, fontFamily: "'DM Sans'" }
+ placeholder: "https://...",
+ style: { ...inpStyle, fontSize: 12 }
   }))),
  /* ── 7. MORE OPTIONS (collapsible) ── */
  secHead("gear", "More options", secMore, () => setSecMore(!secMore), !!f.photo), secMore && /*#__PURE__*/React.createElement("div", {
@@ -6392,7 +6390,7 @@ function App() {
  color: th.text
  }
  }, "✏️")) : null;
-  }))), /*#__PURE__*/React.createElement(Sec, { th: th }, "Passports"), /*#__PURE__*/React.createElement("div", { style: { fontSize: 11, color: th.mut, marginBottom: 10, lineHeight: 1.4 } }, "\ud83d\udd12 Stored only on this device (offline). Not included in JSON backup."), [["passport_amanda", "Amanda"], ["passport_liam", "Liam"]].map(([slot, name]) => /*#__PURE__*/React.createElement("div", { key: slot, style: { background: th.card, borderRadius: 14, border: "0.5px solid " + th.bdr, padding: "12px 14px", marginBottom: 8, boxShadow: th.sh } }, /*#__PURE__*/React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 8, marginBottom: 10 } }, /*#__PURE__*/React.createElement("span", { style: { width: 30, height: 30, borderRadius: 15, background: th.tag, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14 } }, "\ud83d\udc64"), /*#__PURE__*/React.createElement("span", { style: { fontSize: 14, fontWeight: 500, color: th.text } }, name)), (travelDocs[slot] || []).length > 0 && /*#__PURE__*/React.createElement("div", { style: { marginBottom: 10 } }, travelDocs[slot].map(t => /*#__PURE__*/React.createElement("div", { key: t.id, style: { display: "flex", alignItems: "center", gap: 8, padding: "7px 0", borderBottom: "0.5px solid " + th.bdr } }, /*#__PURE__*/React.createElement("span", { style: { fontSize: 14 } }, t.type && t.type.indexOf("image") === 0 ? "\ud83d\uddbc\ufe0f" : "\ud83d\udcc4"), /*#__PURE__*/React.createElement("span", { style: { fontSize: 12, color: th.text, flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" } }, t.name), /*#__PURE__*/React.createElement("span", { onClick: () => setTicketsView(travelDocs[slot]), style: { fontSize: 11, color: th.acc, fontWeight: 500, cursor: "pointer" } }, "View"), edit && /*#__PURE__*/React.createElement("span", { onClick: () => removeTravelDoc(slot, t.id), style: { fontSize: 11, color: "#ef4444", cursor: "pointer" } }, "Remove")))), (edit || (travelDocs[slot] || []).length === 0) && /*#__PURE__*/React.createElement("label", { style: { display: "block", width: "100%", padding: "10px", borderRadius: 10, border: "1px dashed " + th.acc, background: "transparent", color: th.acc, fontSize: 12, fontWeight: 500, cursor: "pointer", textAlign: "center", boxSizing: "border-box" } }, "+ Add passport photo / PDF", /*#__PURE__*/React.createElement("input", { type: "file", accept: "image/*,application/pdf", multiple: true, style: { display: "none" }, onChange: e => { const files = Array.from(e.target.files || []); if (files.length) attachTravelDoc(slot, files); e.target.value = ""; } }))))), tab === "phiphi" && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+  }))), homeView === "overview" && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(Sec, { th: th }, "Passports"), /*#__PURE__*/React.createElement("div", { style: { fontSize: 11, color: th.mut, marginBottom: 10, lineHeight: 1.4 } }, "\ud83d\udd12 Stored only on this device (offline). Not included in JSON backup."), [["passport_amanda", "Amanda"], ["passport_liam", "Liam"]].map(([slot, name]) => /*#__PURE__*/React.createElement("div", { key: slot, style: { background: th.card, borderRadius: 14, border: "0.5px solid " + th.bdr, padding: "12px 14px", marginBottom: 8, boxShadow: th.sh } }, /*#__PURE__*/React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 8, marginBottom: 10 } }, /*#__PURE__*/React.createElement("span", { style: { width: 30, height: 30, borderRadius: 15, background: th.tag, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14 } }, "\ud83d\udc64"), /*#__PURE__*/React.createElement("span", { style: { fontSize: 14, fontWeight: 500, color: th.text } }, name)), (travelDocs[slot] || []).length > 0 && /*#__PURE__*/React.createElement("div", { style: { marginBottom: 10 } }, travelDocs[slot].map(t => /*#__PURE__*/React.createElement("div", { key: t.id, style: { display: "flex", alignItems: "center", gap: 8, padding: "7px 0", borderBottom: "0.5px solid " + th.bdr } }, /*#__PURE__*/React.createElement("span", { style: { fontSize: 14 } }, t.type && t.type.indexOf("image") === 0 ? "\ud83d\uddbc\ufe0f" : "\ud83d\udcc4"), /*#__PURE__*/React.createElement("span", { style: { fontSize: 12, color: th.text, flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" } }, t.name), /*#__PURE__*/React.createElement("span", { onClick: () => setTicketsView(travelDocs[slot]), style: { fontSize: 11, color: th.acc, fontWeight: 500, cursor: "pointer" } }, "View"), edit && /*#__PURE__*/React.createElement("span", { onClick: () => removeTravelDoc(slot, t.id), style: { fontSize: 11, color: "#ef4444", cursor: "pointer" } }, "Remove")))), (edit || (travelDocs[slot] || []).length === 0) && /*#__PURE__*/React.createElement("label", { style: { display: "block", width: "100%", padding: "10px", borderRadius: 10, border: "1px dashed " + th.acc, background: "transparent", color: th.acc, fontSize: 12, fontWeight: 500, cursor: "pointer", textAlign: "center", boxSizing: "border-box" } }, "+ Add passport photo / PDF", /*#__PURE__*/React.createElement("input", { type: "file", accept: "image/*,application/pdf", multiple: true, style: { display: "none" }, onChange: e => { const files = Array.from(e.target.files || []); if (files.length) attachTravelDoc(slot, files); e.target.value = ""; } })))))), tab === "phiphi" && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
  style: {
  fontFamily: "'Fraunces',Georgia,serif",
  fontSize: 24,
