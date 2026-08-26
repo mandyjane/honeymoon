@@ -622,21 +622,21 @@ const TRIP_DAYS = [{
   iso: "2027-02-21"
 }, {
   id: "d_22",
-  label: "Sun 22 Feb",
+  label: "Mon 22 Feb",
   loc: "Phuket",
   dow: "SUN",
   dn: "22",
   iso: "2027-02-22"
 }, {
   id: "d_23",
-  label: "Mon 23 Feb",
+  label: "Tue 23 Feb",
   loc: "Phuket",
   dow: "MON",
   dn: "23",
   iso: "2027-02-23"
 }, {
   id: "d_24",
-  label: "Tue 24 Feb",
+  label: "Wed 24 Feb",
   loc: "Phuket",
   dow: "TUE",
   dn: "24",
@@ -1922,7 +1922,7 @@ const INIT_CARDS = {
     _t: "flight",
     from: "SIN",
     to: "BNE",
-    date: "Thu 25→Thu 26 Feb",
+    date: "Thu 25→Fri 26 Feb",
     dep: "21:35",
     arr: "07:15+1",
     flight: "SQ-235",
@@ -2190,17 +2190,17 @@ const INIT_ACTS = {
     acts: [mk("pk1", "🌅", "Patong Beach Sunset", "1–2 hrs", "On-site", "Walk", "Free", "Andaman Sea sunsets are spectacular."), mk("pk2", "🌃", "Bangla Road", "2–3 hrs", "500m", "Walk 5 min", "฿100–400 (A$4–18)", "Neon walking street. Go after 9pm.")]
   }, {
     id: "pk_d2",
-    label: "Day 11 — Sun 22 Feb",
+    label: "Day 11 — Mon 22 Feb",
     note: "",
     acts: [mk("pk3", "🏖️", "Patong Water Sports", "2–3 hrs", "On-site", "Walk", "฿500–2,500 (A$22–111)", "Jet skiing, parasailing, banana boats."), mk("pk4", "🛕", "Big Buddha & Wat Chalong", "3–4 hrs", "16 km", "Grab 30 min", "Free (donation)", "45m marble Buddha. 360° views. Dress modestly."), mk("pk5", "🏘️", "Phuket Old Town", "2–3 hrs", "12 km", "Grab 25 min", "Free", "Sino-Portuguese streets, cafés, street art.")]
   }, {
     id: "pk_d3",
-    label: "Day 12 — Mon 23 Feb",
+    label: "Day 12 — Tue 23 Feb",
     note: "",
     acts: [mk("pk6", "🏝️", "James Bond Island", "8–9 hrs", "Full day", "Hotel pickup", "฿1,500–2,200 (A$67–98)", "Limestone karsts, sea caves, mangroves. Lunch incl."), mk("pk7", "💆", "Swasana Spa", "1.5–2 hrs", "On-site", "Walk", "฿1,500–3,500 (A$67–156)", "Massage, wraps, facials. Perfect after boat day.")]
   }, {
     id: "pk_d4",
-    label: "Day 13 — Tue 24 Feb",
+    label: "Day 13 — Wed 24 Feb",
     note: "",
     acts: [mk("pk8", "🏖️", "Freedom Beach", "2–3 hrs", "3 km", "Longtail 10 min", "฿1,500 boat + ฿100 entry (A$71)", "Hidden white sand, boat-only. Great snorkelling."), mk("pk9", "🥊", "Muay Thai Fight Night", "2.5–3 hrs", "2 km", "Grab 5 min", "฿1,500–2,500 (A$67–111)", "Ringside at Patong Boxing Stadium."), mk("pk10", "🛒", "Malin Plaza Night Market", "1–2 hrs", "1 km", "Walk 10 min", "฿40–200/dish (A$2–9)", "Street food, souvenirs. Last-night shopping.")]
   }, {
@@ -4528,7 +4528,7 @@ const NoteC = ({
     gap: 8,
     boxShadow: "0 1px 4px rgba(0,0,0,.03)"
   }
-}, /*#__PURE__*/React.createElement("span", {
+}, d.text && d.text.indexOf("\u23f3") >= 0 ? /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(Ico, { name: "clock", size: 14, color: th.sub, sw: 1.5 }), /*#__PURE__*/React.createElement("span", { style: { flex: 1 } }, d.text.replace("\u23f3 ", ""))) : /*#__PURE__*/React.createElement("span", {
   style: {
     flex: 1
   }
@@ -4694,11 +4694,9 @@ const ActC = ({
   onRm,
   onOpenTickets,
   onLogCost,
-  layout,
   idx
 }) => {
-  if (layout === "magazine") {
-    return /*#__PURE__*/React.createElement(ActMag, {
+  return /*#__PURE__*/React.createElement(ActMag, {
       th: th,
       act: act,
       edit: edit,
@@ -4707,251 +4705,8 @@ const ActC = ({
       onLogCost: onLogCost,
       onOpenTickets: onOpenTickets
     });
-  }
-  return /*#__PURE__*/React.createElement("div", {
-  style: {
-    background: th.card,
-    borderRadius: 14,
-    padding: "14px 16px",
-    marginBottom: 10,
-    boxShadow: th.sh,
-    borderLeft: `3px solid ${act.tag === "meal" ? "#dc2626" : act.tag === "drinks" ? "#7c3aed" : th.actBdr}`,
-    position: "relative"
-  }
-}, act.mapQuery && /*#__PURE__*/React.createElement("div", {
-  onClick: () => window.open("https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(act.mapQuery), "_blank"),
-  style: {
-    position: "absolute",
-    top: 12,
-    right: edit ? 72 : 12,
-    display: "flex",
-    alignItems: "center",
-    gap: 4,
-    background: th.dark ? "rgba(14,116,144,0.2)" : "rgba(14,116,144,0.08)",
-    padding: "5px 10px",
-    borderRadius: 12,
-    cursor: "pointer"
-  }
-}, /*#__PURE__*/React.createElement("svg", {
-  width: "11",
-  height: "11",
-  viewBox: "0 0 24 24",
-  fill: "none",
-  stroke: th.acc,
-  strokeWidth: "2",
-  strokeLinecap: "round",
-  strokeLinejoin: "round"
-}, /*#__PURE__*/React.createElement("path", {
-  d: "M12 21c-4.97-5.03-8-8.5-8-12a8 8 0 1 1 16 0c0 3.5-3.03 6.97-8 12z"
-}), /*#__PURE__*/React.createElement("circle", {
-  cx: "12",
-  cy: "9",
-  r: "2.5"
-})), /*#__PURE__*/React.createElement("span", {
-  style: {
-    fontSize: 10,
-    color: th.acc,
-    fontWeight: 500
-  }
-}, "Map")), edit && /*#__PURE__*/React.createElement("div", {
-  style: {
-    position: "absolute",
-    top: 8,
-    right: 8,
-    display: "flex",
-    gap: 4
-  }
-}, /*#__PURE__*/React.createElement("button", {
-  onClick: () => onEdit(act),
-  style: {
-    background: th.acc,
-    color: "#fff",
-    border: "none",
-    borderRadius: 6,
-    width: 28,
-    height: 28,
-    fontSize: 13,
-    cursor: "pointer"
-  }
-}, "✏️"), /*#__PURE__*/React.createElement("button", {
-  onClick: () => onRm(act.id),
-  style: {
-    background: th.coral,
-    color: "#fff",
-    border: "none",
-    borderRadius: 6,
-    width: 28,
-    height: 28,
-    fontSize: 13,
-    cursor: "pointer"
-  }
-}, "✕")), /*#__PURE__*/React.createElement("div", {
-  style: {
-    display: "flex",
-    alignItems: "flex-start",
-    gap: 10,
-    paddingRight: edit ? 70 : 0
-  }
-}, /*#__PURE__*/React.createElement("span", {
-  style: {
-    fontSize: 24,
-    lineHeight: 1,
-    flexShrink: 0
-  }
-}, act.emoji), /*#__PURE__*/React.createElement("div", {
-  style: {
-    flex: 1,
-    minWidth: 0
-  }
-}, /*#__PURE__*/React.createElement("div", {
-  style: {
-    fontWeight: 700,
-    fontSize: 14,
-    color: th.text,
-    marginBottom: 4
-  }
-}, act.title), act.desc && /*#__PURE__*/React.createElement("div", {
-  style: {
-    fontSize: 12,
-    color: th.sub,
-    marginBottom: 8,
-    lineHeight: 1.4
-  }
-}, act.desc), /*#__PURE__*/React.createElement("div", {
-  style: {
-    display: "flex",
-    flexWrap: "wrap",
-    gap: 5
-  }
-}, (act.startTime || act.endTime) && /*#__PURE__*/React.createElement("span", {
-  style: {
-    fontSize: 10,
-    background: th.tag,
-    color: th.sub,
-    padding: "2px 7px",
-    borderRadius: 6,
-    display: "inline-flex",
-    alignItems: "center",
-    gap: 3
-  }
-}, /*#__PURE__*/React.createElement(Ico, { name: "clock", size: 10, color: th.sub, sw: 1.5 }), " ", act.startTime || "?", act.endTime ? " – " + act.endTime : ""), act.dur && /*#__PURE__*/React.createElement("span", {
-  style: {
-    fontSize: 10,
-    background: th.tag,
-    color: th.sub,
-    padding: "2px 7px",
-    borderRadius: 6,
-    display: "inline-flex",
-    alignItems: "center",
-    gap: 3
-  }
-}, /*#__PURE__*/React.createElement(Ico, { name: "clock", size: 10, color: th.sub, sw: 1.5 }), " ", act.dur), act.dist && /*#__PURE__*/React.createElement("span", {
-  style: {
-    fontSize: 10,
-    background: th.tag,
-    color: th.sub,
-    padding: "2px 7px",
-    borderRadius: 6,
-    display: "inline-flex",
-    alignItems: "center",
-    gap: 3
-  }
-}, /*#__PURE__*/React.createElement(Ico, { name: "pin", size: 10, color: th.sub, sw: 1.5 }), " ", act.dist), act.how && /*#__PURE__*/React.createElement("span", {
-  style: {
-    fontSize: 10,
-    background: th.tag,
-    color: th.sub,
-    padding: "2px 7px",
-    borderRadius: 6
-  }
-}, act.howIcon || guessIcon(act.how), " ", act.how), act.tag && /*#__PURE__*/React.createElement("span", {
-  style: {
-    fontSize: 10,
-    background: act.tag === "meal" ? "rgba(239,68,68,0.08)" : "rgba(168,85,247,0.08)",
-    color: act.tag === "meal" ? "#dc2626" : "#7c3aed",
-    padding: "2px 7px",
-    borderRadius: 6,
-    fontWeight: 500
-  }
-}, act.tag === "meal" ? "🍽️ Meal" : "🍸 Drinks"), act.price && /*#__PURE__*/React.createElement("span", {
-  onClick: () => onLogCost && onLogCost(act),
-  style: {
-    fontSize: 10,
-    background: th.tagAcc,
-    color: th.coral,
-    padding: "2px 7px",
-    borderRadius: 6,
-    cursor: "pointer",
-    display: "inline-flex",
-    alignItems: "center",
-    gap: 3
-  }
-}, /*#__PURE__*/React.createElement(Ico, { name: "wallet", size: 10, color: th.coral, sw: 1.5 }), " ", act.price), act.actualCost ? /*#__PURE__*/React.createElement("span", {
-  onClick: () => onLogCost && onLogCost(act),
-  style: {
-    fontSize: 10,
-    background: "#ede9fe",
-    color: "#5b21b6",
-    padding: "2px 7px",
-    borderRadius: 6,
-    fontWeight: 500,
-    cursor: "pointer"
-  }
-}, "✓ ฿", Number(act.actualCost).toLocaleString(), " ✎") : !act.price && /*#__PURE__*/React.createElement("span", {
-  onClick: () => onLogCost && onLogCost(act),
-  style: {
-    fontSize: 10,
-    background: "transparent",
-    color: "#8b5cf6",
-    padding: "2px 7px",
-    borderRadius: 6,
-    cursor: "pointer",
-    border: `1px dashed #c4b5fd`,
-    fontWeight: 500
-  }
-}, "+ Log ฿ paid")), (act.webUrl || act.bookUrl || act.tickets && act.tickets.length > 0) && /*#__PURE__*/React.createElement("div", {
-  style: {
-    display: "flex",
-    gap: 6,
-    marginTop: 6,
-    flexWrap: "wrap"
-  }
-}, act.webUrl && /*#__PURE__*/React.createElement("span", {
-  onClick: () => window.open(act.webUrl, "_blank"),
-  style: {
-    fontSize: 10,
-    color: th.acc,
-    background: th.tag,
-    padding: "3px 8px",
-    borderRadius: 6,
-    cursor: "pointer",
-    border: `0.5px solid ${th.bdr}`
-  }
-}, "🌐 Website"), act.bookUrl && /*#__PURE__*/React.createElement("span", {
-  onClick: () => window.open(act.bookUrl, "_blank"),
-  style: {
-    fontSize: 10,
-    color: th.acc,
-    background: th.tag,
-    padding: "3px 8px",
-    borderRadius: 6,
-    cursor: "pointer",
-    border: `0.5px solid ${th.bdr}`
-  }
-}, "🎫 Book"), act.tickets && act.tickets.length > 0 && /*#__PURE__*/React.createElement("span", {
-  onClick: () => onOpenTickets && onOpenTickets(act.tickets),
-  style: {
-    fontSize: 10,
-    color: "#5b21b6",
-    background: "#ede9fe",
-    padding: "3px 8px",
-    borderRadius: 6,
-    cursor: "pointer",
-    border: `0.5px solid #ddd6fe`,
-    fontWeight: 600
-  }
-}, "🎟️ ", act.tickets.length, " ticket", act.tickets.length > 1 ? "s" : "")))));
 };
+
 const Sec = ({
   th,
   children
@@ -5830,7 +5585,6 @@ function App() {
   const [dark, setDark] = useState(false);
   const [edit, setEdit] = useState(false);
   const [showFab, setShowFab] = useState(false);
-  const [layoutMode, setLayoutMode] = useState("current");
   const [cards, setCards] = useState(INIT_CARDS);
   const [docs, setDocs] = useState(INIT_DOCS);
   const [acts, setActs] = useState(() => addMaps(INIT_ACTS));
@@ -5893,7 +5647,6 @@ function App() {
       if (s.heroImg) setHeroImg(s.heroImg);
       if (s.dark !== undefined) setDark(s.dark);
       if (s.showFab !== undefined) setShowFab(s.showFab);
-      if (s.layoutMode) setLayoutMode(s.layoutMode);
       if (s.travelDocs) setTravelDocs({ tdacReceived: false, tdac: [], passport_amanda: [], passport_liam: [], ...s.travelDocs });
     }
     setLoaded(true);
@@ -5911,9 +5664,8 @@ function App() {
       dark,
       showFab,
       travelDocs,
-      layoutMode
     });
-  }, [cards, docs, acts, standby, meals, packing, budgetTotal, heroImg, dark, showFab, travelDocs, layoutMode, loaded]);
+  }, [cards, docs, acts, standby, meals, packing, budgetTotal, heroImg, dark, showFab, travelDocs, loaded]);
   useEffect(() => {
     document.body.className = dark ? "dark" : "";
   }, [dark]);
@@ -6145,7 +5897,6 @@ function App() {
     th: th,
     act: a,
     edit: edit,
-    layout: layoutMode,
     idx: ai,
     onEdit: a => {
       sEa(a);
@@ -7572,29 +7323,7 @@ function App() {
       transition: "left .3s",
       boxShadow: "0 1px 3px rgba(0,0,0,.2)"
     }
-  }))))), /*#__PURE__*/React.createElement("div", {
-    style: { background: th.card, borderRadius: 16, padding: 16, boxShadow: th.sh, marginBottom: 12 }
-  }, /*#__PURE__*/React.createElement("div", {
-    style: { fontSize: 14, fontWeight: 600, color: th.text, marginBottom: 2 }
-  }, "🎨 Itinerary Layout"), /*#__PURE__*/React.createElement("div", {
-    style: { fontSize: 12, color: th.mut, marginBottom: 12 }
-  }, "How activities appear on destination pages"), /*#__PURE__*/React.createElement("div", {
-    style: { display: "flex", gap: 6 }
-  }, [["current", "Cards"], ["magazine", "Magazine"]].map(([val, label]) => /*#__PURE__*/React.createElement("button", {
-    key: val,
-    onClick: () => setLayoutMode(val),
-    style: {
-      flex: 1,
-      padding: "10px 8px",
-      borderRadius: 10,
-      border: layoutMode === val ? `1.5px solid ${th.acc}` : `1px solid ${th.bdr}`,
-      background: layoutMode === val ? (th.dark ? "rgba(14,116,144,0.15)" : "rgba(14,116,144,0.08)") : "transparent",
-      color: layoutMode === val ? th.acc : th.sub,
-      fontSize: 13,
-      fontWeight: layoutMode === val ? 600 : 400,
-      cursor: "pointer"
-    }
-  }, label)))), standby.length > 0 && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(Sec, {
+  }))))), standby.length > 0 && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(Sec, {
     th: th
   }, "Standby List (", standby.length, ")"), /*#__PURE__*/React.createElement(NoteC, {
     th: th,
