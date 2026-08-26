@@ -4739,7 +4739,7 @@ const Sec = ({
   }
 }));
 /* ── ACTIVITY EDIT MODAL ── */
-const TRANSPORT_CHIPS = [["sail", "Boat"], ["longtail", "Longtail"], ["car", "Taxi/Grab"], ["walk", "Walk"], ["scooter", "Scooter"], ["bus", "Pickup"], ["ticket", "Part of tour"], ["home", "On-site"], ["car", "Drive"], ["bus", "Bus"], ["plane", "Fly"], ["kayak", "Kayak"]];
+const TRANSPORT_CHIPS = [["car", "Taxi/Grab"], ["bus", "Pickup"], ["scooter", "Scooter"], ["bus", "Bus"], ["walk", "Walk"], ["car", "Drive"], ["ticket", "Part of tour"], ["home", "On-site"], ["sail", "Boat"], ["longtail", "Longtail"], ["plane", "Fly"], ["kayak", "Kayak"]];
 const DURATION_PRESETS = ["1-2 hrs", "Half day", "Full day", "Evening"];
 const ActEditM = ({
   th,
@@ -4748,7 +4748,8 @@ const ActEditM = ({
   curDay,
   onSave,
   onMove,
-  onClose
+  onClose,
+  hiddenTransport
 }) => {
   const [f, sF] = useState({
  ...act,
@@ -4928,7 +4929,7 @@ const ActEditM = ({
  gap: 6,
  marginBottom: 10
  }
-  }, TRANSPORT_CHIPS.map(([ico, label]) => {
+  }, TRANSPORT_CHIPS.filter(([_, label]) => !(hiddenTransport || []).includes(label)).map(([ico, label]) => {
  const hows = (f.how || "").split(", ").filter(Boolean);
  const icons = (f.howIcon || "").split(",").filter(Boolean);
  const active = hows.includes(label);
@@ -5025,7 +5026,7 @@ const ActEditM = ({
  const v = e.target.value;
  sF(p => {
  const n = { ...p, priceAUD: v };
- if (p.priceTHB) n.price = fmtPrice(p.priceTHB, v, p.priceSuffix); else n.price = v;
+ if (p.priceTHB) n.price = fmtPrice(p.priceTHB, v, p.priceSuffix); else n.price = v + (p.priceSuffix || "");
  return n;
  });
  },
@@ -5034,7 +5035,7 @@ const ActEditM = ({
  const prefixed = "A$" + f.priceAUD.trim();
  sF(p => {
  const n = { ...p, priceAUD: prefixed };
- if (p.priceTHB) n.price = fmtPrice(p.priceTHB, prefixed, p.priceSuffix); else n.price = prefixed;
+ if (p.priceTHB) n.price = fmtPrice(p.priceTHB, prefixed, p.priceSuffix); else n.price = prefixed + (p.priceSuffix || "");
  return n;
  });
  }
@@ -5047,7 +5048,7 @@ const ActEditM = ({
  const v = e.target.value;
  sF(p => {
  const n = { ...p, priceSuffix: v };
- if (p.priceTHB) n.price = fmtPrice(p.priceTHB, p.priceAUD, v);
+ if (p.priceTHB) n.price = fmtPrice(p.priceTHB, p.priceAUD, v); else if (p.priceAUD) n.price = p.priceAUD + (v || "");
  return n;
  });
  },
@@ -5354,6 +5355,11 @@ function App() {
   const [mEdit, setMEdit] = useState(null); // editing meal
   const [mAdd, setMAdd] = useState(false);
   const [packOpen, setPackOpen] = useState(false);
+  const [transportPopup, setTransportPopup] = useState(false);
+  const [hiddenTransport, setHiddenTransport] = useState(() => {
+ const s = load();
+ return s && s.hiddenTransport ? s.hiddenTransport : [];
+  });
   const [ticketsView, setTicketsView] = useState(null);
   const [quickCostAct, setQuickCostAct] = useState(null);
   const [budgetTotal, setBudgetTotal] = useState(() => {
@@ -5423,9 +5429,10 @@ function App() {
  dark,
  travelDocs,
  homeView,
- dividerStyle
+ dividerStyle,
+ hiddenTransport
  });
-  }, [cards, docs, acts, standby, meals, packing, budgetTotal, heroImg, dark, travelDocs, homeView, dividerStyle, loaded]);
+  }, [cards, docs, acts, standby, meals, packing, budgetTotal, heroImg, dark, travelDocs, homeView, dividerStyle, hiddenTransport, loaded]);
   useEffect(() => {
  document.body.className = dark ? "dark" : "";
   }, [dark]);
@@ -6889,7 +6896,17 @@ function App() {
  color: th.mut,
  marginBottom: 12
  }
-  }, "Customise your itinerary"), /*#__PURE__*/React.createElement("button", {
+  }, "Customise your itinerary"),
+ /* Transport Options button */
+ /*#__PURE__*/React.createElement("button", {
+ onClick: () => setTransportPopup(true),
+ style: { width: "100%", display: "flex", alignItems: "center", gap: 12, padding: "14px 16px", background: th.card, border: `0.5px solid ${th.bdr}`, borderRadius: 16, boxShadow: th.sh, marginBottom: 12, cursor: "pointer" }
+ }, /*#__PURE__*/React.createElement(Ico, { name: "car", size: 20, color: th.acc, sw: 1.5 }),
+ /*#__PURE__*/React.createElement("div", { style: { flex: 1, textAlign: "left" } },
+ /*#__PURE__*/React.createElement("div", { style: { fontSize: 14, fontWeight: 600, color: th.text } }, "Transport Options"),
+ /*#__PURE__*/React.createElement("div", { style: { fontSize: 11, color: th.mut } }, hiddenTransport.length > 0 ? hiddenTransport.length + " hidden" : "All visible")),
+ /*#__PURE__*/React.createElement("span", { style: { fontSize: 16, color: th.mut } }, "›")),
+ /*#__PURE__*/React.createElement("button", {
  onClick: () => setPackOpen(true),
  style: {
  width: "100%",
@@ -7225,7 +7242,39 @@ function App() {
  packing: packing,
  setPacking: setPacking,
  onClose: () => setPackOpen(false)
-  }), ticketsView && /*#__PURE__*/React.createElement(TicketsM, {
+  }), transportPopup && (() => {
+ const [tempHidden, setTempHidden] = React.useState([...hiddenTransport]);
+ const toggle = label => setTempHidden(p => p.includes(label) ? p.filter(x => x !== label) : [...p, label]);
+ return /*#__PURE__*/React.createElement("div", {
+ style: { position: "fixed", inset: 0, zIndex: 9999, background: "rgba(0,0,0,.45)", display: "flex", alignItems: "flex-end" },
+ onClick: e => { if (e.target === e.currentTarget) setTransportPopup(false); }
+ }, /*#__PURE__*/React.createElement("div", {
+ style: { width: "100%", maxWidth: 600, margin: "0 auto", borderRadius: "20px 20px 0 0", background: th.card, padding: "20px 18px 32px" }
+ }, /*#__PURE__*/React.createElement("div", { style: { fontSize: 15, fontWeight: 700, color: th.text, marginBottom: 4 } }, "Transport Options"),
+ /*#__PURE__*/React.createElement("div", { style: { fontSize: 11, color: th.mut, marginBottom: 16 } }, "Tap to show or hide transport options in the activity editor"),
+ /*#__PURE__*/React.createElement("div", { style: { display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 16 } },
+ TRANSPORT_CHIPS.map(([ico, label]) => {
+ const hidden = tempHidden.includes(label);
+ return /*#__PURE__*/React.createElement("button", {
+ key: ico + label,
+ onClick: () => toggle(label),
+ style: { display: "flex", alignItems: "center", gap: 6, padding: "10px 14px", borderRadius: 20, fontSize: 13, cursor: "pointer",
+ border: hidden ? `1px solid ${th.bdr}` : `1px solid ${th.acc}`,
+ background: hidden ? th.inp : (th.dark ? "rgba(20,184,166,.12)" : "rgba(20,184,166,.08)"),
+ color: hidden ? th.mut : th.acc,
+ opacity: hidden ? 0.5 : 1 }
+ }, /*#__PURE__*/React.createElement(Ico, { name: ico, size: 14, color: hidden ? th.mut : th.acc, sw: 1.5 }), label);
+ })),
+ /*#__PURE__*/React.createElement("div", { style: { display: "flex", gap: 10 } },
+ /*#__PURE__*/React.createElement("button", {
+ onClick: () => { setHiddenTransport(tempHidden); setTransportPopup(false); },
+ style: { flex: 1, padding: 13, borderRadius: 12, border: "none", background: th.acc, color: "#fff", fontSize: 14, fontWeight: 700, cursor: "pointer" }
+ }, "Done"),
+ /*#__PURE__*/React.createElement("button", {
+ onClick: () => setTransportPopup(false),
+ style: { padding: "13px 20px", borderRadius: 12, border: `1px solid ${th.bdr}`, background: "transparent", color: th.text, fontSize: 14, cursor: "pointer" }
+ }, "Cancel"))));
+ })(), ticketsView && /*#__PURE__*/React.createElement(TicketsM, {
  th: th,
  tickets: ticketsView,
  onClose: () => setTicketsView(null)
@@ -7256,6 +7305,7 @@ function App() {
  act: ea,
  days: allDays,
  curDay: ed,
+ hiddenTransport: hiddenTransport,
  onSave: u => saveAct(eDst, ed, u),
  onMove: (a, td) => moveAct(eDst, ed, a, td),
  onClose: () => sEa(null)
