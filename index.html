@@ -4523,6 +4523,7 @@ const LU = {
   chevDown: [["path", { d: "m6 9 6 6 6-6" }]],
   hourglass: [["path", { d: "M5 22h14" }], ["path", { d: "M5 2h14" }], ["path", { d: "M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22" }], ["path", { d: "M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.172V2" }]],
   timer: [["line", { x1: "10", x2: "14", y1: "2", y2: "2" }], ["line", { x1: "12", x2: "15", y1: "14", y2: "11" }], ["circle", { cx: "12", cy: "14", r: "8" }]],
+  "check-square": [["rect", { x: "3", y: "3", width: "18", height: "18", rx: "2" }], ["path", { d: "m9 12 2 2 4-4" }]],
   wallet: [["path", { d: "M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1" }], ["path", { d: "M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4" }]],
   sail: [["path", { d: "M2 21c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1 .6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1" }], ["path", { d: "M19.38 20A11.6 11.6 0 0 0 21 14l-9-4-9 4c0 2.9.94 5.34 2.81 7.76" }], ["path", { d: "M19 13V7a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v6" }], ["path", { d: "M12 10v4" }], ["path", { d: "M12 2v3" }]],
   ticket: [["path", { d: "M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z" }], ["path", { d: "M13 5v2" }], ["path", { d: "M13 17v2" }], ["path", { d: "M13 11v2" }]],
@@ -4738,6 +4739,57 @@ const Sec = ({
  opacity: 0.4
   }
 }));
+/* ── DAILY ESSENTIALS MODAL ── */
+const ESSENTIALS_DEFAULTS = ["Phone", "Keys", "Cash"];
+const ESSENTIALS_QUICK = ["Sunglasses", "Hat", "Towel", "Water bottle", "Insect spray", "Sunscreen", "GoPro", "Dry bag", "Snorkel gear", "Charger"];
+const DailyEssM = ({ th, dayNum, dayLabel, essentials, onSave, onClose }) => {
+  const [items, setItems] = useState(essentials || ESSENTIALS_DEFAULTS.map(t => ({ t, done: false, def: true })));
+  const [input, setInput] = useState("");
+  const [showMore, setShowMore] = useState(false);
+  const toggle = i => setItems(p => p.map((it, j) => j === i ? { ...it, done: !it.done } : it));
+  const addItem = t => { if (t && !items.find(x => x.t === t)) setItems(p => [...p, { t, done: false, def: false }]); };
+  const rmItem = i => setItems(p => p.filter((_, j) => j !== i));
+  const doneCount = items.filter(x => x.done).length;
+  return /*#__PURE__*/React.createElement("div", {
+ style: { position: "fixed", inset: 0, zIndex: 9999, background: "rgba(0,0,0,.45)", display: "flex", alignItems: "flex-end" },
+ onClick: e => { if (e.target === e.currentTarget) { onSave(items); onClose(); } }
+  }, /*#__PURE__*/React.createElement("div", {
+ style: { width: "100%", maxWidth: 600, margin: "0 auto", borderRadius: "20px 20px 0 0", background: th.card, padding: "20px 18px 32px", maxHeight: "85vh", overflowY: "auto" }
+  }, /*#__PURE__*/React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 } },
+ /*#__PURE__*/React.createElement("div", null,
+ /*#__PURE__*/React.createElement("div", { style: { fontSize: 15, fontWeight: 700, color: th.text } }, "Day ", dayNum, " Essentials"),
+ /*#__PURE__*/React.createElement("div", { style: { fontSize: 11, color: th.mut } }, dayLabel)),
+ /*#__PURE__*/React.createElement("button", { onClick: () => { onSave(items); onClose(); }, style: { width: 32, height: 32, border: "none", background: th.inp, color: th.text, fontSize: 16, cursor: "pointer" } }, "\u2715")),
+ /*#__PURE__*/React.createElement("div", { style: { padding: "8px 12px", fontSize: 11, marginBottom: 12, background: th.dark ? "rgba(20,184,166,.1)" : "#f0fdf4", color: th.acc } },
+ "\u2713 ", doneCount, " of ", items.length, " packed"),
+ items.map((it, i) => /*#__PURE__*/React.createElement("div", {
+ key: i, style: { display: "flex", alignItems: "center", gap: 10, padding: "11px 0", borderBottom: "0.5px solid " + th.bdr }
+  }, /*#__PURE__*/React.createElement("button", {
+ onClick: () => toggle(i),
+ style: { width: 20, height: 20, border: it.done ? "none" : "1.5px solid " + th.bdr, background: it.done ? th.acc : "transparent", color: "#fff", fontSize: 12, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", flexShrink: 0 }
+  }, it.done ? "\u2713" : ""),
+ /*#__PURE__*/React.createElement("span", { style: { flex: 1, fontSize: 13, color: th.text, textDecoration: it.done ? "line-through" : "none", opacity: it.done ? 0.5 : 1 } }, it.t),
+ it.def ? /*#__PURE__*/React.createElement("span", { style: { fontSize: 9, padding: "2px 6px", fontWeight: 500, background: th.dark ? "rgba(20,184,166,.12)" : "#f0fdf4", color: th.acc } }, "DEFAULT") :
+ /*#__PURE__*/React.createElement("button", { onClick: () => rmItem(i), style: { fontSize: 11, color: th.mut, background: "transparent", border: "none", cursor: "pointer", padding: "4px 6px" } }, "\u2715"))),
+ /*#__PURE__*/React.createElement("button", {
+ onClick: () => setShowMore(!showMore),
+ style: { width: "100%", padding: 10, border: "none", background: "transparent", color: th.acc, fontSize: 12, fontWeight: 500, cursor: "pointer", marginTop: 8, display: "flex", alignItems: "center", justifyContent: "center", gap: 4 }
+  }, showMore ? "- Hide options" : "+ Add items & options"),
+ showMore && /*#__PURE__*/React.createElement("div", { style: { marginTop: 4 } },
+ /*#__PURE__*/React.createElement("div", { style: { fontSize: 10, color: th.mut, textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 6 } }, "Quick add"),
+ /*#__PURE__*/React.createElement("div", { style: { display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 10 } },
+ ESSENTIALS_QUICK.filter(q => !items.find(x => x.t === q)).map(q => /*#__PURE__*/React.createElement("button", {
+ key: q, onClick: () => addItem(q),
+ style: { padding: "7px 12px", fontSize: 11, border: "1px dashed " + th.bdr, background: th.inp, color: th.acc, cursor: "pointer", display: "flex", alignItems: "center", gap: 4 }
+  }, "+ ", q))),
+ /*#__PURE__*/React.createElement("div", { style: { display: "flex", gap: 8, marginBottom: 10 } },
+ /*#__PURE__*/React.createElement("input", { value: input, onChange: e => setInput(e.target.value), onKeyDown: e => { if (e.key === "Enter" && input.trim()) { addItem(input.trim()); setInput(""); } }, placeholder: "Add custom item...", style: { flex: 1, padding: "9px 11px", fontSize: 13, border: "1px solid " + th.bdr, background: th.inp, color: th.text, fontFamily: "'DM Sans'" } }),
+ /*#__PURE__*/React.createElement("button", { onClick: () => { if (input.trim()) { addItem(input.trim()); setInput(""); } }, style: { padding: "9px 16px", border: "none", background: th.acc, color: "#fff", fontSize: 12, fontWeight: 600, cursor: "pointer" } }, "Add")),
+ /*#__PURE__*/React.createElement("button", {
+ onClick: () => setItems(ESSENTIALS_DEFAULTS.map(t => ({ t, done: false, def: true }))),
+ style: { width: "100%", padding: 10, border: "1px solid " + th.bdr, background: "transparent", color: th.sub, fontSize: 11, fontWeight: 600, cursor: "pointer" }
+  }, "\ud83d\udd04 Reset to defaults"))));
+};
 /* ── TRANSPORT OPTIONS MODAL ── */
 const TransportOptsM = ({ th, hiddenTransport, onSave, onClose }) => {
   const [tempHidden, setTempHidden] = useState([...hiddenTransport]);
@@ -5390,6 +5442,11 @@ function App() {
   const [mAdd, setMAdd] = useState(false);
   const [packOpen, setPackOpen] = useState(false);
   const [transportPopup, setTransportPopup] = useState(false);
+  const [essPopup, setEssPopup] = useState(false);
+  const [dailyEss, setDailyEss] = useState(() => {
+ const s = load();
+ return s && s.dailyEss ? s.dailyEss : {};
+  });
   const [hiddenTransport, setHiddenTransport] = useState(() => {
  const s = load();
  return s && s.hiddenTransport ? s.hiddenTransport : [];
@@ -5464,9 +5521,10 @@ function App() {
  travelDocs,
  homeView,
  dividerStyle,
- hiddenTransport
+ hiddenTransport,
+ dailyEss
  });
-  }, [cards, docs, acts, standby, meals, packing, budgetTotal, heroImg, dark, travelDocs, homeView, dividerStyle, hiddenTransport, loaded]);
+  }, [cards, docs, acts, standby, meals, packing, budgetTotal, heroImg, dark, travelDocs, homeView, dividerStyle, hiddenTransport, dailyEss, loaded]);
   useEffect(() => {
  document.body.className = dark ? "dark" : "";
   }, [dark]);
@@ -6003,6 +6061,12 @@ function App() {
  onLogCost: function(act) { setQuickCostAct({ act: act, dest: todayDest, dayId: todayDay.id }); }
  });
  })) : null,
+ /* Daily Essentials button */
+ React.createElement("button", {
+ onClick: function() { setEssPopup(true); },
+ style: { width: "100%", padding: 12, border: "1.5px solid " + th.acc, background: th.dark ? "rgba(20,184,166,.08)" : "rgba(20,184,166,.05)", color: th.acc, fontSize: 12, fontWeight: 600, cursor: "pointer", marginTop: 8, marginBottom: 4, display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }
+ }, React.createElement(Ico, { name: "check-square", size: 14, color: th.acc, sw: 1.5 }), "Day ", dayNum, " Essentials",
+ (() => { var ess = dailyEss["day_" + dayNum]; if (!ess) return null; var done = ess.filter(function(x){return x.done;}).length; return React.createElement("span", { style: { fontSize: 10, opacity: .7 } }, " \u00b7 ", done, "/", ess.length); })()),
  todayMeals.length > 0 ? React.createElement(React.Fragment, null,
  React.createElement(Sec, { th: th }, "Meals Logged"),
  todayMeals.map(function(m) { return React.createElement("div", {
@@ -7277,6 +7341,13 @@ function App() {
  packing: packing,
  setPacking: setPacking,
  onClose: () => setPackOpen(false)
+  }), essPopup && /*#__PURE__*/React.createElement(DailyEssM, {
+ th: th,
+ dayNum: (() => { var tripStart = new Date("2027-02-12"); var now = new Date(); return Math.max(1, Math.min(14, Math.floor((now - tripStart) / (1000 * 60 * 60 * 24)) + 1)); })(),
+ dayLabel: (() => { var todayId = getTodayDay(); var td = TRIP_DAYS.find(d => d.id === todayId); return td ? td.label + " \u00b7 " + td.loc : "Today"; })(),
+ essentials: dailyEss["day_" + (() => { var tripStart = new Date("2027-02-12"); var now = new Date(); return Math.max(1, Math.min(14, Math.floor((now - tripStart) / (1000 * 60 * 60 * 24)) + 1)); })()] || null,
+ onSave: items => { var dayNum = Math.max(1, Math.min(14, Math.floor((new Date() - new Date("2027-02-12")) / (1000 * 60 * 60 * 24)) + 1)); setDailyEss(p => ({ ...p, ["day_" + dayNum]: items })); },
+ onClose: () => setEssPopup(false)
   }), transportPopup && /*#__PURE__*/React.createElement(TransportOptsM, {
  th: th,
  hiddenTransport: hiddenTransport,
