@@ -6155,8 +6155,8 @@ const reorderAct = (dest, dayId, actIdx, dir) => {
         return React.createElement("div", {
           key: a.id, style: { display: "flex", gap: 12, marginBottom: 10, alignItems: "flex-start", flexDirection: isOdd ? "row-reverse" : "row" }
         }, React.createElement("div", {
-          style: { width: 56, height: 56, borderRadius: "50%", background: th.tag, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }
-        }, React.createElement("span", { style: { fontSize: 22 } }, a.emoji || "\ud83c\udf34")),
+          style: { width: 56, height: 56, borderRadius: "50%", background: a.photo ? "url(" + a.photo + ") center/cover" : th.tag, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }
+        }, !a.photo && React.createElement("span", { style: { fontSize: 22 } }, a.emoji || "\ud83c\udf34")),
         React.createElement("div", { style: { textAlign: isOdd ? "right" : "left" } },
           React.createElement("div", { style: { fontFamily: "'Fraunces',serif", fontSize: 16, fontWeight: 700, fontStyle: "italic", color: th.text } }, a.title),
           React.createElement("div", { style: { display: "flex", gap: 6, marginTop: 4, flexWrap: "wrap", justifyContent: isOdd ? "flex-end" : "flex-start" } },
