@@ -4501,9 +4501,10 @@ const NoteC = ({
  gap: 8,
  boxShadow: "0 1px 4px rgba(0,0,0,.03)"
   }
-}, d.text && d.text.indexOf("⏳") >= 0 ? /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(Ico, { name: "hourglass", size: 14, color: th.sub, sw: 1.5 }), /*#__PURE__*/React.createElement("span", { style: { flex: 1 } }, d.text.replace("⏳ ", ""))) : /*#__PURE__*/React.createElement("span", {
+}, d.text && d.text.indexOf("⏳") >= 0 ? /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(Ico, { name: "hourglass", size: 14, color: th.sub, sw: 1.5 }), /*#__PURE__*/React.createElement("span", { style: { flex: 1, whiteSpace: "pre-line" } }, d.text.replace("⏳ ", ""))) : /*#__PURE__*/React.createElement("span", {
   style: {
- flex: 1
+ flex: 1,
+ whiteSpace: "pre-line"
   }
 }, d.text), edit && /*#__PURE__*/React.createElement(PenD, {
   th: th,
@@ -4608,7 +4609,7 @@ const ActMag = ({
   }, /*#__PURE__*/React.createElement("div", {
  style: { fontFamily: "'Fraunces',Georgia,serif", fontWeight: 600, fontSize: 17, color: th.text, lineHeight: 1.2 }
   }, act.title), act.desc && /*#__PURE__*/React.createElement("div", {
- style: { fontSize: 12, color: th.mut, lineHeight: 1.45, margin: "3px 0 7px" }
+ style: { fontSize: 12, color: th.mut, lineHeight: 1.45, margin: "3px 0 7px", whiteSpace: "pre-line" }
   }, act.desc), /*#__PURE__*/React.createElement("div", {
  style: { display: "flex", flexWrap: "wrap", gap: "6px 12px", fontSize: 11, color: th.mut, alignItems: "center", justifyContent: justify }
   }, act.startTime && /*#__PURE__*/React.createElement("span", {
@@ -5919,17 +5920,20 @@ function App() {
  todayDay && todayDay.acts && todayDay.acts.length > 0 ? React.createElement(React.Fragment, null,
  React.createElement(Sec, { th: th }, "Today\u2019s Plan"),
  todayDay.acts.map(function(a, i) {
- var isOdd = i % 2 === 1;
- return React.createElement("div", {
- key: a.id, style: { display: "flex", gap: 12, marginBottom: 10, alignItems: "flex-start", flexDirection: isOdd ? "row-reverse" : "row" }
- }, React.createElement("div", {
- style: { width: 56, height: 56, borderRadius: "50%", background: a.photo ? "url(" + a.photo + ") center/cover" : th.tag, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }
- }, !a.photo && React.createElement("span", { style: { fontSize: 22 } }, a.emoji || "\ud83c\udf34")),
- React.createElement("div", { style: { textAlign: isOdd ? "right" : "left" } },
- React.createElement("div", { style: { fontFamily: "'Fraunces',serif", fontSize: 16, fontWeight: 700, fontStyle: "italic", color: th.text } }, a.title),
- React.createElement("div", { style: { display: "flex", gap: 6, marginTop: 4, flexWrap: "wrap", justifyContent: isOdd ? "flex-end" : "flex-start" } },
- a.dur ? React.createElement("span", { style: { fontSize: 10, background: th.tag, color: th.sub, padding: "2px 7px", borderRadius: 6 } }, a.dur) : null,
- a.price ? React.createElement("span", { style: { fontSize: 10, background: th.dark ? "rgba(14,116,144,.15)" : "rgba(14,116,144,.08)", color: th.acc, padding: "2px 7px", borderRadius: 6 } }, a.price) : null)));
+ var todayDest = td && td.loc === "Phi Phi" ? "phiphi" : td && td.loc === "Samui" ? "samui" : "phuket";
+ return React.createElement(ActC, {
+ key: a.id,
+ th: th,
+ act: a,
+ edit: edit,
+ idx: i,
+ actCount: todayDay.acts.length,
+ onReorder: function(dir) { reorderAct(todayDest, todayDay.id, i, dir); },
+ onEdit: function(a) { sEa(a); sEd(todayDay.id); sEDst(todayDest); },
+ onRm: function(id) { rmAct(todayDest, todayDay.id, id); },
+ onOpenTickets: setTicketsView,
+ onLogCost: function(act) { setQuickCostAct({ act: act, dest: todayDest, dayId: todayDay.id }); }
+ });
  })) : null,
  todayMeals.length > 0 ? React.createElement(React.Fragment, null,
  React.createElement(Sec, { th: th }, "Meals Logged"),
