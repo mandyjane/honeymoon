@@ -4522,9 +4522,29 @@ const LU = {
   martini: [["path", { d: "M12 12 4.207 4.207A.707.707 0 0 1 4.707 3h14.586a.707.707 0 0 1 .5 1.207z" }], ["path", { d: "M12 12v10" }], ["path", { d: "M7 22h10" }]],
   image: [["rect", { width: "18", height: "18", x: "3", y: "3", rx: "2", ry: "2" }], ["circle", { cx: "9", cy: "9", r: "2" }], ["path", { d: "m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" }]],
   plane: [["path", { d: "M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z" }]],
-  bus: [["path", { d: "M8 6v6" }], ["path", { d: "M15 6v6" }], ["path", { d: "M2 12h19.6" }], ["path", { d: "M18 18h3s.5-1.7.8-2.8c.1-.4.2-.8.2-1.2 0-.4-.1-.8-.2-1.2l-1.4-5C20.1 6.8 19.1 6 18 6H4a2 2 0 0 0-2 2v10h3" }], ["circle", { cx: "7", cy: "18", r: "2" }], ["path", { d: "M9 18h5" }], ["circle", { cx: "16", cy: "18", r: "2" }]]
+  bus: [["path", { d: "M8 6v6" }], ["path", { d: "M15 6v6" }], ["path", { d: "M2 12h19.6" }], ["path", { d: "M18 18h3s.5-1.7.8-2.8c.1-.4.2-.8.2-1.2 0-.4-.1-.8-.2-1.2l-1.4-5C20.1 6.8 19.1 6 18 6H4a2 2 0 0 0-2 2v10h3" }], ["circle", { cx: "7", cy: "18", r: "2" }], ["path", { d: "M9 18h5" }], ["circle", { cx: "16", cy: "18", r: "2" }]],
+  longtail: "FILLED",
+  scooter: "FILLED",
+  wallet: [["path", { d: "M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1" }], ["path", { d: "M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4" }]],
+  gear: [["path", { d: "M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" }], ["circle", { cx: "12", cy: "12", r: "3" }]],
+  home: [["path", { d: "m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" }], ["path", { d: "M9 22V12h6v10" }]],
 };
-const Ico = ({ name, size, color, sw }) => /*#__PURE__*/React.createElement("svg", {
+const FILLED_ICONS = {
+  longtail: { vb: "0 0 77 63", t: "translate(0,63) scale(0.1,-0.1)", d: "M60 618 c-70 -19 -67 -58 23 -258 18 -39 21 -67 21 -200 1 -151 2 -155 23 -158 21 -3 22 -1 20 97 -1 56 -2 101 -1 101 0 0 19 -37 43 -82 71 -140 66 -139 307 -70 206 60 281 110 270 179 -3 21 -7 44 -8 52 -9 78 -308 55 -308 -24 0 -44 2 -44 -135 11 l-114 47 -34 106 c-19 58 -40 130 -48 159 -7 28 -15 52 -18 51 -3 0 -22 -5 -41 -11z m76 -148 c43 -144 42 -180 0 -180 -38 0 -127 296 -93 310 49 19 51 16 93 -130z m38 -197 c-21 -15 -54 -17 -54 -3 0 6 9 10 20 10 10 0 25 10 32 23 11 21 12 21 16 3 2 -11 -4 -25 -14 -33z m391 27 c-13 -15 -30 -20 -64 -19 l-46 1 40 19 c58 27 95 26 70 -1z m139 3 c18 -5 18 -6 2 -15 -12 -6 -22 -6 -32 3 -8 6 -17 9 -21 5 -3 -3 -1 -6 5 -6 22 0 12 -18 -12 -24 -13 -3 -31 -9 -40 -12 -11 -4 -16 0 -17 12 0 18 -1 17 -9 -1 -9 -20 -9 -20 -9 1 -2 38 63 56 133 37z m-401 -48 c98 -40 246 -84 291 -87 26 -1 24 -2 -14 -9 -35 -6 -27 -7 36 -4 45 1 92 8 105 15 23 11 23 10 4 -4 -11 -8 -26 -20 -32 -26 -19 -16 -61 -30 -91 -30 -19 0 -23 -3 -14 -9 16 -10 -16 -21 -61 -21 -16 0 -26 -4 -22 -10 4 -6 -5 -10 -20 -10 -14 0 -41 -6 -59 -14 -65 -27 -113 -30 -125 -7 -16 28 -14 31 17 32 23 1 22 2 -8 8 -26 4 -35 11 -35 26 0 11 -6 24 -12 28 -17 10 -17 34 0 40 8 4 6 6 -4 6 -20 1 -45 51 -26 51 6 0 4 5 -5 11 -73 42 -17 53 75 14z m-62 -107 c54 -138 54 -138 37 -138 -32 0 -141 225 -117 241 28 17 36 7 80 -103z m429 68 c0 -35 -53 -47 -120 -27 -22 7 -17 10 40 28 83 27 80 27 80 -1z m90 13 c0 -8 -58 -39 -75 -39 -18 0 0 30 23 38 36 14 52 14 52 1z" },
+  scooter: { vb: "0 0 440 278", t: "translate(0,278) scale(0.1,-0.1)", d: "M2738 2750 c-25 -17 -52 -37 -58 -45 -17 -21 -32 -19 -114 12 -187 71 -586 5 -586 -96 0 -10 9 -30 21 -45 26 -34 62 -34 175 -1 148 43 319 30 411 -31 45 -29 188 -286 251 -451 113 -295 112 -552 -4 -721 -103 -149 -280 -233 -494 -233 -271 -2 -443 117 -442 305 1 92 25 155 100 266 l44 64 -4 81 c-10 185 -146 357 -333 424 -70 24 -164 31 -430 31 -314 0 -369 -6 -470 -55 -146 -71 -231 -177 -274 -345 -17 -64 -18 -65 -77 -98 -111 -62 -231 -203 -291 -342 -13 -30 -28 -64 -33 -75 -34 -73 -110 -379 -125 -500 -5 -42 -3 -55 15 -78 l21 -27 222 -2 222 -3 -3 -106 c-6 -168 38 -305 137 -429 151 -190 403 -285 631 -236 251 53 448 245 505 490 8 33 20 63 27 68 15 9 1253 6 1263 -4 4 -3 15 -38 25 -77 34 -134 112 -256 217 -342 153 -124 360 -175 540 -133 301 70 497 302 510 604 7 156 -27 279 -111 398 l-30 43 99 99 c141 141 137 163 -45 289 -171 119 -358 174 -576 170 -135 -2 -139 -1 -153 44 -40 134 -132 342 -223 501 -70 123 -74 146 -26 146 11 0 33 13 49 29 l29 29 0 177 0 177 -29 29 c-25 25 -37 29 -83 29 -94 0 -219 -52 -254 -105 -9 -14 -20 -25 -24 -25 -4 0 -37 29 -73 65 -36 36 -74 65 -85 65 -10 0 -39 -14 -64 -30z m457 -220 c0 -83 0 -85 -27 -94 -31 -11 -58 8 -90 62 -17 28 -17 30 8 63 29 39 61 60 89 56 18 -2 20 -9 20 -87z m-373 38 c192 -204 378 -494 481 -748 10 -25 22 -54 27 -65 17 -42 60 -161 60 -168 0 -5 -17 -15 -37 -23 -111 -45 -212 -107 -294 -180 -61 -54 -75 -56 -50 -6 28 55 47 127 61 227 30 229 -82 606 -271 903 -28 45 -36 72 -22 85 10 11 13 9 45 -25z m-1150 -436 c73 -29 149 -98 182 -164 48 -97 108 -88 -574 -88 -671 0 -619 -6 -579 73 34 66 67 104 124 142 93 61 122 65 475 62 300 -3 318 -4 372 -25z m148 -410 c0 -4 -13 -39 -30 -78 -16 -39 -35 -103 -42 -142 -36 -210 116 -419 352 -484 257 -71 536 -20 733 134 20 16 37 27 37 25 0 -3 -18 -41 -39 -84 -50 -99 -77 -179 -93 -279 l-14 -79 -476 -3 c-417 -2 -477 0 -482 13 -9 24 4 45 28 45 62 0 80 45 67 163 -31 272 -208 493 -466 582 -410 142 -902 -91 -1106 -523 l-33 -72 -43 0 c-48 0 -53 14 -33 89 5 20 16 65 25 101 71 304 182 483 350 565 l70 35 598 0 c328 0 597 -3 597 -8z m2122 -285 c108 -36 251 -114 262 -144 3 -6 -22 -37 -54 -68 l-59 -56 -73 40 c-120 65 -186 82 -313 83 -177 0 -317 -51 -432 -156 -118 -108 -170 -197 -213 -363 l-11 -43 -84 0 -85 0 0 30 c0 16 6 53 14 82 80 298 280 509 566 597 94 29 101 30 260 27 125 -3 156 -7 222 -29z m-2612 -39 c91 -28 191 -89 245 -150 55 -62 120 -193 130 -260 l6 -48 -640 0 c-512 0 -641 3 -641 13 0 57 172 257 290 337 184 124 421 167 610 108z m2474 -263 c175 -42 318 -178 372 -355 35 -115 4 -303 -65 -404 -101 -145 -238 -218 -411 -219 -147 -1 -246 39 -351 143 -202 199 -201 497 1 700 123 125 290 174 454 135z m-2972 -375 c-13 -105 -6 -196 20 -246 118 -226 432 -224 549 4 23 46 30 145 17 242 l-3 25 95 0 94 0 9 -40 c5 -22 6 -81 4 -131 -9 -158 -89 -293 -230 -385 -79 -52 -152 -72 -262 -72 -146 -1 -243 40 -351 148 -74 74 -105 127 -131 228 -19 77 -15 233 8 248 8 5 52 8 99 7 84 -3 85 -3 82 -28z m397 5 c86 -73 56 -218 -54 -261 -158 -60 -281 161 -148 266 41 32 161 29 202 -5z M3642 949 c-244 -47 -336 -352 -155 -519 121 -113 295 -113 416 0 68 62 90 117 91 220 0 72 -4 93 -26 135 -63 120 -199 189 -326 164z m146 -176 c144 -108 14 -338 -150 -265 -112 49 -130 194 -34 267 52 39 130 38 184 -2z" }
+};
+const Ico = ({ name, size, color, sw }) => {
+  if (FILLED_ICONS[name]) {
+    const fi = FILLED_ICONS[name];
+    return /*#__PURE__*/React.createElement("svg", {
+      width: size || 16, height: size || 16, viewBox: fi.vb,
+      xmlns: "http://www.w3.org/2000/svg",
+      style: { flexShrink: 0 }
+    }, /*#__PURE__*/React.createElement("g", {
+      transform: fi.t, fill: color || "currentColor", stroke: "none"
+    }, /*#__PURE__*/React.createElement("path", { d: fi.d })));
+  }
+  return /*#__PURE__*/React.createElement("svg", {
   width: size || 15,
   height: size || 15,
   viewBox: "0 0 24 24",
@@ -4535,13 +4555,16 @@ const Ico = ({ name, size, color, sw }) => /*#__PURE__*/React.createElement("svg
   strokeLinejoin: "round",
   style: { flexShrink: 0, verticalAlign: "-2px" }
 }, (LU[name] || []).map((el, i) => /*#__PURE__*/React.createElement(el[0], { key: i, ...el[1] })));
+};
 // map a transport label/emoji to a Lucide icon name
 const xferIco = act => {
   const s = ((act.how || "") + " " + (act.howIcon || "")).toLowerCase();
   if (/✈|plane|flight|fly/.test(s)) return "plane";
+  if (/longtail/.test(s)) return "longtail";
   if (/⛴|🛥|🚤|boat|ferry|speed|kayak/.test(s)) return "sail";
   if (/🚌|bus|shuttle|coach/.test(s)) return "bus";
   if (/🚶|walk|foot/.test(s)) return "walk";
+  if (/🛵|scooter|moped|motorbike/.test(s)) return "scooter";
   if (/🚕|🚗|🚐|car|taxi|grab|bolt|drive|private/.test(s)) return "car";
   return "car";
 };
@@ -4785,7 +4808,7 @@ const ActC = ({
     padding: "2px 7px",
     borderRadius: 6
   }
-}, "🕐 ", act.startTime || "?", act.endTime ? " – " + act.endTime : ""), act.dur && /*#__PURE__*/React.createElement("span", {
+}, /*#__PURE__*/React.createElement(Ico, { name: "clock", size: 10, color: th.sub, sw: 1.5 }), " ", act.startTime || "?", act.endTime ? " – " + act.endTime : ""), act.dur && /*#__PURE__*/React.createElement("span", {
   style: {
     fontSize: 10,
     background: th.tag,
@@ -4793,7 +4816,7 @@ const ActC = ({
     padding: "2px 7px",
     borderRadius: 6
   }
-}, "⏱ ", act.dur), act.dist && /*#__PURE__*/React.createElement("span", {
+}, /*#__PURE__*/React.createElement(Ico, { name: "clock", size: 10, color: th.sub, sw: 1.5 }), " ", act.dur), act.dist && /*#__PURE__*/React.createElement("span", {
   style: {
     fontSize: 10,
     background: th.tag,
@@ -4801,7 +4824,7 @@ const ActC = ({
     padding: "2px 7px",
     borderRadius: 6
   }
-}, "📍 ", act.dist), act.how && /*#__PURE__*/React.createElement("span", {
+}, /*#__PURE__*/React.createElement(Ico, { name: "pin", size: 10, color: th.sub, sw: 1.5 }), " ", act.dist), act.how && /*#__PURE__*/React.createElement("span", {
   style: {
     fontSize: 10,
     background: th.tag,
@@ -4828,7 +4851,7 @@ const ActC = ({
     borderRadius: 6,
     cursor: "pointer"
   }
-}, "💰 ", act.price), act.actualCost ? /*#__PURE__*/React.createElement("span", {
+}, /*#__PURE__*/React.createElement(Ico, { name: "wallet", size: 10, color: th.coral, sw: 1.5 }), " ", act.price), act.actualCost ? /*#__PURE__*/React.createElement("span", {
   onClick: () => onLogCost && onLogCost(act),
   style: {
     fontSize: 10,
@@ -4926,7 +4949,7 @@ const Sec = ({
 }));
 
 /* ── ACTIVITY EDIT MODAL ── */
-const TRANSPORT_CHIPS = [["🚤", "Boat"], ["🚕", "Taxi/Grab"], ["🚶", "Walk"], ["🛵", "Scooter"], ["🚐", "Pickup"], ["🎫", "Part of tour"], ["🏠", "On-site"], ["🚙", "Drive"], ["🚌", "Bus"], ["✈️", "Fly"]];
+const TRANSPORT_CHIPS = [["sail", "Boat"], ["longtail", "Longtail"], ["car", "Taxi/Grab"], ["walk", "Walk"], ["scooter", "Scooter"], ["bus", "Pickup"], ["ticket", "Part of tour"], ["home", "On-site"], ["car", "Drive"], ["bus", "Bus"], ["plane", "Fly"]];
 const DURATION_PRESETS = ["1-2 hrs", "Half day", "Full day", "Evening"];
 const ActEditM = ({
   th,
@@ -5000,7 +5023,7 @@ const ActEditM = ({
       fontSize: 13,
       color: th.sub
     }
-  }, icon, " ", title, filled ? /*#__PURE__*/React.createElement("span", {
+  }, /*#__PURE__*/React.createElement(Ico, { name: icon, size: 14, color: th.sub, sw: 1.5 }), " ", title, filled ? /*#__PURE__*/React.createElement("span", {
     style: {
       color: th.acc,
       marginLeft: 6,
@@ -5121,7 +5144,7 @@ const ActEditM = ({
         else { u("howIcon", ico); u("how", label); }
       },
       style: chip(active)
-    }, ico, " ", label);
+    }, /*#__PURE__*/React.createElement(Ico, { name: ico, size: 12, color: active ? "#fff" : th.sub, sw: 1.5 }), " ", label);
   })), /*#__PURE__*/React.createElement("div", {
     onClick: () => setShowTag(!showTag),
     style: {
@@ -5416,7 +5439,7 @@ const ActEditM = ({
       cursor: "pointer",
       padding: "4px 6px"
     }
-  }, "Remove")))), secHead("💰", "Price & cost", secPrice, () => setSecPrice(!secPrice), !!f.price), secPrice && /*#__PURE__*/React.createElement("div", {
+  }, "Remove")))), secHead("wallet", "Price & cost", secPrice, () => setSecPrice(!secPrice), !!f.price), secPrice && /*#__PURE__*/React.createElement("div", {
     style: {
       paddingBottom: 10
     }
@@ -5497,7 +5520,7 @@ const ActEditM = ({
       color: th.sub,
       marginBottom: 8
     }
-  }, "Estimate: ", f.price)), secHead("📍", "Map & timing", secMap, () => setSecMap(!secMap), !!f.mapQuery || !!f.startTime), secMap && /*#__PURE__*/React.createElement("div", {
+  }, "Estimate: ", f.price)), secHead("pin", "Map & timing", secMap, () => setSecMap(!secMap), !!f.mapQuery || !!f.startTime), secMap && /*#__PURE__*/React.createElement("div", {
     style: {
       paddingBottom: 10
     }
@@ -5548,7 +5571,7 @@ const ActEditM = ({
     },
     placeholder: "12:00",
     style: inpStyle
-  })))), secHead("⚙️", "More options", secMore, () => setSecMore(!secMore), !!f.dist), secMore && /*#__PURE__*/React.createElement("div", {
+  })))), secHead("gear", "More options", secMore, () => setSecMore(!secMore), !!f.dist), secMore && /*#__PURE__*/React.createElement("div", {
     style: {
       paddingBottom: 10
     }
