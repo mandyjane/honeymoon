@@ -615,7 +615,7 @@ const TRIP_DAYS = [{
   iso: "2027-02-20"
 }, {
   id: "d_21",
-  label: "Sat 21 Feb",
+  label: "Sun 21 Feb",
   loc: "Phuket",
   dow: "SAT",
   dn: "21",
@@ -643,7 +643,7 @@ const TRIP_DAYS = [{
   iso: "2027-02-24"
 }, {
   id: "d_25",
-  label: "Wed 25 Feb",
+  label: "Thu 25 Feb",
   loc: "Phuket",
   dow: "WED",
   dn: "25",
@@ -1896,7 +1896,7 @@ const INIT_CARDS = {
     _t: "flight",
     from: "USM",
     to: "HKT",
-    date: "Sat 21 Feb",
+    date: "Sun 21 Feb",
     dep: "12:30",
     arr: "13:30",
     flight: "PG-253",
@@ -1909,7 +1909,7 @@ const INIT_CARDS = {
     _t: "flight",
     from: "HKT",
     to: "SIN",
-    date: "Wed 25 Feb",
+    date: "Thu 25 Feb",
     dep: "14:55",
     arr: "18:00",
     flight: "SQ-731",
@@ -1922,7 +1922,7 @@ const INIT_CARDS = {
     _t: "flight",
     from: "SIN",
     to: "BNE",
-    date: "Wed 25→Thu 26 Feb",
+    date: "Thu 25→Thu 26 Feb",
     dep: "21:35",
     arr: "07:15+1",
     flight: "SQ-235",
@@ -2041,7 +2041,7 @@ const INIT_CARDS = {
     name: "SALA Samui Chaweng Beach",
     room: "Oceanfront Balcony Pool Suite",
     checkIn: "Mon 15 Feb",
-    checkOut: "Sat 21 Feb",
+    checkOut: "Sun 21 Feb",
     nights: "6",
     bfast: "Not included",
     ppn: "732.70",
@@ -2052,8 +2052,8 @@ const INIT_CARDS = {
     _t: "accom",
     name: "Impiana Resort Patong",
     room: "Superior Ocean View",
-    checkIn: "Sat 21 Feb",
-    checkOut: "Wed 25 Feb",
+    checkIn: "Sun 21 Feb",
+    checkOut: "Thu 25 Feb",
     nights: "4",
     bfast: "Included",
     ppn: "361.25",
@@ -2185,7 +2185,7 @@ const INIT_ACTS = {
   }],
   phuket: [{
     id: "pk_d1",
-    label: "Day 10 — Sat 21 Feb",
+    label: "Day 10 — Sun 21 Feb",
     note: "Arrive ~3pm. Beach sunset, then Bangla Road.",
     acts: [mk("pk1", "🌅", "Patong Beach Sunset", "1–2 hrs", "On-site", "Walk", "Free", "Andaman Sea sunsets are spectacular."), mk("pk2", "🌃", "Bangla Road", "2–3 hrs", "500m", "Walk 5 min", "฿100–400 (A$4–18)", "Neon walking street. Go after 9pm.")]
   }, {
@@ -2205,7 +2205,7 @@ const INIT_ACTS = {
     acts: [mk("pk8", "🏖️", "Freedom Beach", "2–3 hrs", "3 km", "Longtail 10 min", "฿1,500 boat + ฿100 entry (A$71)", "Hidden white sand, boat-only. Great snorkelling."), mk("pk9", "🥊", "Muay Thai Fight Night", "2.5–3 hrs", "2 km", "Grab 5 min", "฿1,500–2,500 (A$67–111)", "Ringside at Patong Boxing Stadium."), mk("pk10", "🛒", "Malin Plaza Night Market", "1–2 hrs", "1 km", "Walk 10 min", "฿40–200/dish (A$2–9)", "Street food, souvenirs. Last-night shopping.")]
   }, {
     id: "pk_d5",
-    label: "Day 14 — Wed 25 Feb",
+    label: "Day 14 — Thu 25 Feb",
     note: "Check-out 12:00. Final breakfast, last swim.",
     acts: [mk("pk11", "☀️", "Final Beach Walk", "1 hr", "On-site", "Walk", "Free", "One last stroll. Grab a coconut. Soak it in.")]
   }]
@@ -3715,6 +3715,32 @@ const PdfBtns = ({
 };
 
 /* ── CARD COMPONENTS ── */
+
+var CARRIER_LOGOS = {
+  sa: { vb: "0 0 141.000000 197.000000", t: "translate(0.000000,197.000000) scale(0.100000,-0.100000)", d: "M408 1897 c-57 -88 -70 -120 -61 -155 3 -14 113 -204 244 -420 263 -435 271 -453 249 -559 -18 -85 -36 -119 -194 -363 l-145 -225 126 -3 c183 -4 188 -1 315 192 121 185 140 200 250 205 84 3 95 -4 48 -33 -20 -11 -73 -83 -150 -200 -95 -145 -128 -187 -159 -204 -38 -21 -47 -22 -380 -22 -187 0 -341 3 -341 6 0 4 67 110 148 238 82 127 157 246 166 265 20 39 23 109 6 143 -26 50 -415 678 -421 678 -3 0 -29 -39 -57 -87 -59 -98 -69 -159 -34 -204 44 -57 317 -506 329 -541 7 -22 10 -51 6 -66 -3 -15 -78 -137 -166 -272 -88 -135 -162 -251 -164 -257 -8 -20 846 -18 911 1 83 25 109 52 237 242 122 183 140 202 203 213 l35 6 -59 93 -60 92 -108 0 c-82 0 -116 -5 -147 -19 -51 -23 -53 -26 -172 -206 -104 -157 -125 -181 -144 -170 -21 14 -2 50 126 250 160 248 189 312 190 415 0 66 -4 84 -36 150 -28 57 -470 781 -533 872 -10 14 -18 6 -58 -55z M230 1615 c-55 -84 -62 -99 -58 -133 4 -25 68 -141 198 -357 106 -176 201 -338 211 -360 22 -48 24 -104 5 -148 -10 -25 -165 -274 -261 -421 l-17 -26 63 0 64 0 160 248 c196 304 217 358 184 477 -8 28 -439 752 -484 813 -1 1 -30 -40 -65 -93z" },
+  ba: { vb: "0 0 669.000000 590.000000", t: "translate(0.000000,590.000000) scale(0.100000,-0.100000)", d: "M2281 5886 c-10 -11 -8 -42 8 -138 81 -503 -41 -1056 -342 -1546 -270 -440 -553 -745 -1145 -1231 -570 -467 -792 -859 -793 -1394 0 -561 316 -989 861 -1165 80 -26 229 -62 257 -62 4 0 -24 15 -62 34 -490 238 -702 827 -465 1296 84 165 365 473 595 650 61 46 175 139 255 205 80 66 201 165 270 220 242 193 342 310 457 535 98 193 149 342 173 505 14 98 14 2060 0 2086 -12 22 -52 25 -69 5z M2290 2918 c-145 -318 -237 -411 -745 -753 -420 -283 -468 -318 -560 -410 -268 -269 -320 -652 -135 -980 105 -186 360 -380 541 -413 58 -11 59 -12 -46 59 -464 312 -524 844 -131 1143 218 165 416 185 617 61 67 -41 74 -41 158 13 175 110 289 283 327 497 13 71 42 891 32 900 -2 2 -28 -51 -58 -117z M2790 2071 c0 -386 2 -701 5 -701 3 0 25 10 48 22 39 20 57 22 217 23 200 0 245 13 333 94 172 159 161 409 -27 598 l-75 74 15 34 c71 171 -50 333 -313 420 -104 34 -116 40 -158 87 l-45 50 0 -701z m290 313 c87 -79 72 -184 -32 -223 -57 -21 -19 -95 72 -141 262 -132 211 -446 -67 -414 l-53 7 0 414 0 414 21 -11 c11 -7 38 -27 59 -46z M5273 2297 c-55 -47 -80 -74 -74 -81 6 -7 11 -189 12 -414 l3 -402 75 0 76 0 -3 120 c-2 66 1 120 5 120 46 0 133 -133 133 -202 l0 -38 80 0 c78 0 80 1 80 24 0 75 -71 224 -127 265 l-29 22 41 42 c47 49 75 103 82 158 l6 39 -77 0 -76 0 0 -40 c0 -35 -7 -47 -52 -93 l-53 -52 -3 295 c-1 162 -6 297 -10 301 -4 4 -44 -25 -89 -64z M6309 2299 c-80 -70 -85 -77 -72 -95 11 -16 13 -86 11 -412 l-3 -392 75 0 75 0 -3 120 c-4 136 -2 138 60 83 49 -46 77 -103 78 -160 l0 -43 81 0 82 0 -5 48 c-9 77 -45 157 -98 215 l-49 54 35 34 c43 42 84 122 84 166 l0 33 -76 0 -76 0 6 -25 c10 -39 -68 -155 -104 -155 -6 0 -11 119 -12 302 l-3 302 -86 -75z M3669 1935 c-95 -52 -148 -404 -72 -478 55 -52 165 -74 228 -45 19 9 28 9 37 0 23 -23 171 -16 158 8 -13 24 -10 486 4 513 10 20 -140 27 -160 7 -8 -8 -19 -8 -38 0 -39 14 -126 12 -157 -5z m165 -115 c28 -10 41 -224 16 -269 -45 -85 -120 -40 -120 72 0 156 36 223 104 197z M4114 1934 c3 -9 6 -132 6 -275 l0 -259 80 0 80 0 0 171 c0 183 4 200 49 218 74 31 92 -11 90 -209 -1 -191 -6 -180 89 -180 l77 0 -6 214 c-7 239 -15 271 -78 313 -41 28 -121 31 -166 7 -27 -14 -31 -14 -41 0 -17 24 -189 23 -180 0z M4763 1935 c-58 -25 -113 -207 -113 -377 0 -107 85 -166 225 -155 l75 5 0 -82 c0 -118 -88 -165 -213 -113 l-37 16 0 -88 0 -88 78 4 c313 16 315 20 322 508 3 193 9 358 14 368 7 15 1 17 -73 17 -61 0 -83 -4 -87 -14 -5 -12 -9 -12 -32 0 -34 18 -117 17 -159 -1z m168 -115 c31 -17 29 -253 -3 -287 -55 -59 -108 -16 -108 89 0 158 43 234 111 198z M5816 1940 c-111 -35 -175 -320 -102 -454 60 -109 296 -119 390 -16 77 85 45 386 -47 452 -35 25 -185 36 -241 18z m151 -146 c65 -99 -4 -329 -83 -276 -48 32 -49 264 -1 294 26 17 66 8 84 -18z M2631 1687 c-39 -43 -63 -57 -177 -102 -229 -90 -333 -237 -373 -525 -23 -164 -14 -146 -76 -154 -68 -8 -128 1 -177 26 l-38 18 0 -25 c0 -93 108 -185 217 -185 l33 0 -19 -50 c-46 -120 -134 -218 -250 -277 l-63 -33 28 -12 c63 -28 242 -17 304 18 96 54 157 156 182 305 l12 69 89 0 c48 0 97 -5 108 -10 25 -14 25 -2 -2 55 -26 55 -60 81 -126 96 l-50 12 14 86 c39 255 108 401 189 401 22 0 20 -997 -2 -1028 l-15 -22 126 0 c99 0 124 3 118 13 -4 6 -10 316 -13 687 l-5 675 -34 -38z M2814 1180 c-38 -15 -64 -59 -64 -107 0 -124 175 -145 211 -24 26 87 -62 165 -147 131z M5364 900 c-269 -19 -297 -138 -76 -333 76 -67 37 -136 -51 -91 -18 9 -40 23 -49 32 -17 14 -18 10 -18 -81 l0 -97 26 10 c14 6 68 10 120 10 224 0 253 193 52 345 -66 50 -47 100 26 70 70 -30 86 -17 86 70 0 41 -1 74 -2 74 -2 -1 -53 -5 -114 -9z M2805 888 c-2 -7 -6 -131 -7 -276 l-3 -262 75 0 75 0 0 275 0 275 -68 0 c-45 0 -69 -4 -72 -12z M3035 625 l0 -275 75 0 75 0 0 161 0 161 37 34 c40 36 89 45 130 23 19 -10 20 -9 15 22 -3 19 -9 56 -13 82 -10 72 -67 88 -131 37 -34 -26 -43 -25 -43 5 0 24 -2 25 -72 25 l-73 0 0 -275z M3426 883 c2 -10 8 -81 14 -158 12 -175 44 -252 135 -330 31 -26 58 -45 60 -43 3 2 24 51 47 109 58 139 67 139 124 -1 47 -116 48 -117 110 -62 90 81 133 195 134 357 0 44 4 95 9 113 l10 32 -99 0 -99 0 11 -31 c12 -34 5 -166 -10 -181 -4 -4 -19 11 -32 34 -13 24 -39 65 -58 91 l-35 48 -22 -21 c-12 -11 -39 -52 -61 -90 -21 -38 -42 -70 -45 -70 -19 0 -26 168 -9 201 10 18 6 19 -89 19 -89 0 -99 -2 -95 -17z M4200 877 c-88 -59 -146 -382 -83 -458 51 -60 169 -89 238 -57 19 9 28 9 37 0 7 -7 44 -12 89 -12 l78 0 -10 32 c-16 56 -11 458 5 491 l15 27 -83 0 c-45 0 -87 -5 -92 -10 -8 -8 -19 -8 -38 0 -48 18 -120 12 -156 -13z m164 -107 l26 -10 0 -129 c0 -128 0 -130 -26 -150 -86 -67 -135 57 -88 220 21 73 40 88 88 69z M4610 885 c-13 -15 14 -267 41 -397 23 -108 97 -162 212 -156 l67 4 0 -68 c0 -97 -24 -123 -113 -123 -50 0 -70 4 -86 19 l-21 19 0 -90 0 -90 48 3 c26 2 76 5 112 7 75 5 130 29 177 79 56 59 57 64 63 451 l5 357 -80 0 c-110 0 -105 10 -105 -213 l0 -189 -30 -29 c-33 -34 -56 -29 -86 17 -17 26 -49 316 -42 382 l4 32 -77 0 c-56 0 -80 -4 -89 -15z" },
+  awm: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAABaCAMAAAA1r5svAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAuIwAALiMBeKU/dgAAAwBQTFRFAAAA////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////Bz0LCAAAAQB0Uk5TAA5HlbnQ2tytIBed2922Q9hqCY6Nj0EBD6fe4ICFwzdY0ghaseP+//uQLlLv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"
+};
+var getCarrierKey = function(carrier) {
+  if (!carrier) return null;
+  var cl = carrier.toLowerCase();
+  if (cl.indexOf("singapore") >= 0) return "sa";
+  if (cl.indexOf("bangkok") >= 0) return "ba";
+  if (cl.indexOf("andaman") >= 0 || cl.indexOf("wave") >= 0) return "awm";
+  return null;
+};
+var CarrierLogo = function(props) {
+  var key = getCarrierKey(props.carrier);
+  if (!key) return null;
+  var st = { position: "absolute", bottom: 10, right: 14, opacity: 0.15 };
+  if (key === "awm") return React.createElement("img", { src: CARRIER_LOGOS.awm, style: Object.assign({}, st, { width: 55 }), alt: "" });
+  var logo = CARRIER_LOGOS[key];
+  return React.createElement("svg", {
+    style: Object.assign({}, st, { width: 45, height: 60 }), viewBox: logo.vb, xmlns: "http://www.w3.org/2000/svg"
+  }, React.createElement("g", { transform: logo.t, fill: "#fff", stroke: "none" },
+    React.createElement("path", { d: logo.d })));
+};
+
 const FlightC = ({
   th,
   d,
@@ -3836,7 +3862,7 @@ const FlightC = ({
   onEditDoc: onEditDoc,
   onView: onView,
   white: true
-}));
+}), /*#__PURE__*/React.createElement(CarrierLogo, { carrier: d.carrier }));
 const LBarC = ({
   th,
   d,
@@ -4034,7 +4060,7 @@ const FerryC = ({
   onEditDoc: onEditDoc,
   onView: onView,
   white: true
-}));
+}), /*#__PURE__*/React.createElement(CarrierLogo, { carrier: d.carrier }));
 const XferC = ({
   th,
   d,
@@ -5914,8 +5940,8 @@ function App() {
     if (!r.dates) {
       const dd = {
         a_pp: "Fri 12 – Mon 15 Feb",
-        a_sm: "Mon 15 – Sat 21 Feb",
-        a_pk: "Sat 21 – Wed 25 Feb"
+        a_sm: "Mon 15 – Sun 21 Feb",
+        a_pk: "Sun 21 – Thu 25 Feb"
       };
       if (dd[id]) r.dates = dd[id];
     }
@@ -6566,18 +6592,18 @@ function App() {
     i: "🚤",
     t: 1
   }, {
-    d: "Mon 15 – Sat 21 Feb",
+    d: "Mon 15 – Sun 21 Feb",
     l: "Koh Samui",
     s: "6 nights · SALA Samui",
     i: "🌴"
   }, {
-    d: "Sat 21 Feb",
+    d: "Sun 21 Feb",
     l: "Travel Day",
     s: "Koh Samui → Phuket",
     i: "✈️",
     t: 1
   }, {
-    d: "Sat 21 – Wed 25 Feb",
+    d: "Sun 21 – Thu 25 Feb",
     l: "Phuket",
     s: "4 nights · Impiana Patong",
     i: "⛱️"
@@ -6955,11 +6981,11 @@ function App() {
       color: th.mut,
       marginBottom: 16
     }
-  }, "Mon 15 – Sat 21 Feb · 6 nights"), rCustomXfers("samui:arr"), rAddXfer("samui:arr"), /*#__PURE__*/React.createElement(Sec, {
+  }, "Mon 15 – Sun 21 Feb · 6 nights"), rCustomXfers("samui:arr"), rAddXfer("samui:arr"), /*#__PURE__*/React.createElement(Sec, {
     th: th
   }, "Your Stay"), ra("a_sm"), rn("n_sm_stay"), renderDays("samui"), /*#__PURE__*/React.createElement(Sec, {
     th: th
-  }, "Departure — Sat 21 Feb"), rn("n_sm_dep"), rx("x_4"), /*#__PURE__*/React.createElement(FG, null, rf("f_pg2")), rx("x_5"), rCustomXfers("samui:dep"), rAddXfer("samui:dep")), tab === "phuket" && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+  }, "Departure — Sun 21 Feb"), rn("n_sm_dep"), rx("x_4"), /*#__PURE__*/React.createElement(FG, null, rf("f_pg2")), rx("x_5"), rCustomXfers("samui:dep"), rAddXfer("samui:dep")), tab === "phuket" && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
     style: {
       fontFamily: "'Fraunces',Georgia,serif",
       fontSize: 24,
@@ -6973,11 +6999,11 @@ function App() {
       color: th.mut,
       marginBottom: 16
     }
-  }, "Sat 21 – Wed 25 Feb · 4 nights"), rCustomXfers("phuket:arr"), rAddXfer("phuket:arr"), /*#__PURE__*/React.createElement(Sec, {
+  }, "Sun 21 – Thu 25 Feb · 4 nights"), rCustomXfers("phuket:arr"), rAddXfer("phuket:arr"), /*#__PURE__*/React.createElement(Sec, {
     th: th
   }, "Your Stay"), ra("a_pk"), rn("n_pk_stay"), renderDays("phuket"), /*#__PURE__*/React.createElement(Sec, {
     th: th
-  }, "Going Home — Wed 25 Feb"), rx("x_6"), /*#__PURE__*/React.createElement(FG, null, rf("f_sq3"), rl("l_sin2"), rf("f_sq4")), rCustomXfers("phuket:dep"), rAddXfer("phuket:dep")), tab === "meals" && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+  }, "Going Home — Thu 25 Feb"), rx("x_6"), /*#__PURE__*/React.createElement(FG, null, rf("f_sq3"), rl("l_sin2"), rf("f_sq4")), rCustomXfers("phuket:dep"), rAddXfer("phuket:dep")), tab === "meals" && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       justifyContent: "space-between",
