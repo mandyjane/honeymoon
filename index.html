@@ -1689,7 +1689,7 @@ const MealCard = ({
     style: {
       background: th.card,
       border: `0.5px solid ${th.bdr}`,
-      borderRadius: 12,
+      borderRadius: 0,
       padding: 14,
       marginBottom: 8,
       boxShadow: th.sh,
@@ -1704,7 +1704,7 @@ const MealCard = ({
       background: th.acc,
       color: "#fff",
       border: "none",
-      borderRadius: 6,
+      borderRadius: 0,
       width: 26,
       height: 26,
       fontSize: 12,
@@ -5643,6 +5643,7 @@ function App() {
   const [rateTime, setRateTime] = useState(null);
   const [aDay, sADay] = useState(null);
   const [aDst, sADst] = useState(null);
+  const [dividerStyle, setDividerStyle] = useState("circle");
   const [showTravelDocs, setShowTravelDocs] = useState(false);
   const [loaded, setLoaded] = useState(false);
   const th = dark ? TH.dark : TH.light;
@@ -5668,6 +5669,7 @@ function App() {
       if (s.heroImg) setHeroImg(s.heroImg);
       if (s.dark !== undefined) setDark(s.dark);
       if (s.homeView) setHomeView(s.homeView);
+      if (s.dividerStyle) setDividerStyle(s.dividerStyle);
       if (s.travelDocs) setTravelDocs({ tdacReceived: false, tdac: [], passport_amanda: [], passport_liam: [], ...s.travelDocs });
     }
     setLoaded(true);
@@ -5684,9 +5686,10 @@ function App() {
       heroImg,
       dark,
       travelDocs,
-      homeView
+      homeView,
+      dividerStyle
     });
-  }, [cards, docs, acts, standby, meals, packing, budgetTotal, heroImg, dark, travelDocs, homeView, loaded]);
+  }, [cards, docs, acts, standby, meals, packing, budgetTotal, heroImg, dark, travelDocs, homeView, dividerStyle, loaded]);
   useEffect(() => {
     document.body.className = dark ? "dark" : "";
   }, [dark]);
@@ -5915,13 +5918,42 @@ function App() {
       } : d)
     }));
   };
+
+  const DayDivider = ({ th, day, style: ds }) => {
+    var w = WEATHER[day.id];
+    var parts = day.label.split(" \u2014 ");
+    var dayPart = parts[0] || "";
+    var datePart = parts[1] || "";
+    var num = parseInt(dayPart.replace("Day ", "")) || 0;
+    var dayWords = ["One","Two","Three","Four","Five","Six","Seven","Eight","Nine","Ten","Eleven","Twelve","Thirteen","Fourteen"];
+    var loc = day.loc || "";
+    if (ds === "big") {
+      return React.createElement("div", {
+        style: { margin: "20px -16px", padding: "16px", display: "flex", alignItems: "center", gap: 16, borderTop: "1px solid " + th.bdr, borderBottom: "1px solid " + th.bdr }
+      }, React.createElement("div", {
+        style: { fontFamily: "'Fraunces',serif", fontSize: 42, fontWeight: 700, color: th.acc, lineHeight: 1 }
+      }, num), React.createElement("div", null,
+        React.createElement("div", { style: { fontSize: 10, fontWeight: 700, letterSpacing: 2, color: th.mut, textTransform: "uppercase" } }, "Day " + (dayWords[num-1] || num)),
+        React.createElement("div", { style: { fontSize: 14, fontWeight: 600, color: th.text, marginTop: 2 } }, datePart.replace(/\d+ Feb/, function(m) { var d = parseInt(m); var months = "February"; return d + " " + months; })),
+        w ? React.createElement("div", { style: { fontSize: 11, color: th.mut, marginTop: 1 } }, loc, " \u00b7 ", w.icon, " ", w.hi, "\u00b0") : null));
+    }
+    return React.createElement("div", {
+      style: { margin: "20px 0", display: "flex", alignItems: "center", gap: 12 }
+    }, React.createElement("div", {
+      style: { width: 44, height: 44, borderRadius: "50%", background: "linear-gradient(135deg,#0c4a6e,#14b8a6)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", flexShrink: 0 }
+    }, React.createElement("span", { style: { fontSize: 7, fontWeight: 700, color: "rgba(255,255,255,.7)", letterSpacing: 1, lineHeight: 1 } }, "DAY"),
+    React.createElement("span", { style: { fontFamily: "'Fraunces',serif", fontSize: 18, fontWeight: 700, color: "#fff", lineHeight: 1 } }, num)),
+    React.createElement("div", { style: { flex: 1 } },
+      React.createElement("div", { style: { fontSize: 15, fontWeight: 700, color: th.text } }, datePart),
+      w ? React.createElement("div", { style: { fontSize: 11, color: th.mut } }, loc, " \u00b7 ", w.icon, " ", w.hi, "\u00b0 / ", w.lo, "\u00b0") : null),
+    React.createElement("div", { style: { flex: 0.6, height: 1, background: "linear-gradient(to right," + th.acc + ",transparent)" } }));
+  };
   const renderDays = dest => acts[dest]?.map(day => /*#__PURE__*/React.createElement("div", {
     key: day.id
-  }, /*#__PURE__*/React.createElement(Sec, {
-    th: th
-  }, day.label), /*#__PURE__*/React.createElement(WeatherBar, {
+  }, /*#__PURE__*/React.createElement(DayDivider, {
     th: th,
-    dayId: day.id
+    day: day,
+    style: dividerStyle
   }), day.note && /*#__PURE__*/React.createElement(NoteC, {
     th: th,
     d: {
@@ -7236,7 +7268,21 @@ function App() {
       transition: "left .3s",
       boxShadow: "0 1px 3px rgba(0,0,0,.2)"
     }
-  }))))), standby.length > 0 && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(Sec, {
+  }))))), /*#__PURE__*/React.createElement("div", {
+    style: { fontSize: 14, fontWeight: 600, color: th.text, marginBottom: 2, marginTop: 12 }
+  }, "\ud83d\udcc5 Day Divider Style"), /*#__PURE__*/React.createElement("div", {
+    style: { fontSize: 12, color: th.mut, marginBottom: 12 }
+  }, "How day breaks appear on destination pages"), /*#__PURE__*/React.createElement("div", {
+    style: { display: "flex", gap: 6, marginBottom: 12 }
+  }, [["big", "Big Number"], ["circle", "Circle"]].map(function(pair) { var val = pair[0], label = pair[1]; return /*#__PURE__*/React.createElement("button", {
+    key: val,
+    onClick: function() { setDividerStyle(val); },
+    style: {
+      flex: 1, padding: "10px 8px", border: dividerStyle === val ? "1.5px solid " + th.acc : "1px solid " + th.bdr,
+      background: dividerStyle === val ? (th.dark ? "rgba(14,116,144,0.15)" : "rgba(14,116,144,0.08)") : "transparent",
+      color: dividerStyle === val ? th.acc : th.sub, fontSize: 13, fontWeight: dividerStyle === val ? 600 : 400, cursor: "pointer"
+    }
+  }, label); })), standby.length > 0 && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(Sec, {
     th: th
   }, "Standby List (", standby.length, ")"), /*#__PURE__*/React.createElement(NoteC, {
     th: th,
