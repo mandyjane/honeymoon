@@ -6043,6 +6043,17 @@ function App() {
  }, React.createElement("div", { style: { fontSize: 9, opacity: .7, letterSpacing: 1 } }, "SPENT TODAY"),
  React.createElement("div", { style: { fontFamily: "'Fraunces',serif", fontSize: 18, fontWeight: 700, marginTop: 2 } }, "\u0e3f", daySpend.toLocaleString()),
  React.createElement("div", { style: { fontSize: 10, opacity: .8, marginTop: 2 } }, "A$", Math.round(daySpend / r), " \u00b7 ", todayMeals.length, " meal", todayMeals.length !== 1 ? "s" : ""))),
+ /* Daily Essentials — right-aligned card */
+ React.createElement("div", { style: { display: "flex", justifyContent: "flex-end", marginBottom: -14 } },
+ React.createElement("button", {
+ onClick: function() { setEssPopup(true); },
+ style: { display: "flex", alignItems: "center", gap: 8, padding: "8px 14px", border: "0.5px solid " + th.bdr, background: th.card, boxShadow: th.sh, cursor: "pointer" }
+ }, React.createElement(Ico, { name: "check-square", size: 16, color: th.acc, sw: 1.5 }),
+ React.createElement("div", { style: { textAlign: "left" } },
+ React.createElement("div", { style: { fontSize: 13, fontWeight: 500, color: th.text } }, "Day ", dayNum, " essentials"),
+ React.createElement("div", { style: { fontSize: 11, color: th.mut } },
+ (function() { var ess = dailyEss["day_" + dayNum]; if (!ess) return "Not started"; var done = ess.filter(function(x){return x.done;}).length; return done + " of " + ess.length + " packed"; })())),
+ React.createElement("span", { style: { fontSize: 14, color: th.mut, marginLeft: 4 } }, "\u203a"))),
  todayDay && todayDay.acts && todayDay.acts.length > 0 ? React.createElement(React.Fragment, null,
  React.createElement(Sec, { th: th }, "Today\u2019s Plan"),
  todayDay.acts.map(function(a, i) {
@@ -6061,12 +6072,7 @@ function App() {
  onLogCost: function(act) { setQuickCostAct({ act: act, dest: todayDest, dayId: todayDay.id }); }
  });
  })) : null,
- /* Daily Essentials button */
- React.createElement("button", {
- onClick: function() { setEssPopup(true); },
- style: { width: "100%", padding: 12, border: "1.5px solid " + th.acc, background: th.dark ? "rgba(20,184,166,.08)" : "rgba(20,184,166,.05)", color: th.acc, fontSize: 12, fontWeight: 600, cursor: "pointer", marginTop: 8, marginBottom: 4, display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }
- }, React.createElement(Ico, { name: "check-square", size: 14, color: th.acc, sw: 1.5 }), "Day ", dayNum, " Essentials",
- (() => { var ess = dailyEss["day_" + dayNum]; if (!ess) return null; var done = ess.filter(function(x){return x.done;}).length; return React.createElement("span", { style: { fontSize: 10, opacity: .7 } }, " \u00b7 ", done, "/", ess.length); })()),
+
  todayMeals.length > 0 ? React.createElement(React.Fragment, null,
  React.createElement(Sec, { th: th }, "Meals Logged"),
  todayMeals.map(function(m) { return React.createElement("div", {
