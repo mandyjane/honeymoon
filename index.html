@@ -4628,6 +4628,7 @@ const LU = {
   train: [["path", { d: "M4 11V4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v7" }], ["path", { d: "M9 18l-3 3" }], ["path", { d: "M15 18l3 3" }], ["path", { d: "M4 11h16" }], ["path", { d: "M4 15h16" }], ["circle", { cx: "8.5", cy: "18", r: "1" }], ["circle", { cx: "15.5", cy: "18", r: "1" }], ["path", { d: "M2 15h20" }]],
   gear: [["path", { d: "M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" }], ["circle", { cx: "12", cy: "12", r: "3" }]],
   home: [["path", { d: "m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" }], ["path", { d: "M9 22V12h6v10" }]],
+  archive: [["rect", { width: "20", height: "5", x: "2", y: "3", rx: "1" }], ["path", { d: "M4 8v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8" }], ["path", { d: "M10 12h4" }]],
   link: [["path", { d: "M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" }], ["path", { d: "M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" }]],
 };
 const FILLED_ICONS = {
@@ -4681,6 +4682,7 @@ const ActMag = ({
   actCount,
   onReorder,
   onEdit,
+  onRm,
   onLogCost,
   onOpenTickets
 }) => {
@@ -4815,6 +4817,7 @@ const ActC = ({
  actCount: actCount || 0,
  onReorder: onReorder,
  onEdit: onEdit,
+ onRm: onRm,
  onLogCost: onLogCost,
  onOpenTickets: onOpenTickets
  });
@@ -4944,6 +4947,7 @@ const ActEditM = ({
   curDay,
   onSave,
   onMove,
+  onRm,
   onClose,
   hiddenTransport
 }) => {
@@ -5383,7 +5387,11 @@ const ActEditM = ({
   }, days.map(d => /*#__PURE__*/React.createElement("option", {
  key: d.id,
  value: d.id
-  }, d.label)))), /*#__PURE__*/React.createElement("div", {
+  }, d.label))),
+  onRm && /*#__PURE__*/React.createElement("button", {
+ onClick: () => { onRm(act.id); onClose(); },
+ style: { width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: 6, padding: 10, border: "1px solid #ef4444", background: "transparent", color: "#ef4444", fontSize: 12, fontWeight: 500, borderRadius: 0, cursor: "pointer", marginTop: 10 }
+  }, /*#__PURE__*/React.createElement(Ico, { name: "archive", size: 14, color: "#ef4444", sw: 1.5 }), "Move to archived")), /*#__PURE__*/React.createElement("div", {
  style: {
  display: "flex",
  gap: 10
@@ -5573,6 +5581,7 @@ function App() {
   const [mAdd, setMAdd] = useState(false);
   const [packOpen, setPackOpen] = useState(false);
   const [transportPopup, setTransportPopup] = useState(false);
+  const [showArchive, setShowArchive] = useState(false);
   const [essPopup, setEssPopup] = useState(false);
   const [dailyEss, setDailyEss] = useState(() => {
  const s = load();
@@ -7296,59 +7305,16 @@ function App() {
  background: dividerStyle === val ? (th.dark ? "rgba(14,116,144,0.15)" : "rgba(14,116,144,0.08)") : "transparent",
  color: dividerStyle === val ? th.acc : th.sub, fontSize: 13, fontWeight: dividerStyle === val ? 600 : 400, cursor: "pointer"
  }
-  }, label); })), standby.length > 0 && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(Sec, {
- th: th
-  }, "Standby List (", standby.length, ")"), /*#__PURE__*/React.createElement(NoteC, {
- th: th,
- d: {
- text: "Removed activities. Use + on any day to restore."
- },
- edit: false
-  }), standby.map(a => /*#__PURE__*/React.createElement("div", {
- key: a.id,
- style: {
- display: "flex",
- alignItems: "center",
- gap: 10,
- padding: "12px 14px",
- background: th.card,
- border: `1px solid ${th.bdr}`,
- borderRadius: 0,
- marginBottom: 8,
- boxShadow: th.sh
- }
-  }, /*#__PURE__*/React.createElement("span", {
- style: {
- fontSize: 20
- }
-  }, a.emoji), /*#__PURE__*/React.createElement("div", {
- style: {
- flex: 1
- }
-  }, /*#__PURE__*/React.createElement("div", {
- style: {
- fontSize: 13,
- fontWeight: 600,
- color: th.text
- }
-  }, a.title), /*#__PURE__*/React.createElement("div", {
- style: {
- fontSize: 11,
- color: th.mut
- }
-  }, a.dur, " · ", a.price)), /*#__PURE__*/React.createElement("button", {
- onClick: () => setStandby(s => s.filter(x => x.id !== a.id)),
- style: {
- background: th.coral,
- color: "#fff",
- border: "none",
- borderRadius: 6,
- padding: "4px 8px",
- fontSize: 11,
- fontWeight: 600,
- cursor: "pointer"
- }
-  }, "Delete")))), /*#__PURE__*/React.createElement(Sec, {
+  }, label); })),
+  /*#__PURE__*/React.createElement("button", {
+ onClick: () => setShowArchive(true),
+ style: { width: "100%", display: "flex", alignItems: "center", gap: 12, padding: "14px 16px", background: th.card, border: "0.5px solid " + th.bdr, borderRadius: 0, boxShadow: th.sh, marginBottom: 12, cursor: "pointer" }
+  }, /*#__PURE__*/React.createElement(Ico, { name: "archive", size: 18, color: th.mut, sw: 1.5 }),
+  /*#__PURE__*/React.createElement("div", { style: { flex: 1, textAlign: "left" } },
+ /*#__PURE__*/React.createElement("div", { style: { fontSize: 14, fontWeight: 600, color: th.text } }, "Archived activities"),
+ /*#__PURE__*/React.createElement("div", { style: { fontSize: 11, color: th.mut } }, standby.length > 0 ? standby.length + " activit" + (standby.length === 1 ? "y" : "ies") : "None")),
+  /*#__PURE__*/React.createElement("span", { style: { fontSize: 14, color: th.mut } }, "\u203a")),
+  /*#__PURE__*/React.createElement(Sec, {
  th: th
   }, "Backup & Sync"), /*#__PURE__*/React.createElement("div", {
  style: {
@@ -7487,7 +7453,41 @@ function App() {
  hiddenTransport: hiddenTransport,
  onSave: h => { setHiddenTransport(h); setTransportPopup(false); },
  onClose: () => setTransportPopup(false)
-  }), ticketsView && /*#__PURE__*/React.createElement(TicketsM, {
+  }), showArchive && /*#__PURE__*/React.createElement("div", {
+ style: { position: "fixed", inset: 0, zIndex: 200, display: "flex", alignItems: "flex-end", justifyContent: "center" }
+  }, /*#__PURE__*/React.createElement("div", {
+ onClick: () => setShowArchive(false),
+ style: { position: "absolute", inset: 0, background: "rgba(0,0,0,.5)" }
+  }), /*#__PURE__*/React.createElement("div", {
+ style: { position: "relative", width: "100%", maxWidth: 412, background: th.bg, borderRadius: "16px 16px 0 0", padding: "20px 16px 32px", maxHeight: "80vh", overflow: "auto" }
+  }, /*#__PURE__*/React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 } },
+ /*#__PURE__*/React.createElement("div", { style: { fontSize: 18, fontWeight: 700, color: th.text } }, "Archived Activities"),
+ /*#__PURE__*/React.createElement("button", { onClick: () => setShowArchive(false), style: { background: th.inp, border: "none", width: 32, height: 32, borderRadius: "50%", fontSize: 16, cursor: "pointer", color: th.text, display: "flex", alignItems: "center", justifyContent: "center" } }, "\u2715")),
+ standby.length === 0 ? /*#__PURE__*/React.createElement("div", { style: { textAlign: "center", padding: "32px 0", color: th.mut, fontSize: 13 } }, "No archived activities") :
+ standby.map(a => /*#__PURE__*/React.createElement("div", {
+ key: a.id,
+ style: { display: "flex", alignItems: "center", gap: 10, padding: "12px 0", borderBottom: "0.5px solid " + th.bdr }
+  }, /*#__PURE__*/React.createElement("div", { style: { flex: 1 } },
+ /*#__PURE__*/React.createElement("div", { style: { fontSize: 13, fontWeight: 600, color: th.text } }, a.title),
+ /*#__PURE__*/React.createElement("div", { style: { fontSize: 11, color: th.mut } }, a.dur || "", a.price ? " · " + a.price : "")),
+ /*#__PURE__*/React.createElement("button", {
+ onClick: () => {
+ var dayId = prompt("Restore to which day? Enter day ID (e.g. pp_1, sm_4, pk_10):\\n\\n" + allDays.map(d => d.id + " — " + d.label).join("\\n"));
+ if (!dayId) return;
+ var dest = dayId.startsWith("pp") ? "phiphi" : dayId.startsWith("sm") ? "samui" : "phuket";
+ setActs(p => {
+ const r = { ...p };
+ r[dest] = r[dest].map(d => d.id === dayId ? { ...d, acts: [...d.acts, a] } : d);
+ return r;
+ });
+ setStandby(s => s.filter(x => x.id !== a.id));
+ },
+ style: { padding: "6px 12px", border: "none", background: th.acc, color: "#fff", fontSize: 11, fontWeight: 600, borderRadius: 0, cursor: "pointer" }
+  }, "Restore"),
+ /*#__PURE__*/React.createElement("button", {
+ onClick: () => setStandby(s => s.filter(x => x.id !== a.id)),
+ style: { padding: "6px 8px", border: "0.5px solid " + th.bdr, background: "transparent", color: "#ef4444", fontSize: 11, borderRadius: 0, cursor: "pointer" }
+  }, "\u2715"))))), ticketsView && /*#__PURE__*/React.createElement(TicketsM, {
  th: th,
  tickets: ticketsView,
  onClose: () => setTicketsView(null)
@@ -7521,6 +7521,7 @@ function App() {
  hiddenTransport: hiddenTransport,
  onSave: u => saveAct(eDst, ed, u),
  onMove: (a, td) => moveAct(eDst, ed, a, td),
+ onRm: id => rmAct(eDst, ed, id),
  onClose: () => sEa(null)
   }), ce && /*#__PURE__*/React.createElement(CardEditM, {
  th: th,
