@@ -2776,7 +2776,7 @@ const CardEditM = ({
  style: { fontSize: 10, color: th.mut, marginBottom: 5, textTransform: "uppercase" }
   }, "Type"), /*#__PURE__*/React.createElement("div", {
  style: { display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 14 }
-  }, [["car", "🚕"], ["car", "🚗"], ["bus", "🚐"], ["bus", "🚌"], ["train", "🚂"], ["sail", "⛴️"], ["plane", "✈️"]].map(([lucide, emoji], idx) => /*#__PURE__*/React.createElement("button", {
+  }, [["car", "🚕"], ["bus", "🚐"], ["scooter", "🛵"], ["sail", "⛴️"], ["longtail", "🚤"], ["train", "🚂"], ["plane", "✈️"]].map(([lucide, emoji], idx) => /*#__PURE__*/React.createElement("button", {
  key: idx,
  onClick: () => u("icon", emoji),
  style: {
@@ -6073,17 +6073,41 @@ function App() {
  if (!k.startsWith("x_new_")) return false;
  const dst = cards[k]._dest;
  if (dst === slot) return true;
- // Orphaned transfers (legacy "extra" or unknown slot) fall into phuket:dep as a catch-all
  if (slot === "phuket:dep" && !known.includes(dst)) return true;
  return false;
+ }).sort((a, b) => (cards[a]._order || 0) - (cards[b]._order || 0));
+ const reorderXfer = (id, dir) => {
+ const idx = ids.indexOf(id);
+ const swapIdx = idx + dir;
+ if (swapIdx < 0 || swapIdx >= ids.length) return;
+ setCards(p => {
+ const n = { ...p };
+ const orderA = n[ids[idx]]._order || idx;
+ const orderB = n[ids[swapIdx]]._order || swapIdx;
+ n[ids[idx]] = { ...n[ids[idx]], _order: orderB };
+ n[ids[swapIdx]] = { ...n[ids[swapIdx]], _order: orderA };
+ return n;
  });
- return ids.map(id => /*#__PURE__*/React.createElement(XferC, {
+ };
+ return ids.map((id, i) => /*#__PURE__*/React.createElement("div", {
  key: id,
+ style: { position: "relative" }
+ }, edit && ids.length > 1 && /*#__PURE__*/React.createElement("div", {
+ style: { position: "absolute", left: -28, top: "50%", transform: "translateY(-50%)", display: "flex", flexDirection: "column", gap: 2, zIndex: 2 }
+ }, i > 0 && /*#__PURE__*/React.createElement("button", {
+ onClick: () => reorderXfer(id, -1),
+ style: { background: th.inp, border: "none", borderRadius: 4, width: 22, height: 22, fontSize: 10, cursor: "pointer", color: th.mut, display: "flex", alignItems: "center", justifyContent: "center" }
+ }, "\u25B2"),
+ i < ids.length - 1 && /*#__PURE__*/React.createElement("button", {
+ onClick: () => reorderXfer(id, 1),
+ style: { background: th.inp, border: "none", borderRadius: 4, width: 22, height: 22, fontSize: 10, cursor: "pointer", color: th.mut, display: "flex", alignItems: "center", justifyContent: "center" }
+ }, "\u25BC")),
+ /*#__PURE__*/React.createElement(XferC, {
  th: th,
  d: cards[id],
  edit: edit,
  onEdit: () => editCard(id)
- }));
+ })));
   };
   const rAddXfer = slot => edit && /*#__PURE__*/React.createElement("button", {
  onClick: () => {
