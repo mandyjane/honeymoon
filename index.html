@@ -4879,6 +4879,44 @@ const Sec = ({
 /* ── DAILY ESSENTIALS MODAL ── */
 const ESSENTIALS_DEFAULTS = ["Phone", "Keys", "Cash"];
 const ESSENTIALS_QUICK = ["Sunglasses", "Hat", "Towel", "Water bottle", "Insect spray", "Sunscreen", "GoPro", "Dry bag", "Snorkel gear", "Charger"];
+const NoteEditM = ({ th, initial, title, onSave, onClose }) => {
+  const [text, setText] = useState(initial || "");
+  return /*#__PURE__*/React.createElement("div", {
+    onClick: e => { if (e.target === e.currentTarget) onClose(); },
+    style: { position: "fixed", inset: 0, zIndex: 9999, background: "rgba(0,0,0,0.45)", display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: { width: "100%", maxWidth: 380, background: th.card, borderRadius: 0, boxShadow: "0 8px 32px rgba(0,0,0,0.25)", overflow: "hidden" }
+  },
+    /*#__PURE__*/React.createElement("div", {
+      style: { display: "flex", alignItems: "center", justifyContent: "space-between", padding: "16px 18px 12px", borderBottom: "1px solid " + th.bdr }
+    },
+      /*#__PURE__*/React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 8 } },
+        /*#__PURE__*/React.createElement(Ico, { name: "pen", size: 16, color: th.acc, sw: 1.5 }),
+        /*#__PURE__*/React.createElement("span", { style: { fontFamily: "'Fraunces', serif", fontWeight: 700, fontSize: 16, color: th.text } }, title || "Edit note")),
+      /*#__PURE__*/React.createElement("button", {
+        onClick: onClose,
+        style: { background: "transparent", border: "none", color: th.mut, fontSize: 18, cursor: "pointer", padding: "4px", lineHeight: 1 }
+      }, "\u2715")),
+    /*#__PURE__*/React.createElement("div", { style: { padding: "16px 18px 20px" } },
+      /*#__PURE__*/React.createElement("label", {
+        style: { fontFamily: "'DM Sans', sans-serif", fontSize: 11, fontWeight: 500, textTransform: "uppercase", letterSpacing: 0.5, color: th.mut, display: "block", marginBottom: 8 }
+      }, "Note text"),
+      /*#__PURE__*/React.createElement("textarea", {
+        value: text,
+        onChange: e => setText(e.target.value),
+        autoFocus: true,
+        style: { width: "100%", minHeight: 100, border: "1px solid " + th.bdr, borderRadius: 0, padding: 12, fontFamily: "'DM Sans', sans-serif", fontSize: 13, color: th.text, background: th.bg, resize: "vertical", outline: "none", boxSizing: "border-box", lineHeight: 1.6 }
+      }),
+      /*#__PURE__*/React.createElement("div", { style: { display: "flex", gap: 10, marginTop: 16 } },
+        /*#__PURE__*/React.createElement("button", {
+          onClick: () => { if (text.trim()) onSave(text.trim()); },
+          style: { flex: 1, padding: 12, background: th.acc, color: "#fff", border: "none", borderRadius: 0, fontFamily: "'DM Sans', sans-serif", fontSize: 14, fontWeight: 600, cursor: "pointer" }
+        }, "Save"),
+        /*#__PURE__*/React.createElement("button", {
+          onClick: onClose,
+          style: { padding: "12px 20px", background: "transparent", color: th.sub, border: "1px solid " + th.bdr, borderRadius: 0, fontFamily: "'DM Sans', sans-serif", fontSize: 14, cursor: "pointer" }
+        }, "Cancel")))));
+};
 const VendorEditM = ({ th, vendor, initialDest, onSave, onDelete, onClose }) => {
   const [f, sF] = useState(vendor || { type: "v_convenience", name: "", mapUrl: "", website: "", dest: initialDest || "phiphi" });
   const u = (k, v) => sF(p => ({ ...p, [k]: v }));
@@ -5682,6 +5720,7 @@ function App() {
   });
   const [vendorEdit, setVendorEdit] = useState(null);
   const [showVendorMgr, setShowVendorMgr] = useState(false);
+  const [noteEdit, setNoteEdit] = useState(null);
   const [budgetTotal, setBudgetTotal] = useState(() => {
  const s = load();
  return s && s.budgetTotal ? s.budgetTotal : 14000;
@@ -6059,14 +6098,7 @@ function App() {
  },
  edit: edit,
  onEdit: () => {
- var newText = prompt("Edit note:", day.note);
- if (newText !== null) {
- setActs(prev => {
- const r = { ...prev };
- r[dest] = r[dest].map(d => d.id === day.id ? { ...d, note: newText } : d);
- return r;
- });
- }
+ setNoteEdit({ dest: dest, dayId: day.id, text: day.note, isNew: false });
  },
  onDelete: () => {
  setActs(prev => {
@@ -6077,14 +6109,7 @@ function App() {
  }
   }), edit && !day.note && /*#__PURE__*/React.createElement("button", {
  onClick: () => {
- var text = prompt("Add note for " + day.label + ":");
- if (text) {
- setActs(prev => {
- const r = { ...prev };
- r[dest] = r[dest].map(d => d.id === day.id ? { ...d, note: text } : d);
- return r;
- });
- }
+ setNoteEdit({ dest: dest, dayId: day.id, text: "", isNew: true });
  },
  style: { display: "flex", alignItems: "center", justifyContent: "center", gap: 6, width: "100%", padding: "8px", border: "1px dashed " + th.bdr, background: "transparent", color: th.acc, fontSize: 11, fontWeight: 500, cursor: "pointer", marginBottom: 8, borderRadius: 0 }
   }, /*#__PURE__*/React.createElement(Ico, { name: "plus", size: 12, color: th.acc, sw: 1.5 }), "Add day note"),
@@ -7572,6 +7597,19 @@ function App() {
  hiddenTransport: hiddenTransport,
  onSave: h => { setHiddenTransport(h); setTransportPopup(false); },
  onClose: () => setTransportPopup(false)
+  }), noteEdit && /*#__PURE__*/React.createElement(NoteEditM, {
+ th: th,
+ initial: noteEdit.text,
+ title: noteEdit.isNew ? "Add note" : "Edit note",
+ onSave: function(newText) {
+ setActs(function(prev) {
+ var r = { ...prev };
+ r[noteEdit.dest] = r[noteEdit.dest].map(function(d) { return d.id === noteEdit.dayId ? { ...d, note: newText } : d; });
+ return r;
+ });
+ setNoteEdit(null);
+ },
+ onClose: function() { setNoteEdit(null); }
   }), vendorEdit && /*#__PURE__*/React.createElement(VendorEditM, {
  th: th,
  vendor: vendorEdit.vendor,
