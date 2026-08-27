@@ -6103,19 +6103,18 @@ function App() {
  }, React.createElement("div", { style: { fontSize: 9, opacity: .7, letterSpacing: 1 } }, "SPENT TODAY"),
  React.createElement("div", { style: { fontFamily: "'Fraunces',serif", fontSize: 18, fontWeight: 700, marginTop: 2 } }, "\u0e3f", daySpend.toLocaleString()),
  React.createElement("div", { style: { fontSize: 10, opacity: .8, marginTop: 2 } }, "A$", Math.round(daySpend / r), " \u00b7 ", todayMeals.length, " meal", todayMeals.length !== 1 ? "s" : ""))),
- /* Daily Essentials — right-aligned card */
- React.createElement("div", { style: { display: "flex", justifyContent: "flex-end", marginBottom: -14 } },
+ todayDay && todayDay.acts && todayDay.acts.length > 0 ? React.createElement(React.Fragment, null,
+ React.createElement("div", {
+ style: { fontSize: 11, fontWeight: 600, textTransform: "uppercase", letterSpacing: 2, color: th.acc, marginTop: 24, marginBottom: 16, display: "flex", alignItems: "center", gap: 10 }
+ }, React.createElement("div", { style: { flex: "0 0 18px", height: 1.5, background: th.acc } }),
+ React.createElement("span", null, "Today\u2019s Plan"),
+ React.createElement("div", { style: { flex: 1, height: 0.5, background: th.acc, opacity: 0.4 } }),
  React.createElement("button", {
  onClick: function() { setEssPopup(true); },
- style: { display: "flex", alignItems: "center", gap: 8, padding: "8px 14px", border: "0.5px solid " + th.bdr, background: th.card, boxShadow: th.sh, cursor: "pointer" }
- }, React.createElement(Ico, { name: "check-square", size: 16, color: th.acc, sw: 1.5 }),
- React.createElement("div", { style: { textAlign: "left" } },
- React.createElement("div", { style: { fontSize: 13, fontWeight: 500, color: th.text } }, "Day ", dayNum, " essentials"),
- React.createElement("div", { style: { fontSize: 11, color: th.mut } },
- (function() { var ess = dailyEss["day_" + dayNum]; if (!ess) return "Not started"; var done = ess.filter(function(x){return x.done;}).length; return done + " of " + ess.length + " packed"; })())),
- React.createElement("span", { style: { fontSize: 14, color: th.mut, marginLeft: 4 } }, "\u203a"))),
- todayDay && todayDay.acts && todayDay.acts.length > 0 ? React.createElement(React.Fragment, null,
- React.createElement(Sec, { th: th }, "Today\u2019s Plan"),
+ style: { display: "inline-flex", alignItems: "center", gap: 5, padding: "4px 10px", background: th.dark ? "rgba(20,184,166,0.15)" : "rgba(20,184,166,0.1)", border: "none", borderRadius: 12, cursor: "pointer" }
+ }, React.createElement(Ico, { name: "check-square", size: 12, color: th.acc, sw: 1.5 }),
+ React.createElement("span", { style: { fontSize: 11, fontWeight: 500, color: th.acc, letterSpacing: 0, textTransform: "none" } },
+ (function() { var ess = dailyEss["day_" + dayNum]; if (!ess) return "0/0 packed"; var done = ess.filter(function(x){return x.done;}).length; return done + "/" + ess.length + " packed"; })()))),
  todayDay.acts.map(function(a, i) {
  var todayDest = td && td.loc === "Phi Phi" ? "phiphi" : td && td.loc === "Samui" ? "samui" : "phuket";
  return React.createElement(ActC, {
