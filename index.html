@@ -536,35 +536,35 @@ const TRIP_DAYS = [{
   id: "d_21",
   label: "Sun 21 Feb",
   loc: "Phuket",
-  dow: "SAT",
+  dow: "SUN",
   dn: "21",
   iso: "2027-02-21"
 }, {
   id: "d_22",
   label: "Mon 22 Feb",
   loc: "Phuket",
-  dow: "SUN",
+  dow: "MON",
   dn: "22",
   iso: "2027-02-22"
 }, {
   id: "d_23",
   label: "Tue 23 Feb",
   loc: "Phuket",
-  dow: "MON",
+  dow: "TUE",
   dn: "23",
   iso: "2027-02-23"
 }, {
   id: "d_24",
   label: "Wed 24 Feb",
   loc: "Phuket",
-  dow: "TUE",
+  dow: "WED",
   dn: "24",
   iso: "2027-02-24"
 }, {
   id: "d_25",
   label: "Thu 25 Feb",
   loc: "Phuket",
-  dow: "WED",
+  dow: "THU",
   dn: "25",
   iso: "2027-02-25"
 }];
@@ -2171,9 +2171,18 @@ const addMaps = acts => {
  if (icons.length > 0) result.howIcon = icons.join(",");
  return result;
   };
+  // Correct day labels (fixes stale saved data with wrong weekdays)
+  const DAY_LABELS = {
+ pp_d1: "Day 1 — Fri 12 Feb", pp_d2: "Day 2 — Sat 13 Feb", pp_d3: "Day 3 — Sun 14 Feb 💕",
+ sm_d1: "Day 4 — Mon 15 Feb", sm_d2: "Day 5 — Tue 16 Feb", sm_d3: "Day 6 — Wed 17 Feb",
+ sm_d4: "Day 7 — Thu 18 Feb", sm_d5: "Day 8 — Fri 19 Feb", sm_d6: "Day 9 — Sat 20 Feb",
+ pk_d1: "Day 10 — Sun 21 Feb", pk_d2: "Day 11 — Mon 22 Feb", pk_d3: "Day 12 — Tue 23 Feb",
+ pk_d4: "Day 13 — Wed 24 Feb", pk_d5: "Day 14 — Thu 25 Feb"
+  };
   for (const [dest, days] of Object.entries(acts)) {
  r[dest] = days.map(day => ({
  ...day,
+ label: DAY_LABELS[day.id] || day.label,
  acts: day.acts.map(a => {
  const base = maps[a.title] ? { ...a, mapQuery: maps[a.title] } : a;
  return cleanTransport(base);
