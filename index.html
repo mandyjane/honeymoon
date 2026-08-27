@@ -4664,10 +4664,12 @@ const xferIco = act => {
   if (/✈|plane|flight|fly/.test(s)) return "plane";
   if (/kayak|canoe|paddle/.test(s)) return "kayak";
   if (/longtail/.test(s)) return "longtail";
-  if (/⛴|🛥|🚤|boat|ferry|speed|kayak/.test(s)) return "sail";
-  if (/🚌|bus|shuttle|coach/.test(s)) return "bus";
+  if (/⛴|🛥|🚤|boat|ferry|speed|sail/.test(s)) return "sail";
+  if (/🚌|bus|shuttle|coach|pickup/.test(s)) return "bus";
   if (/🚶|walk|foot/.test(s)) return "walk";
   if (/🛵|scooter|moped|motorbike/.test(s)) return "scooter";
+  if (/on-site|in-room|home/.test(s)) return "home";
+  if (/tour|ticket|incl/.test(s)) return "ticket";
   if (/🚕|🚗|🚐|car|taxi|grab|bolt|drive|private/.test(s)) return "car";
   return "car";
 };
@@ -4716,17 +4718,26 @@ const ActMag = ({
  style: { display: "inline-flex", alignItems: "center", gap: 4 }
   }, /*#__PURE__*/React.createElement(Ico, { name: "clock", color: th.mut }), act.startTime), act.dur && /*#__PURE__*/React.createElement("span", {
  style: { display: "inline-flex", alignItems: "center", gap: 4 }
-  }, /*#__PURE__*/React.createElement(Ico, { name: "timer", color: th.mut }), act.dur), act.how && /*#__PURE__*/React.createElement("span", {
- style: { display: "inline-flex", alignItems: "center", gap: 4 }
-  }, (act.howIcon || "").indexOf(",") >= 0 ? (() => {
+  }, /*#__PURE__*/React.createElement(Ico, { name: "timer", color: th.mut }), act.dur), act.how && (() => {
  const icons = (act.howIcon || "").split(",").filter(Boolean);
  const labels = (act.how || "").split(",").map(s => s.trim()).filter(Boolean);
- return icons.map((ic, ii) => /*#__PURE__*/React.createElement(React.Fragment, { key: ii }, ii > 0 && ", ", /*#__PURE__*/React.createElement(Ico, { name: ic, size: 12, color: th.mut }), " ", labels[ii] || ""));
-  })() : /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(Ico, { name: xferIco(act), color: th.mut }), " ", act.how)), act.dist && act.dist !== "On-site" && /*#__PURE__*/React.createElement("span", {
+ const legs = act.transportLegs || [];
+ const isMulti = labels.length > 1;
+ const getLegTime = idx => { if (legs[idx] && legs[idx].time) return legs[idx].time; if (!isMulti && act.travelTime) return act.travelTime; return ""; };
+ const getLegDist = idx => { if (legs[idx] && legs[idx].dist) return parseFloat(legs[idx].dist) || 0; return 0; };
+ const totalDist = legs.length > 0 ? legs.reduce((s, l) => s + (parseFloat(l.dist) || 0), 0) : (act.dist && act.dist !== "On-site" ? act.dist : "");
+ const distStr = typeof totalDist === "number" && totalDist > 0 ? (totalDist >= 1 ? totalDist + " km" : Math.round(totalDist * 1000) + "m") : (typeof totalDist === "string" ? totalDist : "");
+ return /*#__PURE__*/React.createElement(React.Fragment, null, labels.map((label, ii) => {
+ const ico = icons[ii] || xferIco({ how: label });
+ const time = getLegTime(ii);
+ const bracket = time ? " (" + time + ")" : "";
+ return /*#__PURE__*/React.createElement("span", { key: ii, style: { display: "inline-flex", alignItems: "center", gap: 4 } },
+ ii > 0 && /*#__PURE__*/React.createElement("span", { style: { opacity: 0.4, margin: "0 2px" } }, "\u2192"),
+ /*#__PURE__*/React.createElement(Ico, { name: ico, size: 12, color: th.mut }), " ", label + bracket);
+ }), distStr && /*#__PURE__*/React.createElement("span", {
  style: { display: "inline-flex", alignItems: "center", gap: 4 }
-  }, /*#__PURE__*/React.createElement(Ico, { name: "pin", size: 12, color: th.mut }), act.dist), act.travelTime && /*#__PURE__*/React.createElement("span", {
- style: { display: "inline-flex", alignItems: "center", gap: 4 }
-  }, /*#__PURE__*/React.createElement(Ico, { name: "clock", size: 12, color: th.mut }), act.travelTime), act.price && /*#__PURE__*/React.createElement("span", {
+ }, /*#__PURE__*/React.createElement(Ico, { name: "pin", size: 12, color: th.mut }), distStr));
+  })(), act.price && /*#__PURE__*/React.createElement("span", {
  style: { color: th.acc, fontWeight: 500 }
   }, act.actualCost ? "฿" + Number(act.actualCost).toLocaleString() : act.price), act.mapQuery && /*#__PURE__*/React.createElement("span", {
  onClick: openMap,
@@ -5135,17 +5146,31 @@ const ActEditM = ({
  },
  style: chip(active)
  }, /*#__PURE__*/React.createElement(Ico, { name: ico, size: 12, color: active ? "#fff" : th.sub, sw: 1.5 }), " ", label);
-  })), lbl("Distance"), /*#__PURE__*/React.createElement("input", {
- value: f.dist || "",
- onChange: e => u("dist", e.target.value),
- placeholder: "e.g. 8 km",
- style: { ...inpStyle, marginBottom: 4 }
-  }), lbl("Travel time"), /*#__PURE__*/React.createElement("input", {
- value: f.travelTime || "",
- onChange: e => u("travelTime", e.target.value),
- placeholder: "e.g. 5 min, 15 min",
- style: { ...inpStyle, marginBottom: 4 }
-  })),
+  })), (() => {
+ const currentHows = (f.how || "").split(",").map(s => s.trim()).filter(Boolean);
+ const currentIcons = (f.howIcon || "").split(",").filter(Boolean);
+ const legs = f.transportLegs || [];
+ if (currentHows.length > 1) {
+ return /*#__PURE__*/React.createElement("div", { style: { marginTop: 8, marginBottom: 4 } },
+ currentHows.map((method, li) => /*#__PURE__*/React.createElement("div", {
+ key: li,
+ style: { border: "0.5px solid " + th.bdr, marginBottom: 6, borderRadius: 0, overflow: "hidden" }
+ }, /*#__PURE__*/React.createElement("div", {
+ style: { display: "flex", alignItems: "center", gap: 6, padding: "6px 10px", background: th.dark ? "rgba(20,184,166,0.08)" : "rgba(20,184,166,0.04)", borderBottom: "0.5px solid " + th.bdr }
+ }, /*#__PURE__*/React.createElement(Ico, { name: currentIcons[li] || "car", size: 14, color: th.acc, sw: 1.5 }),
+ /*#__PURE__*/React.createElement("span", { style: { fontSize: 12, fontWeight: 600, color: th.text } }, method)),
+ /*#__PURE__*/React.createElement("div", { style: { display: "flex", gap: 8, padding: "8px 10px" } },
+ /*#__PURE__*/React.createElement("div", { style: { flex: 1 } },
+ /*#__PURE__*/React.createElement("div", { style: { fontSize: 9, color: th.mut, textTransform: "uppercase", marginBottom: 2 } }, "Time"),
+ /*#__PURE__*/React.createElement("input", { value: (legs[li] && legs[li].time) || "", onChange: e => { const nl = [...legs]; if (!nl[li]) nl[li] = {}; nl[li] = { ...nl[li], time: e.target.value }; u("transportLegs", nl); }, placeholder: "e.g. 15 min", style: inpStyle })),
+ /*#__PURE__*/React.createElement("div", { style: { flex: 1 } },
+ /*#__PURE__*/React.createElement("div", { style: { fontSize: 9, color: th.mut, textTransform: "uppercase", marginBottom: 2 } }, "Distance"),
+ /*#__PURE__*/React.createElement("input", { value: (legs[li] && legs[li].dist) || "", onChange: e => { const nl = [...legs]; if (!nl[li]) nl[li] = {}; nl[li] = { ...nl[li], dist: e.target.value }; u("transportLegs", nl); }, placeholder: "e.g. 7 km", style: inpStyle }))))));
+ }
+ return /*#__PURE__*/React.createElement(React.Fragment, null,
+ lbl("Distance"), /*#__PURE__*/React.createElement("input", { value: f.dist || "", onChange: e => u("dist", e.target.value), placeholder: "e.g. 8 km", style: { ...inpStyle, marginBottom: 4 } }),
+ lbl("Travel time"), /*#__PURE__*/React.createElement("input", { value: f.travelTime || "", onChange: e => u("travelTime", e.target.value), placeholder: "e.g. 5 min", style: { ...inpStyle, marginBottom: 4 } }));
+  })()),
  /* ── 3. MAP & TIMING (collapsible) ── */
  secHead("pin", "Map & timing", secMap, () => setSecMap(!secMap), !!(f.mapQuery || f.startTime || f.dur)), secMap && /*#__PURE__*/React.createElement("div", {
  style: { paddingBottom: 10 }
