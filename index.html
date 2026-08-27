@@ -224,16 +224,16 @@ const fmtTime = t => {
   return m === 0 ? h12 + " " + ap : h12 + ":" + String(m).padStart(2, "0") + " " + ap;
 };
 const fmtBfastRange = (from, to) => {
-  if (!from && !to) return "Included";
+  if (!from && !to) return "";
   const fH = parseInt(from), tH = parseInt(to);
-  if (isNaN(fH) || isNaN(tH)) return "Included";
+  if (isNaN(fH) || isNaN(tH)) return "";
   const fAP = fH >= 12 ? "PM" : "AM", tAP = tH >= 12 ? "PM" : "AM";
   const f12 = fH % 12 || 12, t12 = tH % 12 || 12;
   const fM = from.split(":")[1], tM = to.split(":")[1];
-  const fS = fM === "00" ? f12 : f12 + ":" + fM;
-  const tS = tM === "00" ? t12 : t12 + ":" + tM;
-  if (fAP === tAP) return "Inc. " + fS + "\u2013" + tS + " " + tAP;
-  return "Inc. " + fS + " " + fAP + "\u2013" + tS + " " + tAP;
+  const fS = f12 + ":" + fM;
+  const tS = t12 + ":" + tM;
+  if (fAP === tAP) return fS + "\u2013" + tS;
+  return fS + " " + fAP + "\u2013" + tS + " " + tAP;
 };
 /* ── PRICE HELPERS ── */
 const RATE = 22.5;
@@ -4496,13 +4496,20 @@ const AccC = ({
  gap: 4,
  marginBottom: 12
  }
-  }, [["CHECK-IN", fmtTime(d.checkIn)], ["CHECK-OUT", fmtTime(d.checkOut)], ["BREAKFAST", d.bfast && !d.bfast.toLowerCase().includes("not") && d.bfastFrom && d.bfastTo ? fmtBfastRange(d.bfastFrom, d.bfastTo) : d.bfast], ["WIFI", d.wifi || "Free"]].map(([l, v], i) => /*#__PURE__*/React.createElement("div", {
+  }, (() => {
+ const bfastTime = d.bfast && !d.bfast.toLowerCase().includes("not") && d.bfastFrom && d.bfastTo ? fmtBfastRange(d.bfastFrom, d.bfastTo) : "";
+ const bfastVal = bfastTime || d.bfast;
+ return [["CHECK-IN", fmtTime(d.checkIn), null], ["CHECK-OUT", fmtTime(d.checkOut), null], ["BREAKFAST", bfastVal, bfastTime ? "Included" : null], ["WIFI", d.wifi || "Free", null]].map(([l, v, sub], i) => /*#__PURE__*/React.createElement("div", {
  key: i,
  style: {
  background: th.inp,
  borderRadius: 6,
  padding: "6px 4px",
- textAlign: "center"
+ textAlign: "center",
+ display: "flex",
+ flexDirection: "column",
+ justifyContent: "center",
+ minHeight: 46
  }
   }, /*#__PURE__*/React.createElement("div", {
  style: {
@@ -4519,7 +4526,15 @@ const AccC = ({
  marginTop: 2,
  lineHeight: 1.2
  }
-  }, v)))), d.accomNotes && /*#__PURE__*/React.createElement("div", {
+  }, v), sub && /*#__PURE__*/React.createElement("div", {
+ style: {
+ fontSize: 8,
+ color: th.mut,
+ marginTop: 1,
+ lineHeight: 1.2
+ }
+  }, sub)));
+  })()), d.accomNotes && /*#__PURE__*/React.createElement("div", {
  style: {
  background: th.inp,
  borderLeft: `3px solid ${th.acc}`,
