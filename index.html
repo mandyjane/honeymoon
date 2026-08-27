@@ -6647,12 +6647,13 @@ function App() {
   }, "Trip Budget"), (() => {
  const r = liveRate || 22.5;
  const flights = 3753;
- const accom = 7457;
+ const accomCards = ["a_pp", "a_sm", "a_pk"].map(k => cards[k]).filter(c => c && c._t === "accom");
  const parseAud = str => {
  if (!str) return 0;
  const m = String(str).match(/A?\$?\s*([\d,]+(?:\.\d+)?)/);
  return m ? Number(m[1].replace(/,/g, "")) : 0;
  };
+ const accom = accomCards.reduce((s, c) => s + parseAud(c.total), 0);
  const xferCards = Object.values(cards).filter(c => c && c._t === "xfer");
  const transfers = xferCards.reduce((s, c) => s + parseAud(c.cost), 0);
  const prebooked = flights + accom;
