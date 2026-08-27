@@ -6579,7 +6579,7 @@ function App() {
  /*#__PURE__*/React.createElement("span", { onClick: () => setTicketsView(travelDocs.tdac), style: { fontSize: 11, color: th.acc, fontWeight: 500, cursor: "pointer" } }, "View"),
  edit && /*#__PURE__*/React.createElement("span", { onClick: () => removeTravelDoc("tdac", t.id), style: { fontSize: 11, color: "#ef4444", cursor: "pointer" } }, "Remove")))) :
  /*#__PURE__*/React.createElement("div", { style: { fontSize: 12, color: th.mut, marginBottom: 12 } }, "No arrival cards attached yet."),
- (edit || (travelDocs.tdac || []).length === 0) && /*#__PURE__*/React.createElement("label", {
+ (edit || (travelDocs.tdac || []).length < 2) && /*#__PURE__*/React.createElement("label", {
  style: { display: "block", width: "100%", padding: "12px", borderRadius: 12, border: "1px dashed " + th.acc, background: "transparent", color: th.acc, fontSize: 13, fontWeight: 500, cursor: "pointer", textAlign: "center", boxSizing: "border-box" }
  }, "+ Attach arrival card", /*#__PURE__*/React.createElement("input", {
  type: "file", accept: "image/*,application/pdf", multiple: true, style: { display: "none" },
