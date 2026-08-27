@@ -5524,6 +5524,10 @@ function App() {
  const s = load();
  return s && s.destNotes ? s.destNotes : { phiphi: [], samui: [], phuket: [] };
   });
+  const [hideCountdown, setHideCountdown] = useState(() => {
+ const s = load();
+ return s && s.hideCountdown ? true : false;
+  });
   const [budgetTotal, setBudgetTotal] = useState(() => {
  const s = load();
  return s && s.budgetTotal ? s.budgetTotal : 14000;
@@ -5594,9 +5598,10 @@ function App() {
  dividerStyle,
  hiddenTransport,
  dailyEss,
- destNotes
+ destNotes,
+ hideCountdown
  });
-  }, [cards, docs, acts, standby, meals, packing, budgetTotal, heroImg, dark, travelDocs, homeView, dividerStyle, hiddenTransport, dailyEss, destNotes, loaded]);
+  }, [cards, docs, acts, standby, meals, packing, budgetTotal, heroImg, dark, travelDocs, homeView, dividerStyle, hiddenTransport, dailyEss, destNotes, hideCountdown, loaded]);
   useEffect(() => {
  document.body.className = dark ? "dark" : "";
   }, [dark]);
@@ -5897,8 +5902,37 @@ function App() {
  d: {
  text: day.note
  },
- edit: false
-  }), day.acts.map((a, ai) => /*#__PURE__*/React.createElement(ActC, {
+ edit: edit,
+ onEdit: () => {
+ var newText = prompt("Edit note:", day.note);
+ if (newText !== null) {
+ setActs(prev => {
+ const r = { ...prev };
+ r[dest] = r[dest].map(d => d.id === day.id ? { ...d, note: newText } : d);
+ return r;
+ });
+ }
+ },
+ onDelete: () => {
+ setActs(prev => {
+ const r = { ...prev };
+ r[dest] = r[dest].map(d => d.id === day.id ? { ...d, note: "" } : d);
+ return r;
+ });
+ }
+  }), edit && !day.note && /*#__PURE__*/React.createElement("button", {
+ onClick: () => {
+ var text = prompt("Add note for " + day.label + ":");
+ if (text) {
+ setActs(prev => {
+ const r = { ...prev };
+ r[dest] = r[dest].map(d => d.id === day.id ? { ...d, note: text } : d);
+ return r;
+ });
+ }
+ },
+ style: { display: "flex", alignItems: "center", justifyContent: "center", gap: 6, width: "100%", padding: "8px", border: "1px dashed " + th.bdr, background: "transparent", color: th.acc, fontSize: 11, fontWeight: 500, cursor: "pointer", marginBottom: 8, borderRadius: 0 }
+  }, /*#__PURE__*/React.createElement(Ico, { name: "plus", size: 12, color: th.acc, sw: 1.5 }), "Add day note"), day.acts.map((a, ai) => /*#__PURE__*/React.createElement(ActC, {
  key: a.id,
  th: th,
  act: a,
@@ -6236,10 +6270,10 @@ function App() {
  }, d);
   })))),
   /* -- COUNTDOWN BAR -- */
-  Math.ceil((new Date("2027-02-11") - new Date()) / 864e5) > 0 && /*#__PURE__*/React.createElement("div", {
+  !hideCountdown && Math.ceil((new Date("2027-02-11") - new Date()) / 864e5) > 0 && /*#__PURE__*/React.createElement("div", {
  style: {
  display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
- padding: "13px 24px", margin: "0 -16px",
+ padding: "13px 24px", margin: "0 -16px", position: "relative",
  background: dark ? "rgba(14,116,144,.35)" : th.acc,
  color: dark ? th.acc : "#fff",
  borderTop: dark ? "0.5px solid rgba(125,211,252,.15)" : "none"
@@ -6249,7 +6283,11 @@ function App() {
   }, Math.max(0, Math.ceil((new Date("2027-02-11") - new Date()) / 864e5))),
   /*#__PURE__*/React.createElement("span", {
  style: { fontSize: 12, opacity: .8 }
-  }, "days until your honeymoon")),
+  }, "days until your honeymoon"),
+  /*#__PURE__*/React.createElement("button", {
+ onClick: () => setHideCountdown(true),
+ style: { position: "absolute", right: 8, top: "50%", transform: "translateY(-50%)", background: "transparent", border: "none", color: "inherit", opacity: .5, fontSize: 14, cursor: "pointer", padding: "4px 8px" }
+  }, "\u2715")),
   /*#__PURE__*/React.createElement(Sec, {
  th: th
   }, "Trip Timeline"), [{
@@ -7119,7 +7157,7 @@ function App() {
  fontWeight: heroImg === h.id ? 600 : 400
  }
  }, h.label));
-  }))), [["🌙", "Dark Mode", "Light and dark theme", dark, () => setDark(!dark)], [/*#__PURE__*/React.createElement(Ico, { name: "square-pen", size: 18, color: edit ? th.acc : th.mut, sw: 1.5 }), "Edit Mode", "Modify all cards and documents", edit, () => setEdit(!edit)]].map(([ico, t, s, on, fn], i) => /*#__PURE__*/React.createElement("div", {
+  }))), [["🌙", "Dark Mode", "Light and dark theme", dark, () => setDark(!dark)], [/*#__PURE__*/React.createElement(Ico, { name: "square-pen", size: 18, color: edit ? th.acc : th.mut, sw: 1.5 }), "Edit Mode", "Modify all cards and documents", edit, () => setEdit(!edit)], ["⏳", "Countdown", "Show days until honeymoon", !hideCountdown, () => setHideCountdown(!hideCountdown)]].map(([ico, t, s, on, fn], i) => /*#__PURE__*/React.createElement("div", {
  key: i,
  style: {
  background: th.card,
@@ -7589,7 +7627,7 @@ function App() {
  transform: "translateX(calc(min(50vw, 240px) - 60px))",
  width: 36,
  height: 36,
- borderRadius: 0,
+ borderRadius: "50%",
  background: edit ? th.acc : th.card,
  border: edit ? "none" : `1.5px solid ${th.acc}`,
  boxShadow: "0 2px 8px rgba(0,0,0,0.25)",
