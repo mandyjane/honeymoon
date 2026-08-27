@@ -4870,11 +4870,12 @@ const Sec = ({
 /* ── DAILY ESSENTIALS MODAL ── */
 const ESSENTIALS_DEFAULTS = ["Phone", "Keys", "Cash"];
 const ESSENTIALS_QUICK = ["Sunglasses", "Hat", "Towel", "Water bottle", "Insect spray", "Sunscreen", "GoPro", "Dry bag", "Snorkel gear", "Charger"];
-const VendorEditM = ({ th, vendor, onSave, onDelete, onClose }) => {
-  const [f, sF] = useState(vendor || { type: "v_convenience", name: "", mapUrl: "", website: "" });
+const VendorEditM = ({ th, vendor, initialDest, onSave, onDelete, onClose }) => {
+  const [f, sF] = useState(vendor || { type: "v_convenience", name: "", mapUrl: "", website: "", dest: initialDest || "phiphi" });
   const u = (k, v) => sF(p => ({ ...p, [k]: v }));
   const inpStyle = { width: "100%", padding: "9px 10px", border: "0.5px solid " + th.bdr, borderRadius: 0, fontSize: 13, background: th.inp, color: th.text, boxSizing: "border-box" };
   const lbl = t => /*#__PURE__*/React.createElement("div", { style: { fontSize: 10, color: th.mut, textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 4, marginTop: 12 } }, t);
+  const DESTS = [["phiphi", "Phi Phi"], ["samui", "Samui"], ["phuket", "Phuket"]];
   return /*#__PURE__*/React.createElement("div", {
  style: { position: "fixed", inset: 0, zIndex: 200, display: "flex", alignItems: "flex-end", justifyContent: "center" }
   }, /*#__PURE__*/React.createElement("div", {
@@ -4885,6 +4886,16 @@ const VendorEditM = ({ th, vendor, onSave, onDelete, onClose }) => {
   }, /*#__PURE__*/React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 } },
  /*#__PURE__*/React.createElement("div", { style: { fontSize: 18, fontWeight: 700, color: th.text } }, vendor ? "Edit Vendor" : "Add Vendor"),
  /*#__PURE__*/React.createElement("button", { onClick: onClose, style: { background: th.inp, border: "none", width: 32, height: 32, borderRadius: "50%", fontSize: 16, cursor: "pointer", color: th.text } }, "\u2715")),
+ lbl("Location"),
+ /*#__PURE__*/React.createElement("div", { style: { display: "flex", gap: 6 } },
+ DESTS.map(function(dd) {
+ var active = f.dest === dd[0];
+ return /*#__PURE__*/React.createElement("button", {
+ key: dd[0],
+ onClick: function() { u("dest", dd[0]); },
+ style: { flex: 1, padding: 9, textAlign: "center", fontSize: 12, fontWeight: active ? 600 : 400, border: active ? "1.5px solid " + th.acc : "0.5px solid " + th.bdr, background: active ? th.acc : th.inp, color: active ? "#fff" : th.sub, cursor: "pointer", borderRadius: 0 }
+ }, dd[1]);
+ })),
  lbl("Shop type"),
  /*#__PURE__*/React.createElement("div", { style: { display: "flex", flexWrap: "wrap", gap: 6 } },
  VENDOR_TYPES.map(function(vt) {
@@ -5661,6 +5672,7 @@ function App() {
  return s && s.vendors ? s.vendors : { phiphi: [], samui: [], phuket: [] };
   });
   const [vendorEdit, setVendorEdit] = useState(null);
+  const [showVendorMgr, setShowVendorMgr] = useState(false);
   const [budgetTotal, setBudgetTotal] = useState(() => {
  const s = load();
  return s && s.budgetTotal ? s.budgetTotal : 14000;
@@ -6349,7 +6361,7 @@ function App() {
  }, destVendors.map(function(v) {
  return React.createElement("div", {
  key: v.id,
- onClick: function() { if (edit) { setVendorEdit({ dest: todayDest, vendor: v }); } else if (v.mapUrl) { window.open(v.mapUrl, "_blank"); } },
+ onClick: function() { if (edit) { setVendorEdit({ dest: todayDest, vendor: { ...v, dest: todayDest } }); } else if (v.mapUrl) { window.open(v.mapUrl, "_blank"); } },
  style: { display: "flex", alignItems: "center", gap: 10, padding: "10px 12px", background: th.card, border: "0.5px solid " + th.bdr, cursor: "pointer" }
  }, React.createElement(Ico, { name: v.type, size: 22, color: th.acc, sw: 1.5 }),
  React.createElement("div", { style: { flex: 1, minWidth: 0 } },
@@ -7404,6 +7416,14 @@ function App() {
  /*#__PURE__*/React.createElement("div", { style: { fontSize: 14, fontWeight: 600, color: th.text } }, "Archived activities"),
  /*#__PURE__*/React.createElement("div", { style: { fontSize: 11, color: th.mut } }, standby.length > 0 ? standby.length + " activit" + (standby.length === 1 ? "y" : "ies") : "None")),
   /*#__PURE__*/React.createElement("span", { style: { fontSize: 14, color: th.mut } }, "\u203a")),
+  /*#__PURE__*/React.createElement("button", {
+ onClick: () => setShowVendorMgr(true),
+ style: { width: "100%", display: "flex", alignItems: "center", gap: 12, padding: "14px 16px", background: th.card, border: "0.5px solid " + th.bdr, borderRadius: 0, boxShadow: th.sh, marginBottom: 12, cursor: "pointer" }
+  }, /*#__PURE__*/React.createElement(Ico, { name: "v_store", size: 18, color: th.mut, sw: 1.5 }),
+  /*#__PURE__*/React.createElement("div", { style: { flex: 1, textAlign: "left" } },
+ /*#__PURE__*/React.createElement("div", { style: { fontSize: 14, fontWeight: 600, color: th.text } }, "Local vendors"),
+ /*#__PURE__*/React.createElement("div", { style: { fontSize: 11, color: th.mut } }, (function() { var n = (vendors.phiphi || []).length + (vendors.samui || []).length + (vendors.phuket || []).length; return n > 0 ? n + " across all destinations" : "None yet"; })())),
+  /*#__PURE__*/React.createElement("span", { style: { fontSize: 14, color: th.mut } }, "\u203a")),
   /*#__PURE__*/React.createElement(Sec, {
  th: th
   }, "Backup & Sync"), /*#__PURE__*/React.createElement("div", {
@@ -7546,28 +7566,72 @@ function App() {
   }), vendorEdit && /*#__PURE__*/React.createElement(VendorEditM, {
  th: th,
  vendor: vendorEdit.vendor,
+ initialDest: vendorEdit.dest,
  onSave: function(v) {
- var dest = vendorEdit.dest;
+ var newDest = v.dest || vendorEdit.dest;
+ var oldDest = vendorEdit.vendor ? (vendorEdit.vendor.dest || vendorEdit.dest) : newDest;
  setVendors(function(p) {
- var list = (p[dest] || []).slice();
+ var result = { ...p };
  if (vendorEdit.vendor) {
- list = list.map(function(x){ return x.id === vendorEdit.vendor.id ? { ...v, id: x.id } : x; });
+ // Remove from old dest, add to new dest
+ var vid = vendorEdit.vendor.id;
+ if (oldDest !== newDest) {
+ result[oldDest] = (result[oldDest] || []).filter(function(x){ return x.id !== vid; });
+ result[newDest] = [...(result[newDest] || []), { ...v, id: vid }];
  } else {
- list.push({ ...v, id: "vnd_" + Date.now() });
+ result[newDest] = (result[newDest] || []).map(function(x){ return x.id === vid ? { ...v, id: vid } : x; });
  }
- return { ...p, [dest]: list };
+ } else {
+ result[newDest] = [...(result[newDest] || []), { ...v, id: "vnd_" + Date.now() }];
+ }
+ return result;
  });
  setVendorEdit(null);
  },
  onDelete: vendorEdit.vendor ? function() {
- var dest = vendorEdit.dest;
+ var dest = vendorEdit.vendor.dest || vendorEdit.dest;
  setVendors(function(p) {
  return { ...p, [dest]: (p[dest] || []).filter(function(x){ return x.id !== vendorEdit.vendor.id; }) };
  });
  setVendorEdit(null);
  } : null,
  onClose: function() { setVendorEdit(null); }
-  }), showArchive && /*#__PURE__*/React.createElement("div", {
+  }), showVendorMgr && /*#__PURE__*/React.createElement("div", {
+ style: { position: "fixed", inset: 0, zIndex: 190, display: "flex", alignItems: "flex-end", justifyContent: "center" }
+  }, /*#__PURE__*/React.createElement("div", {
+ onClick: function() { setShowVendorMgr(false); },
+ style: { position: "absolute", inset: 0, background: "rgba(0,0,0,.5)" }
+  }), /*#__PURE__*/React.createElement("div", {
+ style: { position: "relative", width: "100%", maxWidth: 412, background: th.bg, borderRadius: "16px 16px 0 0", padding: "20px 16px 32px", maxHeight: "85vh", overflow: "auto" }
+  }, /*#__PURE__*/React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 } },
+ /*#__PURE__*/React.createElement("div", { style: { fontSize: 18, fontWeight: 700, color: th.text } }, "Manage Vendors"),
+ /*#__PURE__*/React.createElement("button", { onClick: function() { setShowVendorMgr(false); }, style: { background: th.inp, border: "none", width: 32, height: 32, borderRadius: "50%", fontSize: 16, cursor: "pointer", color: th.text } }, "\u2715")),
+ [["phiphi", "Phi Phi"], ["samui", "Samui"], ["phuket", "Phuket"]].map(function(dd) {
+ var list = vendors[dd[0]] || [];
+ return /*#__PURE__*/React.createElement("div", { key: dd[0], style: { marginBottom: 18 } },
+ /*#__PURE__*/React.createElement("div", { style: { fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: 1, color: th.acc, marginBottom: 6 } }, dd[1]),
+ list.length === 0 ? /*#__PURE__*/React.createElement("div", { style: { fontSize: 12, color: th.mut, padding: "6px 0" } }, "No vendors") :
+ list.map(function(v) {
+ return /*#__PURE__*/React.createElement("div", {
+ key: v.id,
+ style: { display: "flex", alignItems: "center", gap: 10, padding: "8px 0", borderBottom: "0.5px solid " + th.bdr }
+ }, /*#__PURE__*/React.createElement(Ico, { name: v.type, size: 18, color: th.text, sw: 1.5 }),
+ /*#__PURE__*/React.createElement("div", { style: { flex: 1, minWidth: 0 } },
+ /*#__PURE__*/React.createElement("div", { style: { fontSize: 13, fontWeight: 600, color: th.text, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" } }, v.name || (VENDOR_TYPES.find(function(t){ return t[0] === v.type; }) || ["", "Vendor"])[1])),
+ /*#__PURE__*/React.createElement("button", {
+ onClick: function() { setShowVendorMgr(false); setVendorEdit({ dest: dd[0], vendor: { ...v, dest: dd[0] } }); },
+ style: { padding: "4px 10px", border: "0.5px solid " + th.acc, background: "transparent", color: th.acc, fontSize: 11, cursor: "pointer", borderRadius: 0 }
+ }, "Edit"),
+ /*#__PURE__*/React.createElement("button", {
+ onClick: function() { setVendors(function(p){ return { ...p, [dd[0]]: (p[dd[0]] || []).filter(function(x){ return x.id !== v.id; }) }; }); },
+ style: { padding: "4px 8px", border: "0.5px solid " + th.bdr, background: "transparent", color: "#ef4444", fontSize: 11, cursor: "pointer", borderRadius: 0 }
+ }, "\u2715"));
+ }));
+ }),
+ /*#__PURE__*/React.createElement("button", {
+ onClick: function() { setShowVendorMgr(false); setVendorEdit({ dest: "phiphi", vendor: null }); },
+ style: { width: "100%", marginTop: 4, padding: 10, border: "1px dashed " + th.acc, background: "transparent", color: th.acc, fontSize: 12, fontWeight: 500, cursor: "pointer", borderRadius: 0 }
+  }, "+ Add vendor"))), showArchive && /*#__PURE__*/React.createElement("div", {
  style: { position: "fixed", inset: 0, zIndex: 200, display: "flex", alignItems: "flex-end", justifyContent: "center" }
   }, /*#__PURE__*/React.createElement("div", {
  onClick: () => setShowArchive(false),
