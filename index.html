@@ -30,7 +30,9 @@
 <div id="root"></div>
 <script>const {
   useState,
-  useEffect
+  useEffect,
+  useRef,
+  useCallback
 } = React;
 const openPdf = doc => {
   if (!doc) return;
@@ -5679,6 +5681,64 @@ const HERO_OPTIONS = [{
 }];
 function App() {
   const [tab, setTab] = useState("overview");
+  const [swipeX, setSwipeX] = useState(0);
+  const [sliding, setSliding] = useState(false);
+  const touchRef = useRef({ startX: 0, startY: 0, swiping: false, moved: false });
+  const animRef = useRef(false);
+  const goTab = useCallback(function(dir) {
+    if (animRef.current) return;
+    var idx = TABS.indexOf(tab);
+    var next = idx + dir;
+    if (next < 0 || next >= TABS.length) return;
+    animRef.current = true;
+    setSliding(false);
+    setSwipeX(dir * -100);
+    setTab(TABS[next]);
+    window.scrollTo(0, 0);
+    requestAnimationFrame(function() {
+      requestAnimationFrame(function() {
+        setSliding(true);
+        setSwipeX(0);
+        setTimeout(function() { setSliding(false); animRef.current = false; }, 320);
+      });
+    });
+  }, [tab]);
+  const onTS = useCallback(function(e) {
+    if (animRef.current) return;
+    var t = e.touches[0];
+    touchRef.current = { startX: t.clientX, startY: t.clientY, swiping: false, moved: false };
+  }, []);
+  const onTM = useCallback(function(e) {
+    if (animRef.current) return;
+    var tc = touchRef.current;
+    var t = e.touches[0];
+    var dx = t.clientX - tc.startX;
+    var dy = t.clientY - tc.startY;
+    if (!tc.moved) {
+      tc.moved = true;
+      tc.swiping = Math.abs(dx) > Math.abs(dy) * 1.2;
+    }
+    if (tc.swiping) {
+      e.preventDefault();
+      var pct = (dx / window.innerWidth) * 100;
+      var idx = TABS.indexOf(tab);
+      if ((pct > 0 && idx === 0) || (pct < 0 && idx === TABS.length - 1)) pct *= 0.2;
+      setSwipeX(pct);
+    }
+  }, [tab]);
+  const onTE = useCallback(function(e) {
+    if (animRef.current) return;
+    var tc = touchRef.current;
+    if (!tc.swiping) { setSwipeX(0); return; }
+    var dx = e.changedTouches[0].clientX - tc.startX;
+    if (Math.abs(dx) > 60) {
+      goTab(dx < 0 ? 1 : -1);
+    } else {
+      setSliding(true);
+      setSwipeX(0);
+      setTimeout(function() { setSliding(false); }, 300);
+    }
+  }, [goTab]);
   const [dark, setDark] = useState(false);
   const [edit, setEdit] = useState(false);
   const [cards, setCards] = useState(INIT_CARDS);
@@ -6293,6 +6353,9 @@ function App() {
  }
   }));
   return /*#__PURE__*/React.createElement("div", {
+ onTouchStart: onTS,
+ onTouchMove: onTM,
+ onTouchEnd: onTE,
  style: {
  background: th.bg,
  minHeight: "100vh",
@@ -6304,7 +6367,10 @@ function App() {
  }
   }, /*#__PURE__*/React.createElement("div", {
  style: {
- padding: 0
+ padding: 0,
+ transform: "translateX(" + swipeX + "%)",
+ transition: sliding ? "transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)" : "none",
+ willChange: "transform"
  }
   }, tab === "overview" && /*#__PURE__*/React.createElement(React.Fragment, null,
   homeView === "today" && (() => {
@@ -7986,8 +8052,20 @@ function App() {
   }, TABS.map(t => /*#__PURE__*/React.createElement("button", {
  key: t,
  onClick: () => {
+ if (animRef.current || t === tab) return;
+ var dir = TABS.indexOf(t) > TABS.indexOf(tab) ? 1 : -1;
+ animRef.current = true;
+ setSliding(false);
+ setSwipeX(dir * -100);
  setTab(t);
  window.scrollTo(0, 0);
+ requestAnimationFrame(function() {
+ requestAnimationFrame(function() {
+ setSliding(true);
+ setSwipeX(0);
+ setTimeout(function() { setSliding(false); animRef.current = false; }, 320);
+ });
+ });
  },
  style: {
  display: "flex",
