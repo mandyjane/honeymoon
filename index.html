@@ -644,7 +644,7 @@ const TIDES = {
  time: "03:05",
  h: "0.5m"
   }],
-  sm_d4: [{
+  sm_d1: [{
  t: "HIGH",
  time: "05:48",
  h: "1.8m"
@@ -661,7 +661,7 @@ const TIDES = {
  time: "00:20",
  h: "0.9m"
   }],
-  sm_d5: [{
+  sm_d2: [{
  t: "HIGH",
  time: "06:35",
  h: "1.9m"
@@ -678,7 +678,7 @@ const TIDES = {
  time: "01:08",
  h: "0.8m"
   }],
-  sm_d6: [{
+  sm_d3: [{
  t: "HIGH",
  time: "07:20",
  h: "2.0m"
@@ -695,7 +695,7 @@ const TIDES = {
  time: "01:55",
  h: "0.7m"
   }],
-  sm_d7: [{
+  sm_d4: [{
  t: "HIGH",
  time: "08:05",
  h: "2.1m"
@@ -712,7 +712,7 @@ const TIDES = {
  time: "02:42",
  h: "0.6m"
   }],
-  sm_d8: [{
+  sm_d5: [{
  t: "HIGH",
  time: "08:50",
  h: "2.2m"
@@ -729,7 +729,7 @@ const TIDES = {
  time: "03:28",
  h: "0.5m"
   }],
-  sm_d9: [{
+  sm_d6: [{
  t: "HIGH",
  time: "09:35",
  h: "2.3m"
@@ -6092,7 +6092,8 @@ function App() {
  th: th,
  day: day,
  style: dividerStyle
-  }), day.note && /*#__PURE__*/React.createElement(NoteC, {
+  }), /*#__PURE__*/React.createElement(TideBar, { th: th, dayId: day.id }),
+  day.note && /*#__PURE__*/React.createElement(NoteC, {
  th: th,
  d: {
  text: day.note
@@ -6114,7 +6115,6 @@ function App() {
  },
  style: { display: "flex", alignItems: "center", justifyContent: "center", gap: 6, width: "100%", padding: "8px", border: "1px dashed " + th.bdr, background: "transparent", color: th.acc, fontSize: 11, fontWeight: 500, cursor: "pointer", marginBottom: 8, borderRadius: 0 }
   }, /*#__PURE__*/React.createElement(Ico, { name: "plus", size: 12, color: th.acc, sw: 1.5 }), "Add day note"),
-  /*#__PURE__*/React.createElement(TideBar, { th: th, dayId: day.id }),
   day.acts.map((a, ai) => /*#__PURE__*/React.createElement(ActC, {
  key: a.id,
  th: th,
@@ -6501,7 +6501,7 @@ function App() {
  style: { position: "absolute", right: 8, top: "50%", transform: "translateY(-50%)", background: "transparent", border: "none", color: "inherit", opacity: .5, fontSize: 14, cursor: "pointer", padding: "4px 8px" }
   }, "\u2715")),
   /*#__PURE__*/React.createElement("div", {
- style: { display: "flex", alignItems: "center", gap: 6, padding: "10px 12px", margin: "8px 0", border: "0.5px solid " + th.bdr, background: "transparent" }
+ style: { display: "flex", alignItems: "center", gap: 6, padding: "10px 12px", margin: "8px 0 -14px", border: "0.5px solid " + th.bdr, background: "transparent" }
   }, /*#__PURE__*/React.createElement(Ico, { name: "map-pin", size: 16, color: th.acc, sw: 1.5 }),
   /*#__PURE__*/React.createElement("span", { style: { fontSize: 12, color: th.sub } }, "My maps"),
   /*#__PURE__*/React.createElement("div", { style: { flex: 1 } }),
