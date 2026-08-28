@@ -5681,64 +5681,108 @@ const HERO_OPTIONS = [{
 }];
 function App() {
   const [tab, setTab] = useState("overview");
-  const [swipeX, setSwipeX] = useState(0);
-  const [sliding, setSliding] = useState(false);
-  const touchRef = useRef({ startX: 0, startY: 0, swiping: false, moved: false });
-  const animRef = useRef(false);
-  const goTab = useCallback(function(dir) {
-    if (animRef.current) return;
-    var idx = TABS.indexOf(tab);
-    var next = idx + dir;
-    if (next < 0 || next >= TABS.length) return;
-    animRef.current = true;
-    setSliding(false);
-    setSwipeX(dir * -100);
-    setTab(TABS[next]);
-    window.scrollTo(0, 0);
-    requestAnimationFrame(function() {
-      requestAnimationFrame(function() {
-        setSliding(true);
-        setSwipeX(0);
-        setTimeout(function() { setSliding(false); animRef.current = false; }, 320);
-      });
-    });
-  }, [tab]);
-  const onTS = useCallback(function(e) {
-    if (animRef.current) return;
-    var t = e.touches[0];
-    touchRef.current = { startX: t.clientX, startY: t.clientY, swiping: false, moved: false };
+  const contentRef = useRef(null);
+  const touchRef = useRef({ startX: 0, startY: 0, swiping: false, moved: false, active: false });
+  const tabRef = useRef(tab);
+  tabRef.current = tab;
+  const animating = useRef(false);
+
+  const slideToTab = useCallback(function(newTab, dir) {
+    if (animating.current) return;
+    var el = contentRef.current;
+    if (!el) { setTab(newTab); return; }
+    animating.current = true;
+    // Slide current content out
+    el.style.transition = "transform 0.25s cubic-bezier(0.25,0.46,0.45,0.94)";
+    el.style.transform = "translateX(" + (dir * -100) + "%)";
+    setTimeout(function() {
+      setTab(newTab);
+      tabRef.current = newTab;
+      window.scrollTo(0, 0);
+      // Position new content off-screen on the entry side (no transition)
+      el.style.transition = "none";
+      el.style.transform = "translateX(" + (dir * 100) + "%)";
+      // Force reflow then animate in
+      void el.offsetWidth;
+      el.style.transition = "transform 0.25s cubic-bezier(0.25,0.46,0.45,0.94)";
+      el.style.transform = "translateX(0)";
+      setTimeout(function() {
+        el.style.transition = "";
+        el.style.transform = "";
+        animating.current = false;
+      }, 260);
+    }, 250);
   }, []);
-  const onTM = useCallback(function(e) {
-    if (animRef.current) return;
-    var tc = touchRef.current;
-    var t = e.touches[0];
-    var dx = t.clientX - tc.startX;
-    var dy = t.clientY - tc.startY;
-    if (!tc.moved) {
-      tc.moved = true;
-      tc.swiping = Math.abs(dx) > Math.abs(dy) * 1.2;
+
+  useEffect(function() {
+    var el = contentRef.current;
+    if (!el) return;
+    var tc = { startX: 0, startY: 0, swiping: false, moved: false };
+
+    function onTS(e) {
+      if (animating.current) return;
+      var t = e.touches[0];
+      tc.startX = t.clientX;
+      tc.startY = t.clientY;
+      tc.swiping = false;
+      tc.moved = false;
     }
-    if (tc.swiping) {
-      e.preventDefault();
-      var pct = (dx / window.innerWidth) * 100;
-      var idx = TABS.indexOf(tab);
-      if ((pct > 0 && idx === 0) || (pct < 0 && idx === TABS.length - 1)) pct *= 0.2;
-      setSwipeX(pct);
+    function onTM(e) {
+      if (animating.current) return;
+      var t = e.touches[0];
+      var dx = t.clientX - tc.startX;
+      var dy = t.clientY - tc.startY;
+      if (!tc.moved) {
+        tc.moved = true;
+        tc.swiping = Math.abs(dx) > Math.abs(dy) * 1.2;
+      }
+      if (tc.swiping) {
+        e.preventDefault();
+        var pct = (dx / window.innerWidth) * 100;
+        var idx = TABS.indexOf(tabRef.current);
+        if ((pct > 0 && idx === 0) || (pct < 0 && idx === TABS.length - 1)) pct *= 0.2;
+        el.style.transition = "none";
+        el.style.transform = "translateX(" + pct + "%)";
+      }
     }
-  }, [tab]);
-  const onTE = useCallback(function(e) {
-    if (animRef.current) return;
-    var tc = touchRef.current;
-    if (!tc.swiping) { setSwipeX(0); return; }
-    var dx = e.changedTouches[0].clientX - tc.startX;
-    if (Math.abs(dx) > 60) {
-      goTab(dx < 0 ? 1 : -1);
-    } else {
-      setSliding(true);
-      setSwipeX(0);
-      setTimeout(function() { setSliding(false); }, 300);
+    function onTE(e) {
+      if (animating.current) return;
+      if (!tc.swiping) {
+        el.style.transform = "";
+        el.style.transition = "";
+        return;
+      }
+      var dx = e.changedTouches[0].clientX - tc.startX;
+      var idx = TABS.indexOf(tabRef.current);
+      if (Math.abs(dx) > 60) {
+        var dir = dx < 0 ? 1 : -1;
+        var next = idx + dir;
+        if (next >= 0 && next < TABS.length) {
+          // Reset transform first, then do the full slide
+          el.style.transform = "";
+          el.style.transition = "";
+          slideToTab(TABS[next], dir);
+          return;
+        }
+      }
+      // Snap back
+      el.style.transition = "transform 0.25s ease";
+      el.style.transform = "translateX(0)";
+      setTimeout(function() {
+        el.style.transition = "";
+        el.style.transform = "";
+      }, 260);
     }
-  }, [goTab]);
+
+    el.addEventListener("touchstart", onTS, { passive: true });
+    el.addEventListener("touchmove", onTM, { passive: false });
+    el.addEventListener("touchend", onTE, { passive: true });
+    return function() {
+      el.removeEventListener("touchstart", onTS);
+      el.removeEventListener("touchmove", onTM);
+      el.removeEventListener("touchend", onTE);
+    };
+  }, [slideToTab]);
   const [dark, setDark] = useState(false);
   const [edit, setEdit] = useState(false);
   const [cards, setCards] = useState(INIT_CARDS);
@@ -6353,9 +6397,6 @@ function App() {
  }
   }));
   return /*#__PURE__*/React.createElement("div", {
- onTouchStart: onTS,
- onTouchMove: onTM,
- onTouchEnd: onTE,
  style: {
  background: th.bg,
  minHeight: "100vh",
@@ -6366,10 +6407,9 @@ function App() {
  overflowX: "hidden"
  }
   }, /*#__PURE__*/React.createElement("div", {
+ ref: contentRef,
  style: {
  padding: 0,
- transform: "translateX(" + swipeX + "%)",
- transition: sliding ? "transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)" : "none",
  willChange: "transform"
  }
   }, tab === "overview" && /*#__PURE__*/React.createElement(React.Fragment, null,
@@ -8052,20 +8092,9 @@ function App() {
   }, TABS.map(t => /*#__PURE__*/React.createElement("button", {
  key: t,
  onClick: () => {
- if (animRef.current || t === tab) return;
+ if (animating.current || t === tab) return;
  var dir = TABS.indexOf(t) > TABS.indexOf(tab) ? 1 : -1;
- animRef.current = true;
- setSliding(false);
- setSwipeX(dir * -100);
- setTab(t);
- window.scrollTo(0, 0);
- requestAnimationFrame(function() {
- requestAnimationFrame(function() {
- setSliding(true);
- setSwipeX(0);
- setTimeout(function() { setSliding(false); animRef.current = false; }, 320);
- });
- });
+ slideToTab(t, dir);
  },
  style: {
  display: "flex",
