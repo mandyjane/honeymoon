@@ -3794,13 +3794,19 @@ var getCarrierKey = function(carrier) {
 var CarrierLogo = function(props) {
   var key = getCarrierKey(props.carrier);
   if (!key) return null;
+  if (key === "ba") {
+    var st = { position: "absolute", bottom: -17, right: 3, opacity: 0.15 };
+    var logo = CARRIER_LOGOS[key];
+    return React.createElement("svg", { style: Object.assign({}, st, { width: 80, height: 103 }), viewBox: logo.vb, xmlns: "http://www.w3.org/2000/svg" }, React.createElement("g", { transform: logo.t, fill: "#fff", stroke: "none" }, React.createElement("path", { d: logo.d })));
+  }
+  if (key === "awm") {
+    var st = { position: "absolute", bottom: 16, right: 17, opacity: 0.15 };
+    return React.createElement("img", { src: CARRIER_LOGOS.awm, style: Object.assign({}, st, { width: 80 }), alt: "" });
+  }
   var st = { position: "absolute", bottom: 0, right: 0, opacity: 0.15 };
-  if (key === "awm") return React.createElement("img", { src: CARRIER_LOGOS.awm, style: Object.assign({}, st, { width: 80 }), alt: "" });
   var logo = CARRIER_LOGOS[key];
-  var lw = key === "ba" ? 70 : 45;
-  var lh = key === "ba" ? 90 : 60;
   return React.createElement("svg", {
- style: Object.assign({}, st, { width: lw, height: lh }), viewBox: logo.vb, xmlns: "http://www.w3.org/2000/svg"
+ style: Object.assign({}, st, { width: 66, height: 88 }), viewBox: logo.vb, xmlns: "http://www.w3.org/2000/svg"
   }, React.createElement("g", { transform: logo.t, fill: "#fff", stroke: "none" },
  React.createElement("path", { d: logo.d })));
 };
