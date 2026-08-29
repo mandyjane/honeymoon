@@ -575,6 +575,14 @@ const getTodayDay = () => {
 };
 /* ── LOCATIONS ── */
 /* ── TIDES (Phi Phi only) ── */
+
+const SUNDATA = {
+  pp_d1: ["6:32","18:24"], pp_d2: ["6:32","18:25"], pp_d3: ["6:32","18:25"], pp_d4: ["6:31","18:25"],
+  sm_d1: ["6:31","18:25"], sm_d2: ["6:31","18:26"], sm_d3: ["6:30","18:26"],
+  sm_d4: ["6:30","18:26"], sm_d5: ["6:29","18:27"], sm_d6: ["6:29","18:27"],
+  pk_d1: ["6:34","18:28"], pk_d2: ["6:34","18:28"], pk_d3: ["6:33","18:29"],
+  pk_d4: ["6:33","18:29"], pk_d5: ["6:32","18:29"]
+};
 const TIDES = {
   pp_d1: [{
  t: "HIGH",
@@ -4652,7 +4660,11 @@ const LU = {
   v_bar: [["path", { d: "M12 12 4.207 4.207A.707.707 0 0 1 4.707 3h14.586a.707.707 0 0 1 .5 1.207z" }], ["path", { d: "M12 12v10" }], ["path", { d: "M7 22h10" }]],
   v_store: [["path", { d: "M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" }], ["path", { d: "M3 6h18" }], ["path", { d: "M16 10a4 4 0 0 1-8 0" }]],
   globe: [["circle", { cx: "12", cy: "12", r: "10" }], ["path", { d: "M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" }], ["path", { d: "M2 12h20" }]],
+  phone: [["path", { d: "M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" }]],
+  "shield-check": [["path", { d: "M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" }], ["path", { d: "m9 12 2 2 4-4" }]],
   "map-pin": [["path", { d: "M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0" }], ["circle", { cx: "12", cy: "10", r: "3" }]],
+  sunrise: [["path", { d: "M12 2v8" }], ["path", { d: "m4.93 10.93 1.41 1.41" }], ["path", { d: "M2 18h2" }], ["path", { d: "M20 18h2" }], ["path", { d: "m19.07 10.93-1.41 1.41" }], ["path", { d: "M22 22H2" }], ["path", { d: "m8 6 4-4 4 4" }], ["path", { d: "M16 18a4 4 0 0 0-8 0" }]],
+  sunset: [["path", { d: "M12 10V2" }], ["path", { d: "m4.93 10.93 1.41 1.41" }], ["path", { d: "M2 18h2" }], ["path", { d: "M20 18h2" }], ["path", { d: "m19.07 10.93-1.41 1.41" }], ["path", { d: "M22 22H2" }], ["path", { d: "m16 6-4 4-4-4" }], ["path", { d: "M16 18a4 4 0 0 0-8 0" }]],
 };
 const FILLED_ICONS = {
   longtail: { vb: "0 0 77 63", t: "translate(0,63) scale(0.1,-0.1)", d: "M60 618 c-70 -19 -67 -58 23 -258 18 -39 21 -67 21 -200 1 -151 2 -155 23 -158 21 -3 22 -1 20 97 -1 56 -2 101 -1 101 0 0 19 -37 43 -82 71 -140 66 -139 307 -70 206 60 281 110 270 179 -3 21 -7 44 -8 52 -9 78 -308 55 -308 -24 0 -44 2 -44 -135 11 l-114 47 -34 106 c-19 58 -40 130 -48 159 -7 28 -15 52 -18 51 -3 0 -22 -5 -41 -11z m76 -148 c43 -144 42 -180 0 -180 -38 0 -127 296 -93 310 49 19 51 16 93 -130z m38 -197 c-21 -15 -54 -17 -54 -3 0 6 9 10 20 10 10 0 25 10 32 23 11 21 12 21 16 3 2 -11 -4 -25 -14 -33z m391 27 c-13 -15 -30 -20 -64 -19 l-46 1 40 19 c58 27 95 26 70 -1z m139 3 c18 -5 18 -6 2 -15 -12 -6 -22 -6 -32 3 -8 6 -17 9 -21 5 -3 -3 -1 -6 5 -6 22 0 12 -18 -12 -24 -13 -3 -31 -9 -40 -12 -11 -4 -16 0 -17 12 0 18 -1 17 -9 -1 -9 -20 -9 -20 -9 1 -2 38 63 56 133 37z m-401 -48 c98 -40 246 -84 291 -87 26 -1 24 -2 -14 -9 -35 -6 -27 -7 36 -4 45 1 92 8 105 15 23 11 23 10 4 -4 -11 -8 -26 -20 -32 -26 -19 -16 -61 -30 -91 -30 -19 0 -23 -3 -14 -9 16 -10 -16 -21 -61 -21 -16 0 -26 -4 -22 -10 4 -6 -5 -10 -20 -10 -14 0 -41 -6 -59 -14 -65 -27 -113 -30 -125 -7 -16 28 -14 31 17 32 23 1 22 2 -8 8 -26 4 -35 11 -35 26 0 11 -6 24 -12 28 -17 10 -17 34 0 40 8 4 6 6 -4 6 -20 1 -45 51 -26 51 6 0 4 5 -5 11 -73 42 -17 53 75 14z m-62 -107 c54 -138 54 -138 37 -138 -32 0 -141 225 -117 241 28 17 36 7 80 -103z m429 68 c0 -35 -53 -47 -120 -27 -22 7 -17 10 40 28 83 27 80 27 80 -1z m90 13 c0 -8 -58 -39 -75 -39 -18 0 0 30 23 38 36 14 52 14 52 1z" },
@@ -4882,41 +4894,23 @@ const ESSENTIALS_DEFAULTS = ["Phone", "Keys", "Cash"];
 const ESSENTIALS_QUICK = ["Sunglasses", "Hat", "Towel", "Water bottle", "Insect spray", "Sunscreen", "GoPro", "Dry bag", "Snorkel gear", "Charger"];
 const NoteEditM = ({ th, initial, title, onSave, onClose }) => {
   const [text, setText] = useState(initial || "");
-  return /*#__PURE__*/React.createElement("div", {
+  return React.createElement("div", {
     onClick: e => { if (e.target === e.currentTarget) onClose(); },
     style: { position: "fixed", inset: 0, zIndex: 9999, background: "rgba(0,0,0,0.45)", display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }
-  }, /*#__PURE__*/React.createElement("div", {
+  }, React.createElement("div", {
     style: { width: "100%", maxWidth: 380, background: th.card, borderRadius: 0, boxShadow: "0 8px 32px rgba(0,0,0,0.25)", overflow: "hidden" }
-  },
-    /*#__PURE__*/React.createElement("div", {
+  }, React.createElement("div", {
       style: { display: "flex", alignItems: "center", justifyContent: "space-between", padding: "16px 18px 12px", borderBottom: "1px solid " + th.bdr }
-    },
-      /*#__PURE__*/React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 8 } },
-        /*#__PURE__*/React.createElement(Ico, { name: "pen", size: 16, color: th.acc, sw: 1.5 }),
-        /*#__PURE__*/React.createElement("span", { style: { fontFamily: "'Fraunces', serif", fontWeight: 700, fontSize: 16, color: th.text } }, title || "Edit note")),
-      /*#__PURE__*/React.createElement("button", {
-        onClick: onClose,
-        style: { background: "transparent", border: "none", color: th.mut, fontSize: 18, cursor: "pointer", padding: "4px", lineHeight: 1 }
-      }, "\u2715")),
-    /*#__PURE__*/React.createElement("div", { style: { padding: "16px 18px 20px" } },
-      /*#__PURE__*/React.createElement("label", {
-        style: { fontFamily: "'DM Sans', sans-serif", fontSize: 11, fontWeight: 500, textTransform: "uppercase", letterSpacing: 0.5, color: th.mut, display: "block", marginBottom: 8 }
-      }, "Note text"),
-      /*#__PURE__*/React.createElement("textarea", {
-        value: text,
-        onChange: e => setText(e.target.value),
-        autoFocus: true,
-        style: { width: "100%", minHeight: 100, border: "1px solid " + th.bdr, borderRadius: 0, padding: 12, fontFamily: "'DM Sans', sans-serif", fontSize: 13, color: th.text, background: th.bg, resize: "vertical", outline: "none", boxSizing: "border-box", lineHeight: 1.6 }
-      }),
-      /*#__PURE__*/React.createElement("div", { style: { display: "flex", gap: 10, marginTop: 16 } },
-        /*#__PURE__*/React.createElement("button", {
-          onClick: () => { if (text.trim()) onSave(text.trim()); },
-          style: { flex: 1, padding: 12, background: th.acc, color: "#fff", border: "none", borderRadius: 0, fontFamily: "'DM Sans', sans-serif", fontSize: 14, fontWeight: 600, cursor: "pointer" }
-        }, "Save"),
-        /*#__PURE__*/React.createElement("button", {
-          onClick: onClose,
-          style: { padding: "12px 20px", background: "transparent", color: th.sub, border: "1px solid " + th.bdr, borderRadius: 0, fontFamily: "'DM Sans', sans-serif", fontSize: 14, cursor: "pointer" }
-        }, "Cancel")))));
+    }, React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 8 } },
+        React.createElement(Ico, { name: "pen", size: 16, color: th.acc, sw: 1.5 }),
+        React.createElement("span", { style: { fontFamily: "'Fraunces', serif", fontWeight: 700, fontSize: 16, color: th.text } }, title || "Edit note")),
+      React.createElement("button", { onClick: onClose, style: { background: "transparent", border: "none", color: th.mut, fontSize: 18, cursor: "pointer", padding: "4px", lineHeight: 1 } }, "\u2715")),
+    React.createElement("div", { style: { padding: "16px 18px 20px" } },
+      React.createElement("label", { style: { fontFamily: "'DM Sans', sans-serif", fontSize: 11, fontWeight: 500, textTransform: "uppercase", letterSpacing: 0.5, color: th.mut, display: "block", marginBottom: 8 } }, "Note text"),
+      React.createElement("textarea", { value: text, onChange: e => setText(e.target.value), autoFocus: true, style: { width: "100%", minHeight: 100, border: "1px solid " + th.bdr, borderRadius: 0, padding: 12, fontFamily: "'DM Sans', sans-serif", fontSize: 13, color: th.text, background: th.bg, resize: "vertical", outline: "none", boxSizing: "border-box", lineHeight: 1.6 } }),
+      React.createElement("div", { style: { display: "flex", gap: 10, marginTop: 16 } },
+        React.createElement("button", { onClick: () => { if (text.trim()) onSave(text.trim()); }, style: { flex: 1, padding: 12, background: th.acc, color: "#fff", border: "none", borderRadius: 0, fontFamily: "'DM Sans', sans-serif", fontSize: 14, fontWeight: 600, cursor: "pointer" } }, "Save"),
+        React.createElement("button", { onClick: onClose, style: { padding: "12px 20px", background: "transparent", color: th.sub, border: "1px solid " + th.bdr, borderRadius: 0, fontFamily: "'DM Sans', sans-serif", fontSize: 14, cursor: "pointer" } }, "Cancel")))));
 };
 const VendorEditM = ({ th, vendor, initialDest, onSave, onDelete, onClose }) => {
   const [f, sF] = useState(vendor || { type: "v_convenience", name: "", mapUrl: "", website: "", dest: initialDest || "phiphi" });
@@ -5722,6 +5716,10 @@ function App() {
   const [vendorEdit, setVendorEdit] = useState(null);
   const [showVendorMgr, setShowVendorMgr] = useState(false);
   const [noteEdit, setNoteEdit] = useState(null);
+  const [showEmergency, setShowEmergency] = useState(false);
+  const [showSun, setShowSun] = useState(() => {
+ try { var s = JSON.parse(localStorage.getItem("th-honeymoon-2027")); return s && s.showSun !== undefined ? s.showSun : true; } catch(e) { return true; }
+  });
   const [budgetTotal, setBudgetTotal] = useState(() => {
  const s = load();
  return s && s.budgetTotal ? s.budgetTotal : 14000;
@@ -5794,9 +5792,10 @@ function App() {
  dailyEss,
  destNotes,
  hideCountdown,
+showSun,
  vendors
  });
-  }, [cards, docs, acts, standby, meals, packing, budgetTotal, heroImg, dark, travelDocs, homeView, dividerStyle, hiddenTransport, dailyEss, destNotes, hideCountdown, vendors, loaded]);
+  }, [cards, docs, acts, standby, meals, packing, budgetTotal, heroImg, dark, travelDocs, homeView, dividerStyle, hiddenTransport, dailyEss, destNotes, hideCountdown, vendors, showSun, loaded]);
   useEffect(() => {
  document.body.className = dark ? "dark" : "";
   }, [dark]);
@@ -6041,7 +6040,8 @@ function App() {
  }, num), React.createElement("div", null,
  React.createElement("div", { style: { fontSize: 10, fontWeight: 700, letterSpacing: 2, color: th.mut, textTransform: "uppercase" } }, "Day " + (dayWords[num-1] || num)),
  React.createElement("div", { style: { fontSize: 14, fontWeight: 600, color: th.text, marginTop: 2 } }, datePart.replace(/\d+ Feb/, function(m) { var d = parseInt(m); var months = "February"; return d + " " + months; })),
- w ? React.createElement("div", { style: { fontSize: 11, color: th.mut, marginTop: 1 } }, loc, " \u00b7 ", w.icon, " ", w.hi, "\u00b0") : null));
+ w ? React.createElement("div", { style: { fontSize: 11, color: th.mut, marginTop: 1 } }, loc, " \u00b7 ", w.icon, " ", w.hi, "\u00b0",
+ showSun && SUNDATA[day.id] ? React.createElement("span", { style: { display: "inline-flex", alignItems: "center", gap: 3 } }, " \u00b7 ", React.createElement("span", { style: { display: "inline-flex", alignItems: "center", gap: 2, color: "#fbbf24" } }, React.createElement(Ico, { name: "sunrise", size: 12, color: "#fbbf24", sw: 1.5 }), " ", SUNDATA[day.id][0]), "  ", React.createElement("span", { style: { display: "inline-flex", alignItems: "center", gap: 2, color: "#f97316" } }, React.createElement(Ico, { name: "sunset", size: 12, color: "#f97316", sw: 1.5 }), " ", SUNDATA[day.id][1])) : null) : null));
  }
  return React.createElement("div", {
  style: { margin: "20px 0", display: "flex", alignItems: "center", gap: 12 }
@@ -6051,7 +6051,8 @@ function App() {
  React.createElement("span", { style: { fontFamily: "'Fraunces',serif", fontSize: 18, fontWeight: 700, color: "#fff", lineHeight: 1 } }, num)),
  React.createElement("div", { style: { flex: "none" } },
  React.createElement("div", { style: { fontSize: 15, fontWeight: 700, color: th.text } }, datePart),
- w ? React.createElement("div", { style: { fontSize: 11, color: th.mut } }, loc, " \u00b7 ", w.icon, " ", w.hi, "\u00b0 / ", w.lo, "\u00b0") : null),
+ w ? React.createElement("div", { style: { fontSize: 11, color: th.mut } }, loc, " \u00b7 ", w.icon, " ", w.hi, "\u00b0 / ", w.lo, "\u00b0",
+ showSun && SUNDATA[day.id] ? React.createElement("span", { style: { display: "inline-flex", alignItems: "center", gap: 3 } }, " \u00b7 ", React.createElement("span", { style: { display: "inline-flex", alignItems: "center", gap: 2, color: "#fbbf24" } }, React.createElement(Ico, { name: "sunrise", size: 12, color: "#fbbf24", sw: 1.5 }), " ", SUNDATA[day.id][0]), "  ", React.createElement("span", { style: { display: "inline-flex", alignItems: "center", gap: 2, color: "#f97316" } }, React.createElement(Ico, { name: "sunset", size: 12, color: "#f97316", sw: 1.5 }), " ", SUNDATA[day.id][1])) : null) : null),
  React.createElement("div", { style: { flex: 1, height: 1, background: "linear-gradient(to right," + th.acc + ",transparent)" } }));
   };
   const TravelDivider = ({ th, title, subtitle, icon, style: ds }) => {
@@ -6095,24 +6096,12 @@ function App() {
   }), /*#__PURE__*/React.createElement(TideBar, { th: th, dayId: day.id }),
   day.note && /*#__PURE__*/React.createElement(NoteC, {
  th: th,
- d: {
- text: day.note
- },
+ d: { text: day.note },
  edit: edit,
- onEdit: () => {
- setNoteEdit({ dest: dest, dayId: day.id, text: day.note, isNew: false });
- },
- onDelete: () => {
- setActs(prev => {
- const r = { ...prev };
- r[dest] = r[dest].map(d => d.id === day.id ? { ...d, note: "" } : d);
- return r;
- });
- }
+ onEdit: () => { setNoteEdit({ dest: dest, dayId: day.id, text: day.note, isNew: false }); },
+ onDelete: () => { setActs(prev => { const r = { ...prev }; r[dest] = r[dest].map(d => d.id === day.id ? { ...d, note: "" } : d); return r; }); }
   }), edit && !day.note && /*#__PURE__*/React.createElement("button", {
- onClick: () => {
- setNoteEdit({ dest: dest, dayId: day.id, text: "", isNew: true });
- },
+ onClick: () => { setNoteEdit({ dest: dest, dayId: day.id, text: "", isNew: true }); },
  style: { display: "flex", alignItems: "center", justifyContent: "center", gap: 6, width: "100%", padding: "8px", border: "1px dashed " + th.bdr, background: "transparent", color: th.acc, fontSize: 11, fontWeight: 500, cursor: "pointer", marginBottom: 8, borderRadius: 0 }
   }, /*#__PURE__*/React.createElement(Ico, { name: "plus", size: 12, color: th.acc, sw: 1.5 }), "Add day note"),
   day.acts.map((a, ai) => /*#__PURE__*/React.createElement(ActC, {
@@ -6817,7 +6806,11 @@ function App() {
  /*#__PURE__*/React.createElement("button", {
  onClick: () => window.open("https://tdac.immigration.go.th/arrival-card/#/home", "_blank"),
  style: { width: "100%", padding: "12px", borderRadius: 12, border: "none", background: th.acc, color: "#fff", fontSize: 14, fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }
- }, "Open Arrival Card \u2197"))))))), tab === "phiphi" && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+ }, "Open Arrival Card \u2197")),
+ React.createElement("button", {
+ onClick: () => setShowEmergency(true),
+ style: { width: "100%", padding: "12px", border: "1px solid " + th.bdr, background: "transparent", color: th.mut, fontSize: 12, fontWeight: 500, cursor: "pointer", marginTop: 20, borderRadius: 0, display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }
+ }, React.createElement(Ico, { name: "shield-check", size: 16, color: th.mut, sw: 1.5 }), "Emergency contacts")))))), tab === "phiphi" && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
  style: {
  fontFamily: "'Fraunces',Georgia,serif",
  fontSize: 24,
@@ -7380,7 +7373,7 @@ function App() {
  fontWeight: heroImg === h.id ? 600 : 400
  }
  }, h.label));
-  }))), [["🌙", "Dark Mode", "Light and dark theme", dark, () => setDark(!dark)], [/*#__PURE__*/React.createElement(Ico, { name: "square-pen", size: 18, color: edit ? th.acc : th.mut, sw: 1.5 }), "Edit Mode", "Modify all cards and documents", edit, () => setEdit(!edit)], ["⏳", "Countdown", "Show days until honeymoon", !hideCountdown, () => setHideCountdown(!hideCountdown)]].map(([ico, t, s, on, fn], i) => /*#__PURE__*/React.createElement("div", {
+  }))), [["🌙", "Dark Mode", "Light and dark theme", dark, () => setDark(!dark)], [/*#__PURE__*/React.createElement(Ico, { name: "square-pen", size: 18, color: edit ? th.acc : th.mut, sw: 1.5 }), "Edit Mode", "Modify all cards and documents", edit, () => setEdit(!edit)], ["⏳", "Countdown", "Show days until honeymoon", !hideCountdown, () => setHideCountdown(!hideCountdown)], [/*#__PURE__*/React.createElement(Ico, { name: "sunrise", size: 18, color: showSun ? th.acc : th.mut, sw: 1.5 }), "Sunrise / sunset", "Show sun times on day headers", showSun, () => setShowSun(!showSun)]].map(([ico, t, s, on, fn], i) => /*#__PURE__*/React.createElement("div", {
  key: i,
  style: {
  background: th.card,
@@ -7609,7 +7602,33 @@ function App() {
  hiddenTransport: hiddenTransport,
  onSave: h => { setHiddenTransport(h); setTransportPopup(false); },
  onClose: () => setTransportPopup(false)
-  }), noteEdit && /*#__PURE__*/React.createElement(NoteEditM, {
+  }), showEmergency && React.createElement("div", {
+ onClick: e => { if (e.target === e.currentTarget) setShowEmergency(false); },
+ style: { position: "fixed", inset: 0, zIndex: 9999, background: "rgba(0,0,0,0.5)", display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }
+  }, React.createElement("div", {
+ style: { width: "100%", maxWidth: 380, background: th.card, borderRadius: 0, boxShadow: "0 8px 32px rgba(0,0,0,0.25)", overflow: "hidden" }
+  }, React.createElement("div", {
+ style: { display: "flex", alignItems: "center", justifyContent: "space-between", padding: "16px 18px 12px", borderBottom: "1px solid " + th.bdr }
+  }, React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 8 } },
+ React.createElement(Ico, { name: "shield-check", size: 16, color: th.acc, sw: 1.5 }),
+ React.createElement("span", { style: { fontFamily: "'Fraunces', serif", fontWeight: 700, fontSize: 16, color: th.text } }, "Emergency contacts")),
+ React.createElement("button", { onClick: () => setShowEmergency(false), style: { background: "transparent", border: "none", color: th.mut, fontSize: 18, cursor: "pointer", padding: "4px", lineHeight: 1 } }, "\u2715")),
+  React.createElement("div", { style: { padding: "12px 18px 20px", display: "flex", flexDirection: "column", gap: 6 } },
+ [["Thai Emergency", "Police \u00b7 Ambulance \u00b7 Fire", "191", "#ef4444"],
+ ["Tourist Police", "English-speaking assistance", "1155", "#f59e0b"],
+ ["Australian Embassy", "Bangkok \u00b7 24hr consular", "+66 2 344 6300", "#3b82f6"],
+ ["Bangkok Hospital Phuket", "International hospital", "+66 76 254 425", "#14b8a6"],
+ ["CoCo Beach Resort", "Phi Phi \u00b7 Front desk", "+66 76 340 138", "#f59e0b"],
+ ["SALA Samui Chaweng", "Samui \u00b7 Front desk", "+66 77 905 888", "#f59e0b"],
+ ["Impiana Resort Patong", "Phuket \u00b7 Front desk", "+66 76 340 138", "#f59e0b"]
+ ].map(function(r, i) {
+ return React.createElement("div", { key: i, style: { display: "flex", alignItems: "center", gap: 10, padding: "8px 10px", background: th.inp, borderLeft: "3px solid " + r[3] } },
+ React.createElement("div", { style: { flex: 1 } },
+ React.createElement("div", { style: { fontSize: 12, fontWeight: 500, color: th.text } }, r[0]),
+ React.createElement("div", { style: { fontSize: 10, color: th.mut } }, r[1])),
+ r[2] ? React.createElement("a", { href: "tel:" + r[2].replace(/\s/g, ""), style: { fontSize: 11, fontWeight: 600, color: r[3], textDecoration: "none", whiteSpace: "nowrap" } }, r[2]) : null);
+ })))),
+  noteEdit && React.createElement(NoteEditM, {
  th: th,
  initial: noteEdit.text,
  title: noteEdit.isNew ? "Add note" : "Edit note",
