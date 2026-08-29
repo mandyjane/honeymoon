@@ -3875,26 +3875,33 @@ const FlightC = ({
           style: { position: "absolute", top: 4, right: 6, fontSize: 10, color: "rgba(255,255,255,.4)", background: "rgba(255,255,255,.15)", width: 16, height: 16, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }
         }, "\u2715")
       ) : React.createElement("div", {
-        style: { height: 48, border: "1.5px dashed rgba(255,255,255,.2)", display: "flex", alignItems: "center", justifyContent: "center", gap: 5, cursor: "pointer" },
+        style: { height: 48, border: "1.5px dashed rgba(255,255,255,.2)", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, cursor: "pointer" },
         onClick: function() { startUpload(key); }
       },
-        React.createElement(Ico, { name: "camera", size: 16, color: "rgba(255,255,255,.3)", sw: 1.5 }),
-        React.createElement("span", { style: { fontSize: 10, color: "rgba(255,255,255,.4)" } }, "Add boarding pass")
+        React.createElement("div", { style: { display: "flex", gap: 4 } },
+          React.createElement(Ico, { name: "upload", size: 14, color: "rgba(255,255,255,.4)", sw: 1.5 }),
+          React.createElement(Ico, { name: "camera", size: 14, color: "rgba(255,255,255,.4)", sw: 1.5 })
+        ),
+        React.createElement("span", { style: { fontSize: 10, color: "rgba(255,255,255,.4)" } }, "Boarding pass")
       ),
       hasBag ? React.createElement("div", {
-        style: { marginTop: 6, height: 36, background: "rgba(255,255,255,.06)", display: "flex", alignItems: "center", justifyContent: "center", gap: 6, position: "relative" }
+        style: { marginTop: 6, height: 36, background: "rgba(255,255,255,.06)", display: "flex", alignItems: "center", justifyContent: "center", gap: 5, cursor: "pointer", position: "relative" },
+        onClick: function() { if (onViewBp) onViewBp(cid, key, "bag"); }
       },
-        React.createElement(Ico, { name: "scan-barcode", size: 14, color: "#14b8a6", sw: 1.5 }),
-        React.createElement("span", { style: { fontSize: 13, fontFamily: "'DM Mono',monospace", color: "rgba(255,255,255,.8)", letterSpacing: 1 } }, hasBag),
+        React.createElement(Ico, { name: "scan-barcode", size: 12, color: "#14b8a6", sw: 1.5 }),
+        React.createElement("span", { style: { fontSize: 10, color: "rgba(255,255,255,.6)" } }, "View bag tag"),
         edit && React.createElement("div", {
-          onClick: function() { removeBag(key); },
+          onClick: function(e) { e.stopPropagation(); removeBag(key); },
           style: { position: "absolute", top: "50%", right: 6, transform: "translateY(-50%)", fontSize: 9, color: "rgba(255,255,255,.4)", background: "rgba(255,255,255,.15)", width: 14, height: 14, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }
         }, "\u2715")
       ) : React.createElement("div", {
-        style: { marginTop: 6, height: 36, border: "1px dashed rgba(255,255,255,.15)", display: "flex", alignItems: "center", justifyContent: "center", gap: 6, cursor: "pointer" },
+        style: { marginTop: 6, height: 36, border: "1px dashed rgba(255,255,255,.15)", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, cursor: "pointer" },
         onClick: function() { promptBag(key); }
       },
-        React.createElement(Ico, { name: "scan-barcode", size: 14, color: "rgba(255,255,255,.3)", sw: 1.5 }),
+        React.createElement("div", { style: { display: "flex", gap: 4 } },
+          React.createElement(Ico, { name: "scan-barcode", size: 12, color: "rgba(255,255,255,.3)", sw: 1.5 }),
+          React.createElement(Ico, { name: "file", size: 12, color: "rgba(255,255,255,.3)", sw: 1.5 })
+        ),
         React.createElement("span", { style: { fontSize: 10, color: "rgba(255,255,255,.35)" } }, "Bag tag")
       )
     );
@@ -3902,7 +3909,7 @@ const FlightC = ({
   return React.createElement("div", {
     style: { background: th.accBg, borderRadius: 0, padding: "16px 18px", color: "#fff" }
   },
-    React.createElement("input", { ref: fileRef, type: "file", accept: "image/*", capture: "environment", style: { display: "none" }, onChange: handleFile }),
+    React.createElement("input", { ref: fileRef, type: "file", accept: "image/*", style: { display: "none" }, onChange: handleFile }),
     React.createElement("div", { style: { position: "relative" } },
       edit && React.createElement(Pen, { th: th, onClick: onEdit, abs: true }),
       React.createElement("div", { style: { display: "flex", justifyContent: "space-between", marginBottom: 8, paddingRight: edit ? 34 : 0 } },
@@ -4668,6 +4675,7 @@ const LU = {
   walk: [["path", { d: "M4 16v-2.38C4 11.5 2.97 10.5 3 8c.03-2.72 1.49-6 4.5-6C9.37 2 10 3.8 10 5.5c0 3.11-2 5.66-2 8.68V16a2 2 0 1 1-4 0Z" }], ["path", { d: "M20 20v-2.38c0-2.12 1.03-3.12 1-5.62-.03-2.72-1.49-6-4.5-6C14.63 6 14 7.8 14 9.5c0 3.11 2 5.66 2 8.68V20a2 2 0 1 0 4 0Z" }], ["path", { d: "M16 17h4" }], ["path", { d: "M4 13h4" }]],
   utensils: [["path", { d: "M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2" }], ["path", { d: "M7 2v20" }], ["path", { d: "M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7" }]],
   martini: [["path", { d: "M12 12 4.207 4.207A.707.707 0 0 1 4.707 3h14.586a.707.707 0 0 1 .5 1.207z" }], ["path", { d: "M12 12v10" }], ["path", { d: "M7 22h10" }]],
+  upload: [["path", { d: "M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" }], ["polyline", { points: "17 8 12 3 7 8" }], ["line", { x1: "12", y1: "3", x2: "12", y2: "15" }]],
   file: [["path", { d: "M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z" }], ["path", { d: "M14 2v4a2 2 0 0 0 2 2h4" }]],
   image: [["rect", { width: "18", height: "18", x: "3", y: "3", rx: "2", ry: "2" }], ["circle", { cx: "9", cy: "9", r: "2" }], ["path", { d: "m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" }]],
   plane: [["path", { d: "M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z" }]],
@@ -6196,7 +6204,13 @@ showSun,
  onToggleBp: function(fid) { setBpOpen(function(p) { var n = Object.assign({}, p); n[fid] = !n[fid]; return n; }); },
  bpState: bpData,
  onSaveBp: function(fid, key, val) { setBpData(function(p) { var n = Object.assign({}, p); if (!n[fid]) n[fid] = {}; n[fid][key] = val; return n; }); },
- onViewBp: function(fid, wk) { getTicket("bp_" + fid + "_" + wk).then(function(t) { if (t) setBpView(t); }); }
+ onViewBp: function(fid, wk, viewType) {
+   if (viewType === "bag") {
+     var bpd = bpData[fid]; if (bpd && bpd[wk + "_bag"]) setBpView({ type: "bag", number: bpd[wk + "_bag"], label: wk.charAt(0).toUpperCase() + wk.slice(1) + " \u2014 " + (c(fid).flight || fid) });
+   } else {
+     getTicket("bp_" + fid + "_" + wk).then(function(t) { if (t) setBpView({ type: "bp", data: t.data, label: wk.charAt(0).toUpperCase() + wk.slice(1) + " \u2014 " + (c(fid).flight || fid) }); });
+   }
+ }
   });
   const rl = id => /*#__PURE__*/React.createElement(LBarC, {
  th: th,
@@ -7419,7 +7433,22 @@ showSun,
  fontWeight: heroImg === h.id ? 600 : 400
  }
  }, h.label));
-  }))), [["🌙", "Dark Mode", "Light and dark theme", dark, () => setDark(!dark)], [/*#__PURE__*/React.createElement(Ico, { name: "square-pen", size: 18, color: edit ? th.acc : th.mut, sw: 1.5 }), "Edit Mode", "Modify all cards and documents", edit, () => setEdit(!edit)], ["⏳", "Countdown", "Show days until honeymoon", !hideCountdown, () => setHideCountdown(!hideCountdown)]].map(([ico, t, s, on, fn], i) => /*#__PURE__*/React.createElement("div", {
+  }))),
+ /*#__PURE__*/React.createElement("div", {
+ style: { fontSize: 14, fontWeight: 600, color: th.text, marginBottom: 2, marginTop: 12 }
+  }, "\ud83d\udcc5 Day Divider Style"), /*#__PURE__*/React.createElement("div", {
+ style: { fontSize: 12, color: th.mut, marginBottom: 12 }
+  }, "How day breaks appear on destination pages"), /*#__PURE__*/React.createElement("div", {
+ style: { display: "flex", gap: 6, marginBottom: 12 }
+  }, [["big", "Big Number"], ["circle", "Circle"]].map(function(pair) { var val = pair[0], label = pair[1]; return /*#__PURE__*/React.createElement("button", {
+ key: val,
+ onClick: function() { setDividerStyle(val); },
+ style: {
+ flex: 1, padding: "10px 8px", border: dividerStyle === val ? "1.5px solid " + th.acc : "1px solid " + th.bdr,
+ background: dividerStyle === val ? (th.dark ? "rgba(14,116,144,0.15)" : "rgba(14,116,144,0.08)") : "transparent",
+ color: dividerStyle === val ? th.acc : th.sub, fontSize: 13, fontWeight: dividerStyle === val ? 600 : 400, cursor: "pointer"
+ }
+  }, label); })), [["🌙", "Dark Mode", "Light and dark theme", dark, () => setDark(!dark)], [/*#__PURE__*/React.createElement(Ico, { name: "square-pen", size: 18, color: edit ? th.acc : th.mut, sw: 1.5 }), "Edit Mode", "Modify all cards and documents", edit, () => setEdit(!edit)], ["⏳", "Countdown", "Show days until honeymoon", !hideCountdown, () => setHideCountdown(!hideCountdown)]].map(([ico, t, s, on, fn], i) => /*#__PURE__*/React.createElement("div", {
  key: i,
  style: {
  background: th.card,
@@ -7478,21 +7507,6 @@ showSun,
  /*#__PURE__*/React.createElement("div", { style: { fontSize: 14, fontWeight: 600, color: th.text } }, "Transport Options"),
  /*#__PURE__*/React.createElement("div", { style: { fontSize: 11, color: th.mut } }, hiddenTransport.length > 0 ? hiddenTransport.length + " hidden" : "All visible")),
  /*#__PURE__*/React.createElement("span", { style: { fontSize: 16, color: th.mut } }, "›")),
- /*#__PURE__*/React.createElement("div", {
- style: { fontSize: 14, fontWeight: 600, color: th.text, marginBottom: 2, marginTop: 12 }
-  }, "\ud83d\udcc5 Day Divider Style"), /*#__PURE__*/React.createElement("div", {
- style: { fontSize: 12, color: th.mut, marginBottom: 12 }
-  }, "How day breaks appear on destination pages"), /*#__PURE__*/React.createElement("div", {
- style: { display: "flex", gap: 6, marginBottom: 12 }
-  }, [["big", "Big Number"], ["circle", "Circle"]].map(function(pair) { var val = pair[0], label = pair[1]; return /*#__PURE__*/React.createElement("button", {
- key: val,
- onClick: function() { setDividerStyle(val); },
- style: {
- flex: 1, padding: "10px 8px", border: dividerStyle === val ? "1.5px solid " + th.acc : "1px solid " + th.bdr,
- background: dividerStyle === val ? (th.dark ? "rgba(14,116,144,0.15)" : "rgba(14,116,144,0.08)") : "transparent",
- color: dividerStyle === val ? th.acc : th.sub, fontSize: 13, fontWeight: dividerStyle === val ? 600 : 400, cursor: "pointer"
- }
-  }, label); })),
   /*#__PURE__*/React.createElement("button", {
  onClick: () => setShowArchive(true),
  style: { width: "100%", display: "flex", alignItems: "center", gap: 12, padding: "14px 16px", background: th.card, border: "0.5px solid " + th.bdr, borderRadius: 0, boxShadow: th.sh, marginBottom: 12, cursor: "pointer" }
@@ -7650,17 +7664,41 @@ showSun,
  onClose: () => setTransportPopup(false)
   }), bpView && React.createElement("div", {
  onClick: function() { setBpView(null); },
- style: { position: "fixed", inset: 0, zIndex: 10000, background: "rgba(0,0,0,.92)", display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }
+ style: { position: "fixed", inset: 0, zIndex: 10000, backdropFilter: "blur(8px)", WebkitBackdropFilter: "blur(8px)", background: "rgba(0,0,0,.5)", display: "flex", alignItems: "center", justifyContent: "center", padding: 24 }
   },
+ React.createElement("div", {
+ onClick: function(e) { e.stopPropagation(); },
+ style: { background: th.dark ? "#1a2332" : "#fff", border: "0.5px solid " + (th.dark ? "rgba(255,255,255,.12)" : "rgba(0,0,0,.1)"), width: "100%", maxWidth: 300, padding: 16, position: "relative" }
+ },
  React.createElement("button", {
- onClick: function() { setBpView(null); },
- style: { position: "absolute", top: 16, right: 16, background: "rgba(255,255,255,.15)", border: "none", color: "#fff", fontSize: 20, width: 36, height: 36, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", zIndex: 10001 }
+   onClick: function() { setBpView(null); },
+   style: { position: "absolute", top: 10, right: 10, background: "rgba(255,255,255,.1)", border: "none", color: th.dark ? "rgba(255,255,255,.5)" : "rgba(0,0,0,.4)", fontSize: 14, width: 26, height: 26, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }
  }, "\u2715"),
- React.createElement("img", {
- src: bpView.data,
- style: { maxWidth: "100%", maxHeight: "85vh", objectFit: "contain" },
- onClick: function(e) { e.stopPropagation(); }
+ React.createElement("div", { style: { fontSize: 10, textTransform: "uppercase", letterSpacing: 1, color: th.dark ? "rgba(255,255,255,.4)" : "rgba(0,0,0,.4)", marginBottom: 12, textAlign: "center" } }, bpView.label || ""),
+ bpView.type === "bag" ? React.createElement("div", { style: { background: "#fff", padding: "20px 16px", display: "flex", flexDirection: "column", alignItems: "center", gap: 10 } },
+   React.createElement("svg", { viewBox: "0 0 200 60", style: { width: "80%", height: 50 } },
+     (function() {
+       var num = (bpView.number || "").replace(/\s/g, "");
+       var bars = []; var x = 0;
+       for (var i = 0; i < num.length; i++) {
+         var d = parseInt(num[i]) || 0;
+         var widths = [1, 2, 1, 3, 1, 2, 1, 1, 2, 1];
+         for (var j = 0; j < 4; j++) {
+           var bw = widths[(d + j) % widths.length];
+           if (j % 2 === 0) bars.push(React.createElement("rect", { key: x, x: x, y: 0, width: bw, height: 60, fill: "#000" }));
+           x += bw + 0.5;
+         }
+         x += 1;
+       }
+       return bars;
+     })()
+   ),
+   React.createElement("div", { style: { fontSize: 14, fontFamily: "'DM Mono',monospace", letterSpacing: 2, color: "#000", fontWeight: 500 } }, bpView.number)
+ ) : React.createElement("img", {
+   src: bpView.data,
+   style: { width: "100%", maxHeight: 250, objectFit: "contain" }
  })
+ )
   ), showEmergency && React.createElement("div", {
  onClick: e => { if (e.target === e.currentTarget) setShowEmergency(false); },
  style: { position: "fixed", inset: 0, zIndex: 9999, background: "rgba(0,0,0,0.5)", display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }
