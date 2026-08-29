@@ -3818,6 +3818,7 @@ const FlightC = ({
   var exp = bpExpanded || false;
   var bp = (bpState && bpState[cid]) || {};
   var fileRef = React.useRef(null);
+  var camRef = React.useRef(null);
   var fileWho = React.useRef("");
   var handleFile = function(e) {
     var file = e.target.files && e.target.files[0];
@@ -3836,6 +3837,40 @@ const FlightC = ({
   var startUpload = function(who) {
     fileWho.current = who;
     if (fileRef.current) fileRef.current.click();
+  };
+  var startCamera = function(who) {
+    fileWho.current = who;
+    if (camRef.current) camRef.current.click();
+  };
+  var startScanBag = function(who) {
+    if (!("BarcodeDetector" in window)) { promptBag(who); return; }
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } }).then(function(stream) {
+      var video = document.createElement("video");
+      video.srcObject = stream; video.setAttribute("playsinline", "true"); video.play();
+      var detector = new BarcodeDetector({ formats: ["code_128", "code_39", "ean_13", "ean_8", "itf", "codabar"] });
+      var overlay = document.createElement("div");
+      overlay.style.cssText = "position:fixed;inset:0;z-index:10002;background:rgba(0,0,0,.85);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;";
+      var label = document.createElement("div");
+      label.style.cssText = "color:rgba(255,255,255,.6);font-size:12px;margin-bottom:12px;font-family:inherit;";
+      label.textContent = "Point camera at bag tag barcode";
+      video.style.cssText = "width:90%;max-height:50vh;object-fit:cover;border:2px solid rgba(20,184,166,.5);";
+      var cancelBtn = document.createElement("button");
+      cancelBtn.style.cssText = "margin-top:16px;padding:8px 24px;background:rgba(255,255,255,.15);border:none;color:#fff;font-size:13px;cursor:pointer;font-family:inherit;";
+      cancelBtn.textContent = "Cancel — enter manually";
+      var closed = false;
+      var cleanup = function() { closed = true; stream.getTracks().forEach(function(t){t.stop();}); if (overlay.parentNode) overlay.parentNode.removeChild(overlay); };
+      cancelBtn.onclick = function() { cleanup(); promptBag(who); };
+      overlay.appendChild(label); overlay.appendChild(video); overlay.appendChild(cancelBtn);
+      document.body.appendChild(overlay);
+      var scan = function() {
+        if (closed) return;
+        detector.detect(video).then(function(barcodes) {
+          if (barcodes.length > 0) { cleanup(); if (onSaveBp) onSaveBp(cid, who + "_bag", barcodes[0].rawValue); return; }
+          requestAnimationFrame(scan);
+        }).catch(function() { requestAnimationFrame(scan); });
+      };
+      video.onplaying = function() { setTimeout(scan, 500); };
+    }).catch(function() { promptBag(who); });
   };
   var removeBp = function(who) {
     var blobId = bp[who + "_photo"];
@@ -3875,14 +3910,23 @@ const FlightC = ({
           style: { position: "absolute", top: 4, right: 6, fontSize: 10, color: "rgba(255,255,255,.4)", background: "rgba(255,255,255,.15)", width: 16, height: 16, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }
         }, "\u2715")
       ) : React.createElement("div", {
-        style: { height: 48, border: "1.5px dashed rgba(255,255,255,.2)", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, cursor: "pointer" },
-        onClick: function() { startUpload(key); }
+        style: { height: 48, border: "1.5px dashed rgba(255,255,255,.2)", display: "flex", alignItems: "center", justifyContent: "center", gap: 0 }
       },
-        React.createElement("div", { style: { display: "flex", gap: 4 } },
-          React.createElement(Ico, { name: "upload", size: 14, color: "rgba(255,255,255,.4)", sw: 1.5 }),
-          React.createElement(Ico, { name: "camera", size: 14, color: "rgba(255,255,255,.4)", sw: 1.5 })
+        React.createElement("div", {
+          onClick: function() { startUpload(key); },
+          style: { flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 2, cursor: "pointer", height: "100%" }
+        },
+          React.createElement(Ico, { name: "upload", size: 13, color: "rgba(255,255,255,.4)", sw: 1.5 }),
+          React.createElement("span", { style: { fontSize: 8, color: "rgba(255,255,255,.35)" } }, "Upload")
         ),
-        React.createElement("span", { style: { fontSize: 10, color: "rgba(255,255,255,.4)" } }, "Boarding pass")
+        React.createElement("div", { style: { width: 1, height: 24, background: "rgba(255,255,255,.15)" } }),
+        React.createElement("div", {
+          onClick: function() { startCamera(key); },
+          style: { flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 2, cursor: "pointer", height: "100%" }
+        },
+          React.createElement(Ico, { name: "camera", size: 13, color: "rgba(255,255,255,.4)", sw: 1.5 }),
+          React.createElement("span", { style: { fontSize: 8, color: "rgba(255,255,255,.35)" } }, "Photo")
+        )
       ),
       hasBag ? React.createElement("div", {
         style: { marginTop: 6, height: 36, background: "rgba(255,255,255,.06)", display: "flex", alignItems: "center", justifyContent: "center", gap: 5, cursor: "pointer", position: "relative" },
@@ -3895,14 +3939,23 @@ const FlightC = ({
           style: { position: "absolute", top: "50%", right: 6, transform: "translateY(-50%)", fontSize: 9, color: "rgba(255,255,255,.4)", background: "rgba(255,255,255,.15)", width: 14, height: 14, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }
         }, "\u2715")
       ) : React.createElement("div", {
-        style: { marginTop: 6, height: 36, border: "1px dashed rgba(255,255,255,.15)", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, cursor: "pointer" },
-        onClick: function() { promptBag(key); }
+        style: { marginTop: 6, height: 36, border: "1px dashed rgba(255,255,255,.15)", display: "flex", alignItems: "center", justifyContent: "center", gap: 0 }
       },
-        React.createElement("div", { style: { display: "flex", gap: 4 } },
-          React.createElement(Ico, { name: "scan-barcode", size: 12, color: "rgba(255,255,255,.3)", sw: 1.5 }),
-          React.createElement(Ico, { name: "file", size: 12, color: "rgba(255,255,255,.3)", sw: 1.5 })
+        React.createElement("div", {
+          onClick: function() { startScanBag(key); },
+          style: { flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 1, cursor: "pointer", height: "100%" }
+        },
+          React.createElement(Ico, { name: "scan-barcode", size: 11, color: "rgba(255,255,255,.3)", sw: 1.5 }),
+          React.createElement("span", { style: { fontSize: 8, color: "rgba(255,255,255,.3)" } }, "Scan")
         ),
-        React.createElement("span", { style: { fontSize: 10, color: "rgba(255,255,255,.35)" } }, "Bag tag")
+        React.createElement("div", { style: { width: 1, height: 18, background: "rgba(255,255,255,.12)" } }),
+        React.createElement("div", {
+          onClick: function() { promptBag(key); },
+          style: { flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 1, cursor: "pointer", height: "100%" }
+        },
+          React.createElement(Ico, { name: "file", size: 11, color: "rgba(255,255,255,.3)", sw: 1.5 }),
+          React.createElement("span", { style: { fontSize: 8, color: "rgba(255,255,255,.3)" } }, "Manual")
+        )
       )
     );
   };
@@ -3910,6 +3963,7 @@ const FlightC = ({
     style: { background: th.accBg, borderRadius: 0, padding: "16px 18px", color: "#fff" }
   },
     React.createElement("input", { ref: fileRef, type: "file", accept: "image/*", style: { display: "none" }, onChange: handleFile }),
+    React.createElement("input", { ref: camRef, type: "file", accept: "image/*", capture: "environment", style: { display: "none" }, onChange: handleFile }),
     React.createElement("div", { style: { position: "relative" } },
       edit && React.createElement(Pen, { th: th, onClick: onEdit, abs: true }),
       React.createElement("div", { style: { display: "flex", justifyContent: "space-between", marginBottom: 8, paddingRight: edit ? 34 : 0 } },
