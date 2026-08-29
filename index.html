@@ -3931,10 +3931,10 @@ const FlightC = ({
       d.notes && React.createElement("div", { style: { fontSize: 11, opacity: .7, marginTop: 4, fontStyle: "italic" } }, d.notes),
       React.createElement("button", {
         onClick: function() { if (onToggleBp) onToggleBp(cid); },
-        style: { display: "flex", alignItems: "center", gap: 8, marginTop: 12, padding: "8px 12px", background: exp ? "rgba(255,255,255,.15)" : "rgba(255,255,255,.1)", cursor: "pointer", border: "none", color: "rgba(255,255,255,.75)", fontSize: 12, fontWeight: 500, width: "calc(100% - 70px)", textAlign: "left", fontFamily: "inherit" }
+        style: { display: "flex", alignItems: "center", gap: 6, marginTop: 10, padding: "5px 10px", background: exp ? "rgba(255,255,255,.15)" : "rgba(255,255,255,.1)", cursor: "pointer", border: "none", color: "rgba(255,255,255,.75)", fontSize: 11, fontWeight: 500, width: "auto", textAlign: "left", fontFamily: "inherit" }
       },
-        React.createElement(Ico, { name: "ticket", size: 16, color: "rgba(255,255,255,.6)", sw: 1.5 }),
-        "Documents & boarding passes",
+        React.createElement(Ico, { name: "ticket", size: 14, color: "rgba(255,255,255,.6)", sw: 1.5 }),
+        "Documents",
         React.createElement("span", { style: { marginLeft: "auto" } }, React.createElement(Ico, { name: exp ? "chevUp" : "chevDown", size: 14, color: "rgba(255,255,255,.5)", sw: 2 }))
       ),
       React.createElement(CarrierLogo, { carrier: d.carrier })
