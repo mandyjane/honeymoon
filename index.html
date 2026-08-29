@@ -3794,7 +3794,7 @@ var getCarrierKey = function(carrier) {
 var CarrierLogo = function(props) {
   var key = getCarrierKey(props.carrier);
   if (!key) return null;
-  var st = { position: "absolute", bottom: 10, right: 14, opacity: 0.15 };
+  var st = Object.assign({ position: "absolute", bottom: 10, right: 14, opacity: 0.15 }, props.posStyle || {});
   if (key === "awm") return React.createElement("img", { src: CARRIER_LOGOS.awm, style: Object.assign({}, st, { width: 80 }), alt: "" });
   var logo = CARRIER_LOGOS[key];
   return React.createElement("svg", {
@@ -3803,188 +3803,139 @@ var CarrierLogo = function(props) {
  React.createElement("path", { d: logo.d })));
 };
 const FlightC = ({
-  th,
-  d,
-  docs,
-  edit,
-  onEdit,
-  onEditDoc,
-  onView,
-  cardId,
-  bpExpanded,
-  onToggleBp,
-  bpState,
-  onSaveBp,
-  onViewBp
+  th, d, docs, edit, onEdit, onEditDoc, onView,
+  cardId, bpExpanded, onToggleBp, bpState, onSaveBp, onViewBp
 }) => {
-  var _bpExpanded = bpExpanded || false;
-  var _fid = cardId || d.flight || "";
-  return /*#__PURE__*/React.createElement("div", {
-  style: {
- background: th.accBg,
- borderRadius: 0,
- padding: "16px 18px",
- color: "#fff",
- position: "relative"
-  }
-}, edit && /*#__PURE__*/React.createElement(Pen, {
-  th: th,
-  onClick: onEdit,
-  abs: true
-}), /*#__PURE__*/React.createElement("div", {
-  style: {
- display: "flex",
- justifyContent: "space-between",
- marginBottom: 8,
- paddingRight: edit ? 34 : 0
-  }
-}, /*#__PURE__*/React.createElement("span", {
-  style: {
- fontSize: 11,
- opacity: .8,
- textTransform: "uppercase",
- letterSpacing: 1
-  }
-}, d.carrier), /*#__PURE__*/React.createElement("span", {
-  style: {
- fontSize: 11,
- background: "rgba(255,255,255,.2)",
- padding: "2px 8px",
- borderRadius: 20
-  }
-}, d.flight)), /*#__PURE__*/React.createElement("div", {
-  style: {
- display: "flex",
- alignItems: "center",
- justifyContent: "space-between",
- marginBottom: 6
-  }
-}, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
-  style: {
- fontFamily: "'Fraunces',Georgia,serif",
- fontSize: 20,
- fontWeight: 700
-  }
-}, d.dep), /*#__PURE__*/React.createElement("div", {
-  style: {
- fontSize: 12,
- opacity: .8
-  }
-}, d.from)), /*#__PURE__*/React.createElement("div", {
-  style: {
- flex: 1,
- textAlign: "center",
- padding: "0 6px"
-  }
-}, /*#__PURE__*/React.createElement("div", {
-  style: {
- borderTop: "1.5px dashed rgba(255,255,255,.4)",
- position: "relative",
- margin: "10px 0"
-  }
-}, /*#__PURE__*/React.createElement("span", {
-  style: {
- position: "absolute",
- top: -8,
- left: "50%",
- transform: "translateX(-50%)",
- fontSize: 14
-  }
-}, /*#__PURE__*/React.createElement(Ico, { name: "plane", size: 14, color: "rgba(255,255,255,.7)", sw: 1.5 })))), /*#__PURE__*/React.createElement("div", {
-  style: {
- textAlign: "right"
-  }
-}, /*#__PURE__*/React.createElement("div", {
-  style: {
- fontFamily: "'Fraunces',Georgia,serif",
- fontSize: 20,
- fontWeight: 700
-  }
-}, d.arr), /*#__PURE__*/React.createElement("div", {
-  style: {
- fontSize: 12,
- opacity: .8
-  }
-}, d.to))), /*#__PURE__*/React.createElement("div", {
-  style: {
- fontSize: 11,
- opacity: .7
-  }
-}, d.date), d.bref && /*#__PURE__*/React.createElement("div", {
-  style: {
- fontSize: 11,
- marginTop: 6,
- background: "rgba(255,255,255,.15)",
- padding: "3px 8px",
- borderRadius: 8,
- display: "inline-block"
-  }
-}, "Ref: ", d.bref), d.notes && /*#__PURE__*/React.createElement("div", {
-  style: {
- fontSize: 11,
- opacity: .7,
- marginTop: 4,
- fontStyle: "italic"
-  }
-}, d.notes), /*#__PURE__*/React.createElement(CarrierLogo, { carrier: d.carrier }),
-  /*#__PURE__*/React.createElement("button", {
- onClick: function() { if (onToggleBp) onToggleBp(_fid); },
- style: { width: "100%", marginTop: 10, padding: "7px 0", background: "rgba(255,255,255,0.1)", border: "none", color: "rgba(255,255,255,0.75)", fontSize: 11, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 6, borderRadius: 0 }
-  }, React.createElement(Ico, { name: "ticket", size: 13, color: "rgba(255,255,255,0.7)", sw: 1.5 }), "Documents & boarding passes",
-  React.createElement(Ico, { name: _bpExpanded ? "chevron-up" : "chevron-down", size: 13, color: "rgba(255,255,255,0.5)", sw: 1.5 })),
-  _bpExpanded && React.createElement("div", { style: { marginTop: 8, borderTop: "1px solid rgba(255,255,255,0.15)", paddingTop: 10 } },
- React.createElement(PdfBtns, { th: th, docs: docs, keys: d.pdfKeys, edit: edit, onEditDoc: onEditDoc, onView: onView, white: true }),
- React.createElement("div", { style: { display: "flex", gap: 8, marginTop: 10 } },
- ["Amanda", "Liam"].map(function(who) {
- var wk = who.toLowerCase();
- var fid = _fid;
- var bp = bpState && bpState[fid] || {};
- var photoKey = wk + "_photo";
- var bagKey = wk + "_bag";
- var hasPhoto = bp[photoKey];
- return React.createElement("div", { key: wk, style: { flex: 1 } },
- React.createElement("div", { style: { fontSize: 10, color: "rgba(255,255,255,0.5)", marginBottom: 4 } }, who),
- React.createElement("div", {
- onClick: function() {
- if (hasPhoto && onViewBp) { onViewBp(fid, wk); return; }
- var inp = document.createElement("input");
- inp.type = "file"; inp.accept = "image/*"; inp.capture = "environment";
- inp.onchange = function(e) {
- var file = e.target.files[0]; if (!file) return;
- var reader = new FileReader();
- reader.onload = function(ev) {
- putTicket({ id: "bp_" + fid + "_" + wk, data: ev.target.result, name: who + " boarding pass", type: file.type }).then(function() {
- if (onSaveBp) onSaveBp(fid, photoKey, "bp_" + fid + "_" + wk);
- });
- };
- reader.readAsDataURL(file);
- };
- inp.click();
- },
- style: { position: "relative", height: 72, background: hasPhoto ? "rgba(255,255,255,0.08)" : "transparent", border: hasPhoto ? "none" : "0.5px dashed rgba(255,255,255,0.25)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", cursor: "pointer", overflow: "hidden" }
- },
- hasPhoto ? React.createElement("div", { style: { fontSize: 10, color: "rgba(255,255,255,0.6)", display: "flex", alignItems: "center", gap: 4 } },
- React.createElement(Ico, { name: "ticket", size: 14, color: "rgba(255,255,255,0.5)", sw: 1.5 }), "View pass") :
- React.createElement(React.Fragment, null,
- React.createElement(Ico, { name: "camera", size: 16, color: "rgba(255,255,255,0.35)", sw: 1.5 }),
- React.createElement("span", { style: { fontSize: 8, color: "rgba(255,255,255,0.3)", marginTop: 3 } }, "Add pass")),
- hasPhoto && edit ? React.createElement("button", {
- onClick: function(e) { e.stopPropagation(); delTicket("bp_" + fid + "_" + wk).then(function() { if (onSaveBp) onSaveBp(fid, photoKey, ""); }); },
- style: { position: "absolute", top: 2, right: 2, width: 16, height: 16, background: "rgba(0,0,0,0.5)", border: "none", color: "white", fontSize: 10, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", borderRadius: 0 }
- }, "\u2715") : null),
- React.createElement("div", { style: { marginTop: 4 } },
- bp[bagKey] ? React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 4, padding: "5px", background: "rgba(255,255,255,0.08)" } },
- React.createElement(Ico, { name: "scan-barcode", size: 12, color: "#14b8a6", sw: 1.5 }),
- React.createElement("span", { style: { fontSize: 9, color: "rgba(255,255,255,0.7)", fontFamily: "'DM Mono', monospace" } }, bp[bagKey]),
- edit ? React.createElement("button", { onClick: function() { if (onSaveBp) onSaveBp(fid, bagKey, ""); }, style: { marginLeft: "auto", background: "none", border: "none", color: "rgba(255,255,255,0.4)", fontSize: 10, cursor: "pointer", padding: 0 } }, "\u2715") : null) :
- React.createElement("button", {
- onClick: function() {
- var v = prompt("Enter bag tag number:");
- if (v && onSaveBp) onSaveBp(fid, bagKey, v.trim());
- },
- style: { width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: 4, padding: "5px", border: "0.5px dashed rgba(255,255,255,0.2)", background: "none", color: "rgba(255,255,255,0.35)", fontSize: 9, cursor: "pointer", borderRadius: 0 }
- }, React.createElement(Ico, { name: "scan-barcode", size: 11, color: "rgba(255,255,255,0.35)", sw: 1.5 }), "Bag tag")));
- }))));
+  var cid = cardId || d.flight || "";
+  var exp = bpExpanded || false;
+  var bp = (bpState && bpState[cid]) || {};
+  var fileRef = React.useRef(null);
+  var fileWho = React.useRef("");
+  var handleFile = function(e) {
+    var file = e.target.files && e.target.files[0];
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) { alert("Max 5MB"); return; }
+    var reader = new FileReader();
+    reader.onload = function(ev) {
+      var blobId = "bp_" + cid + "_" + fileWho.current;
+      putTicket({ id: blobId, name: file.name, type: file.type, data: ev.target.result }).then(function() {
+        if (onSaveBp) onSaveBp(cid, fileWho.current + "_photo", blobId);
+      });
+    };
+    reader.readAsDataURL(file);
+    e.target.value = "";
+  };
+  var startUpload = function(who) {
+    fileWho.current = who;
+    if (fileRef.current) fileRef.current.click();
+  };
+  var removeBp = function(who) {
+    var blobId = bp[who + "_photo"];
+    if (blobId) delTicket(blobId).catch(function(){});
+    if (onSaveBp) onSaveBp(cid, who + "_photo", "");
+  };
+  var promptBag = function(who) {
+    var v = prompt("Enter bag tag number:");
+    if (v !== null && onSaveBp) onSaveBp(cid, who + "_bag", v.trim());
+  };
+  var removeBag = function(who) {
+    if (onSaveBp) onSaveBp(cid, who + "_bag", "");
+  };
+  var travCol = function(name, key) {
+    var hasPhoto = bp[key + "_photo"];
+    var hasBag = bp[key + "_bag"];
+    var pdfKey = null;
+    if (d.pdfKeys) {
+      for (var i = 0; i < d.pdfKeys.length; i++) {
+        if (d.pdfKeys[i].toLowerCase().indexOf(key) >= 0 || d.pdfKeys[i].toLowerCase().indexOf(name.toLowerCase()) >= 0) { pdfKey = d.pdfKeys[i]; break; }
+      }
+    }
+    return React.createElement("div", { style: { flex: 1 } },
+      React.createElement("div", { style: { fontSize: 10, textTransform: "uppercase", letterSpacing: 0.5, color: "rgba(255,255,255,.5)", marginBottom: 6, textAlign: "center" } }, name),
+      pdfKey && docs[pdfKey] ? React.createElement("button", {
+        onClick: function() { onView(pdfKey); },
+        style: { display: "flex", alignItems: "center", justifyContent: "center", gap: 5, fontSize: 11, color: "rgba(255,255,255,.7)", background: "rgba(255,255,255,.08)", padding: "7px 6px", border: "none", fontFamily: "inherit", cursor: "pointer", width: "100%", marginBottom: 6 }
+      }, React.createElement(Ico, { name: "file", size: 14, color: "rgba(255,255,255,.6)", sw: 1.5 }), "e-ticket") : null,
+      hasPhoto ? React.createElement("div", {
+        style: { height: 48, background: "rgba(255,255,255,.08)", display: "flex", alignItems: "center", justifyContent: "center", gap: 5, cursor: "pointer", position: "relative" },
+        onClick: function() { if (onViewBp) onViewBp(cid, key); }
+      },
+        React.createElement(Ico, { name: "ticket", size: 14, color: "rgba(255,255,255,.5)", sw: 1.5 }),
+        React.createElement("span", { style: { fontSize: 10, color: "rgba(255,255,255,.6)" } }, "View boarding pass"),
+        edit && React.createElement("div", {
+          onClick: function(e) { e.stopPropagation(); removeBp(key); },
+          style: { position: "absolute", top: 4, right: 6, fontSize: 10, color: "rgba(255,255,255,.4)", background: "rgba(255,255,255,.15)", width: 16, height: 16, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }
+        }, "\u2715")
+      ) : React.createElement("div", {
+        style: { height: 48, border: "1.5px dashed rgba(255,255,255,.2)", display: "flex", alignItems: "center", justifyContent: "center", gap: 5, cursor: "pointer" },
+        onClick: function() { startUpload(key); }
+      },
+        React.createElement(Ico, { name: "camera", size: 16, color: "rgba(255,255,255,.3)", sw: 1.5 }),
+        React.createElement("span", { style: { fontSize: 10, color: "rgba(255,255,255,.4)" } }, "Add boarding pass")
+      ),
+      hasBag ? React.createElement("div", {
+        style: { marginTop: 6, height: 36, background: "rgba(255,255,255,.06)", display: "flex", alignItems: "center", justifyContent: "center", gap: 6, position: "relative" }
+      },
+        React.createElement(Ico, { name: "scan-barcode", size: 14, color: "#14b8a6", sw: 1.5 }),
+        React.createElement("span", { style: { fontSize: 13, fontFamily: "'DM Mono',monospace", color: "rgba(255,255,255,.8)", letterSpacing: 1 } }, hasBag),
+        edit && React.createElement("div", {
+          onClick: function() { removeBag(key); },
+          style: { position: "absolute", top: "50%", right: 6, transform: "translateY(-50%)", fontSize: 9, color: "rgba(255,255,255,.4)", background: "rgba(255,255,255,.15)", width: 14, height: 14, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }
+        }, "\u2715")
+      ) : React.createElement("div", {
+        style: { marginTop: 6, height: 36, border: "1px dashed rgba(255,255,255,.15)", display: "flex", alignItems: "center", justifyContent: "center", gap: 6, cursor: "pointer" },
+        onClick: function() { promptBag(key); }
+      },
+        React.createElement(Ico, { name: "scan-barcode", size: 14, color: "rgba(255,255,255,.3)", sw: 1.5 }),
+        React.createElement("span", { style: { fontSize: 10, color: "rgba(255,255,255,.35)" } }, "Bag tag")
+      )
+    );
+  };
+  return React.createElement("div", {
+    style: { background: th.accBg, borderRadius: 0, padding: "16px 18px", color: "#fff", position: "relative" }
+  },
+    React.createElement("input", { ref: fileRef, type: "file", accept: "image/*", capture: "environment", style: { display: "none" }, onChange: handleFile }),
+    edit && React.createElement(Pen, { th: th, onClick: onEdit, abs: true }),
+    React.createElement("div", { style: { display: "flex", justifyContent: "space-between", marginBottom: 8, paddingRight: edit ? 34 : 0 } },
+      React.createElement("span", { style: { fontSize: 11, opacity: .8, textTransform: "uppercase", letterSpacing: 1 } }, d.carrier),
+      React.createElement("span", { style: { fontSize: 11, background: "rgba(255,255,255,.2)", padding: "2px 8px", borderRadius: 20 } }, d.flight)
+    ),
+    React.createElement("div", { style: { display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 } },
+      React.createElement("div", null,
+        React.createElement("div", { style: { fontFamily: "'Fraunces',Georgia,serif", fontSize: 20, fontWeight: 700 } }, d.dep),
+        React.createElement("div", { style: { fontSize: 12, opacity: .8 } }, d.from)
+      ),
+      React.createElement("div", { style: { flex: 1, textAlign: "center", padding: "0 6px" } },
+        React.createElement("div", { style: { borderTop: "1.5px dashed rgba(255,255,255,.4)", position: "relative", margin: "10px 0" } },
+          React.createElement("span", { style: { position: "absolute", top: -8, left: "50%", transform: "translateX(-50%)", fontSize: 14 } },
+            React.createElement(Ico, { name: "plane", size: 14, color: "rgba(255,255,255,.7)", sw: 1.5 })
+          )
+        )
+      ),
+      React.createElement("div", { style: { textAlign: "right" } },
+        React.createElement("div", { style: { fontFamily: "'Fraunces',Georgia,serif", fontSize: 20, fontWeight: 700 } }, d.arr),
+        React.createElement("div", { style: { fontSize: 12, opacity: .8 } }, d.to)
+      )
+    ),
+    React.createElement("div", { style: { fontSize: 11, opacity: .7 } }, d.date),
+    d.bref && React.createElement("div", { style: { fontSize: 11, marginTop: 6, background: "rgba(255,255,255,.15)", padding: "3px 8px", borderRadius: 8, display: "inline-block" } }, "Ref: ", d.bref),
+    d.notes && React.createElement("div", { style: { fontSize: 11, opacity: .7, marginTop: 4, fontStyle: "italic" } }, d.notes),
+    React.createElement("button", {
+      onClick: function() { if (onToggleBp) onToggleBp(cid); },
+      style: { display: "flex", alignItems: "center", gap: 8, marginTop: 12, padding: "8px 12px", background: exp ? "rgba(255,255,255,.15)" : "rgba(255,255,255,.1)", cursor: "pointer", border: "none", color: "rgba(255,255,255,.75)", fontSize: 12, fontWeight: 500, width: "calc(100% - 70px)", textAlign: "left", fontFamily: "inherit" }
+    },
+      React.createElement(Ico, { name: "ticket", size: 16, color: "rgba(255,255,255,.6)", sw: 1.5 }),
+      "Documents & boarding passes",
+      React.createElement("span", { style: { marginLeft: "auto" } }, React.createElement(Ico, { name: exp ? "chevUp" : "chevDown", size: 14, color: "rgba(255,255,255,.5)", sw: 2 }))
+    ),
+    exp && React.createElement("div", { style: { marginTop: 8 } },
+      React.createElement("div", { style: { display: "flex", gap: 10 } },
+        travCol("Amanda", "amanda"),
+        travCol("Liam", "liam")
+      )
+    ),
+    React.createElement(CarrierLogo, { carrier: d.carrier, posStyle: { top: 50, bottom: "auto" } })
+  );
 };
 const LBarC = ({
   th,
@@ -4177,7 +4128,191 @@ const FerryC = ({
  alignItems: "center",
  gap: 3
   }
-}, /*#__PURE__*/React.createElement(Ico, { name: "wallet", size: 10, color: "rgba(255,255,255,.7)", sw: 1.5 }), " ", d.cost)), /*#__PURE__*/React.createElement(CarrierLogo, { carrier: d.carrier }));
+}, /*#__PURE__*/React.createElement(Ico, { name: "wallet", size: 10, color: "rgba(255,255,255,.7)", sw: 1.5 }), " ", d.cost)), /*#__PURE__*/React.createElement(PdfBtns, {
+  th: th,
+  docs: docs,
+  keys: d.pdfKeys,
+  edit: edit,
+  onEditDoc: onEditDoc,
+  onView: onView,
+  white: true
+}), /*#__PURE__*/React.createElement(CarrierLogo, { carrier: d.carrier }));
+const XferC = ({
+  th,
+  d,
+  edit,
+  onEdit
+}) => /*#__PURE__*/React.createElement("div", {
+  style: {
+ display: "flex",
+ alignItems: "center",
+ gap: 12,
+ padding: "10px 14px",
+ background: th.card,
+ border: "0.5px solid " + th.bdr,
+ borderRadius: 0,
+ marginBottom: 8,
+ fontSize: 13
+  }
+}, /*#__PURE__*/React.createElement(Ico, { name: xferIco({ how: (d.method || "") + " " + (d.icon || ""), howIcon: d.icon }), size: 18, color: th.acc, sw: 1.5 }), /*#__PURE__*/React.createElement("div", {
+  style: {
+ flex: 1
+  }
+}, /*#__PURE__*/React.createElement("div", {
+  style: {
+ fontWeight: 600,
+ color: th.text
+  }
+}, d.from, " → ", d.to), /*#__PURE__*/React.createElement("div", {
+  style: {
+ color: th.mut,
+ fontSize: 11
+  }
+}, [d.leave ? "Leave " + d.leave : null, d.method, d.time].filter(Boolean).join(" · "))), d.cost && /*#__PURE__*/React.createElement("div", {
+  style: {
+ fontWeight: 600,
+ color: th.teal,
+ fontSize: 12
+  }
+}, d.cost), /*#__PURE__*/React.createElement("div", {
+  onClick: () => window.open("https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(d.to), "_blank"),
+  style: {
+ display: "flex",
+ alignItems: "center",
+ gap: 4,
+ background: th.dark ? "rgba(14,116,144,0.2)" : "rgba(14,116,144,0.08)",
+ padding: "5px 9px",
+ borderRadius: 0,
+ cursor: "pointer",
+ flexShrink: 0
+  }
+}, /*#__PURE__*/React.createElement("svg", {
+  width: "11",
+  height: "11",
+  viewBox: "0 0 24 24",
+  fill: "none",
+  stroke: th.acc,
+  strokeWidth: "2",
+  strokeLinecap: "round",
+  strokeLinejoin: "round"
+}, /*#__PURE__*/React.createElement("path", {
+  d: "M12 21c-4.97-5.03-8-8.5-8-12a8 8 0 1 1 16 0c0 3.5-3.03 6.97-8 12z"
+}), /*#__PURE__*/React.createElement("circle", {
+  cx: "12",
+  cy: "9",
+  r: "2.5"
+})), /*#__PURE__*/React.createElement("span", {
+  style: {
+ fontSize: 10,
+ color: th.acc,
+ fontWeight: 500
+  }
+}, "Map")), edit && /*#__PURE__*/React.createElement(PenD, {
+  th: th,
+  onClick: onEdit
+}));
+/* ── SVG ICONS ── */
+const ICO_PIN = () => /*#__PURE__*/React.createElement("svg", {
+  width: "13",
+  height: "13",
+  viewBox: "0 0 24 24",
+  fill: "none",
+  stroke: "currentColor",
+  strokeWidth: "1.5",
+  strokeLinecap: "round",
+  strokeLinejoin: "round"
+}, /*#__PURE__*/React.createElement("path", {
+  d: "M12 21c-4.97-5.03-8-8.5-8-12a8 8 0 1 1 16 0c0 3.5-3.03 6.97-8 12z"
+}), /*#__PURE__*/React.createElement("circle", {
+  cx: "12",
+  cy: "9",
+  r: "2.5"
+}));
+const ICO_DOC = () => /*#__PURE__*/React.createElement("svg", {
+  width: "13",
+  height: "13",
+  viewBox: "0 0 24 24",
+  fill: "none",
+  stroke: "currentColor",
+  strokeWidth: "1.5"
+}, /*#__PURE__*/React.createElement("path", {
+  d: "M6 2h12a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z"
+}), /*#__PURE__*/React.createElement("path", {
+  d: "M8 7h8M8 11h8M8 15h5"
+}));
+const ICO_FORK = () => /*#__PURE__*/React.createElement("svg", {
+  width: "13",
+  height: "13",
+  viewBox: "0 0 24 24",
+  fill: "none",
+  stroke: "currentColor",
+  strokeWidth: "1.5",
+  strokeLinecap: "round",
+  strokeLinejoin: "round"
+}, /*#__PURE__*/React.createElement("path", {
+  d: "M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"
+}), /*#__PURE__*/React.createElement("path", {
+  d: "M7 2v20"
+}), /*#__PURE__*/React.createElement("path", {
+  d: "M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"
+}));
+const ICO_LOTUS = () => /*#__PURE__*/React.createElement("svg", {
+  width: "13",
+  height: "13",
+  viewBox: "0 0 143 139",
+  xmlns: "http://www.w3.org/2000/svg"
+}, /*#__PURE__*/React.createElement("path", {
+  d: "M 64.125 10.945 C 61.404 14.215, 57.683 19.390, 55.855 22.445 C 54.028 25.500, 51.931 28, 51.197 28 C 50.462 28, 47.888 26.643, 45.478 24.985 C 39.556 20.910, 32.123 17.826, 29.913 18.528 C 27.584 19.267, 26.985 21.294, 26.045 31.609 C 25.621 36.256, 25.052 40.282, 24.780 40.554 C 24.507 40.826, 21.651 40.363, 18.432 39.524 C 5.060 36.041, 3.518 38.233, 7.201 55.500 C 8.986 63.871, 13.341 72.174, 19.353 78.668 L 25.054 84.825 22.123 86.913 C 20.510 88.061, 18.698 89, 18.096 89 C 17.493 89, 14.300 91.700, 11 95 C 3.117 102.883, 3.082 104.723, 10.750 108.359 C 23.095 114.214, 35.857 115.543, 46 112.030 C 49.025 110.982, 51.771 110.434, 52.103 110.812 C 52.434 111.190, 53.281 113.642, 53.985 116.260 C 55.550 122.079, 61.231 128.784, 67.345 132.027 L 71.830 134.406 75.492 132.453 C 81.490 129.253, 88.754 120.862, 90.079 115.602 C 91.370 110.472, 91.513 110.419, 98.409 112.511 C 107.889 115.387, 123.326 113.476, 133.750 108.136 C 137.020 106.461, 138 105.388, 138 103.483 C 138 100.288, 132.247 93.921, 124.776 88.848 L 118.980 84.912 124.034 78.706 C 130.723 70.493, 134.508 62.365, 136.598 51.725 C 139.268 38.135, 137.724 36.353, 126 39.500 C 122.975 40.312, 120.035 40.982, 119.467 40.988 C 118.899 40.995, 117.919 36.660, 117.288 31.356 C 115.875 19.470, 114.884 18.134, 108.793 19.907 C 106.432 20.594, 101.880 22.696, 98.678 24.578 C 95.476 26.460, 92.326 27.987, 91.678 27.970 C 91.030 27.954, 88.925 25.176, 87 21.797 C 82.198 13.368, 74.445 5, 71.436 5 C 69.772 5, 67.610 6.758, 64.125 10.945 M 67.048 16.564 C 57.371 27.062, 52.279 45.324, 54.846 60.321 C 56.266 68.610, 62.209 81.629, 67.202 87.385 C 71.385 92.207, 73.271 91.825, 77.727 85.257 C 90.414 66.557, 92.431 45.901, 83.392 27.241 C 80.692 21.669, 73.532 12, 72.104 12 C 71.637 12, 69.362 14.054, 67.048 16.564 M 31.630 28.250 C 30.556 32.258, 30.958 42.567, 32.250 44.131 C 34.912 47.355, 47.245 56.151, 47.977 55.347 C 48.401 54.881, 49 50.351, 49.307 45.281 L 49.866 36.062 46.183 33.158 C 40.910 29, 35.760 26.008, 33.867 26.004 C 32.968 26.002, 31.962 27.012, 31.630 28.250 M 103.789 28.394 C 101.749 29.607, 98.752 31.782, 97.130 33.227 L 94.181 35.854 94.724 46.177 C 95.023 51.855, 95.360 56.615, 95.472 56.755 C 95.584 56.895, 99.349 54.058, 103.838 50.450 L 112 43.890 112 36.527 C 112 25.155, 110.965 24.129, 103.789 28.394 M 121.441 46.855 C 107.934 52.186, 97.755 61.166, 91.455 73.310 C 89.403 77.264, 85.954 83.130, 83.790 86.344 C 81.626 89.559, 80.116 92.450, 80.435 92.769 C 80.754 93.088, 84.499 92.599, 88.758 91.684 C 109.762 87.169, 125.564 72.574, 130.559 53.078 C 131.799 48.237, 131.885 46.566, 130.951 45.440 C 129.435 43.614, 129.782 43.563, 121.441 46.855 M 11.552 45.916 C 10.537 47.558, 13.131 57.351, 16.318 63.911 C 20.183 71.867, 29.486 81.390, 37.571 85.667 C 46.870 90.587, 63 94.877, 63 92.430 C 63 92.117, 61.720 89.979, 60.156 87.680 C 58.591 85.381, 55.104 79.495, 52.406 74.601 C 44.240 59.788, 36.204 52.246, 23.488 47.459 C 16.675 44.895, 12.515 44.357, 11.552 45.916 M 26.688 91.327 C 22.429 92.638, 13.127 99.785, 13.050 101.806 C 12.986 103.480, 19.882 106.481, 27.198 107.965 C 31.341 108.805, 34.481 108.831, 38.698 108.060 C 44.721 106.959, 57 101.541, 57 99.985 C 57 99.495, 54.188 98.211, 50.750 97.131 C 47.313 96.052, 41.800 94.016, 38.500 92.608 C 31.721 89.715, 31.872 89.731, 26.688 91.327 M 104 92.693 C 100.975 94.112, 95.824 96.037, 92.554 96.973 C 89.284 97.909, 86.461 99.116, 86.282 99.655 C 86.102 100.195, 88.905 102.119, 92.512 103.931 C 101.670 108.533, 112.772 109.289, 122.983 106.006 C 126.868 104.756, 130.312 103.304, 130.638 102.777 C 131.516 101.356, 124.172 94.262, 119.465 91.983 C 114.119 89.395, 110.701 89.552, 104 92.693 M 67.271 100.964 C 62.174 103.277, 59.009 108.036, 59.004 113.393 C 59.001 116.718, 59.708 117.994, 63.857 122.143 C 69.997 128.283, 73.085 128.562, 78.345 123.453 C 80.354 121.503, 82.712 118.523, 83.587 116.832 C 86.558 111.087, 83.091 103.190, 76.364 100.379 C 72.244 98.657, 72.369 98.649, 67.271 100.964",
+  fill: "currentColor",
+  fillRule: "evenodd"
+}));
+const ICO_GLOBE = () => /*#__PURE__*/React.createElement("svg", {
+  width: "13",
+  height: "13",
+  viewBox: "0 0 24 24",
+  fill: "none",
+  stroke: "currentColor",
+  strokeWidth: "1.5",
+  strokeLinecap: "round"
+}, /*#__PURE__*/React.createElement("circle", {
+  cx: "12",
+  cy: "12",
+  r: "10"
+}), /*#__PURE__*/React.createElement("ellipse", {
+  cx: "12",
+  cy: "12",
+  rx: "4",
+  ry: "10"
+}), /*#__PURE__*/React.createElement("path", {
+  d: "M2 12h20"
+}));
+const ICO_GLASS = () => /*#__PURE__*/React.createElement("svg", {
+  width: "13",
+  height: "13",
+  viewBox: "38 103 220 213",
+  xmlns: "http://www.w3.org/2000/svg"
+}, /*#__PURE__*/React.createElement("g", {
+  transform: "translate(0,400) scale(0.1,-0.1)",
+  fill: "currentColor",
+  stroke: "none"
+}, /*#__PURE__*/React.createElement("path", {
+  d: "M2046 2880 c-14 -17 -63 -106 -110 -199 l-86 -170 -567 -3 c-313 -2 -576 -7 -585 -12 -24 -11 -31 -41 -17 -67 6 -12 47 -67 90 -123 76 -97 210 -271 449 -586 l110 -145 -2 -203 -3 -204 -172 -95 -173 -96 0 -37 c0 -25 5 -40 16 -44 9 -3 228 -6 489 -6 514 0 500 -2 493 56 -2 21 -16 34 -68 64 -36 20 -112 64 -170 97 l-105 61 0 209 0 209 121 155 c66 84 170 219 230 299 61 80 151 199 201 265 95 124 114 163 91 182 -7 6 -75 13 -155 15 -79 3 -145 7 -148 10 -3 3 33 81 80 173 47 92 85 174 85 181 0 14 -38 44 -56 44 -7 0 -24 -14 -38 -30z m77 -493 c-4 -7 -30 -41 -57 -75 l-49 -62 -374 0 c-239 0 -381 -4 -394 -10 -12 -7 -19 -21 -19 -40 0 -19 7 -33 19 -40 13 -6 142 -10 350 -10 206 0 331 -4 331 -10 0 -5 -13 -24 -28 -42 -48 -55 -332 -428 -353 -462 -17 -28 -19 -52 -19 -278 l0 -248 103 -60 102 -60 -252 0 c-139 0 -253 2 -253 4 0 2 42 27 93 56 50 29 95 58 100 64 4 6 6 121 5 256 l-3 246 -45 61 c-25 34 -146 194 -270 355 -124 160 -238 309 -253 330 l-29 38 652 0 c525 0 649 -2 643 -13z M1605 2042 c-20 -14 -126 -235 -123 -256 4 -25 52 -45 74 -31 18 12 163 277 157 288 -5 9 -95 9 -108 -1z"
+})));
+/* ── DATE HELPERS ── */
+const DAY_NAMES = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+const MONTH_NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+const fmtDateRange = (ci, co) => {
+  try {
+ const d1 = new Date(ci + "T00:00");
+ const d2 = new Date(co + "T00:00");
+ if (isNaN(d1) || isNaN(d2)) return "";
+ const m1 = MONTH_NAMES[d1.getMonth()];
+ const m2 = MONTH_NAMES[d2.getMonth()];
+ return `${DAY_NAMES[d1.getDay()]} ${d1.getDate()}${m1 !== m2 ? " " + m1 : ""} – ${DAY_NAMES[d2.getDay()]} ${d2.getDate()} ${m2}`;
+  } catch {
+ return "";
+  }
+};
 const calcNights = (ci, co) => {
   try {
  const ms = new Date(co + "T00:00").getTime() - new Date(ci + "T00:00").getTime();
@@ -4507,14 +4642,15 @@ const LU = {
   "square-pen": [["path", { d: "M12 3H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" }], ["path", { d: "M18.375 2.625a1 1 0 013 3l-9.013 9.014a2 2 0 01-.853.505l-2.873.84a.5.5 0 01-.62-.62l.84-2.873a2 2 0 01.506-.852z" }]],
   wallet: [["path", { d: "M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1" }], ["path", { d: "M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4" }]],
   sail: [["path", { d: "M2 21c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1 .6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1" }], ["path", { d: "M19.38 20A11.6 11.6 0 0 0 21 14l-9-4-9 4c0 2.9.94 5.34 2.81 7.76" }], ["path", { d: "M19 13V7a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v6" }], ["path", { d: "M12 10v4" }], ["path", { d: "M12 2v3" }]],
+  ticket: [["path", { d: "M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z" }], ["path", { d: "M13 5v2" }], ["path", { d: "M13 17v2" }], ["path", { d: "M13 11v2" }]],
   camera: [["path", { d: "M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z" }], ["circle", { cx: "12", cy: "13", r: "3" }]],
   "scan-barcode": [["path", { d: "M3 7V5a2 2 0 0 1 2-2h2" }], ["path", { d: "M17 3h2a2 2 0 0 1 2 2v2" }], ["path", { d: "M21 17v2a2 2 0 0 1-2 2h-2" }], ["path", { d: "M7 21H5a2 2 0 0 1-2-2v-2" }], ["path", { d: "M8 7v10" }], ["path", { d: "M12 7v10" }], ["path", { d: "M17 7v10" }]],
-  ticket: [["path", { d: "M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z" }], ["path", { d: "M13 5v2" }], ["path", { d: "M13 17v2" }], ["path", { d: "M13 11v2" }]],
   pin: [["path", { d: "M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0" }], ["circle", { cx: "12", cy: "10", r: "3" }]],
   car: [["path", { d: "M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2" }], ["circle", { cx: "7", cy: "17", r: "2" }], ["path", { d: "M9 17h6" }], ["circle", { cx: "17", cy: "17", r: "2" }]],
   walk: [["path", { d: "M4 16v-2.38C4 11.5 2.97 10.5 3 8c.03-2.72 1.49-6 4.5-6C9.37 2 10 3.8 10 5.5c0 3.11-2 5.66-2 8.68V16a2 2 0 1 1-4 0Z" }], ["path", { d: "M20 20v-2.38c0-2.12 1.03-3.12 1-5.62-.03-2.72-1.49-6-4.5-6C14.63 6 14 7.8 14 9.5c0 3.11 2 5.66 2 8.68V20a2 2 0 1 0 4 0Z" }], ["path", { d: "M16 17h4" }], ["path", { d: "M4 13h4" }]],
   utensils: [["path", { d: "M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2" }], ["path", { d: "M7 2v20" }], ["path", { d: "M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7" }]],
   martini: [["path", { d: "M12 12 4.207 4.207A.707.707 0 0 1 4.707 3h14.586a.707.707 0 0 1 .5 1.207z" }], ["path", { d: "M12 12v10" }], ["path", { d: "M7 22h10" }]],
+  file: [["path", { d: "M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z" }], ["path", { d: "M14 2v4a2 2 0 0 0 2 2h4" }]],
   image: [["rect", { width: "18", height: "18", x: "3", y: "3", rx: "2", ry: "2" }], ["circle", { cx: "9", cy: "9", r: "2" }], ["path", { d: "m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" }]],
   plane: [["path", { d: "M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z" }]],
   bus: [["path", { d: "M8 6v6" }], ["path", { d: "M15 6v6" }], ["path", { d: "M2 12h19.6" }], ["path", { d: "M18 18h3s.5-1.7.8-2.8c.1-.4.2-.8.2-1.2 0-.4-.1-.8-.2-1.2l-1.4-5C20.1 6.8 19.1 6 18 6H4a2 2 0 0 0-2 2v10h3" }], ["circle", { cx: "7", cy: "18", r: "2" }], ["path", { d: "M9 18h5" }], ["circle", { cx: "16", cy: "18", r: "2" }]],
@@ -4541,9 +4677,6 @@ const LU = {
   phone: [["path", { d: "M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" }]],
   "shield-check": [["path", { d: "M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" }], ["path", { d: "m9 12 2 2 4-4" }]],
   "map-pin": [["path", { d: "M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0" }], ["circle", { cx: "12", cy: "10", r: "3" }]],
-  camera: [["path", { d: "M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z" }], ["circle", { cx: "12", cy: "13", r: "3" }]],
-  "scan-barcode": [["path", { d: "M3 7V5a2 2 0 0 1 2-2h2" }], ["path", { d: "M17 3h2a2 2 0 0 1 2 2v2" }], ["path", { d: "M21 17v2a2 2 0 0 1-2 2h-2" }], ["path", { d: "M7 21H5a2 2 0 0 1-2-2v-2" }], ["path", { d: "M8 7v10" }], ["path", { d: "M12 7v10" }], ["path", { d: "M17 7v10" }]],
-  ticket: [["path", { d: "M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z" }], ["path", { d: "M13 5v2" }], ["path", { d: "M13 17v2" }], ["path", { d: "M13 11v2" }]],
   sunrise: [["path", { d: "M12 2v8" }], ["path", { d: "m4.93 10.93 1.41 1.41" }], ["path", { d: "M2 18h2" }], ["path", { d: "M20 18h2" }], ["path", { d: "m19.07 10.93-1.41 1.41" }], ["path", { d: "M22 22H2" }], ["path", { d: "m8 6 4-4 4 4" }], ["path", { d: "M16 18a4 4 0 0 0-8 0" }]],
   sunset: [["path", { d: "M12 10V2" }], ["path", { d: "m4.93 10.93 1.41 1.41" }], ["path", { d: "M2 18h2" }], ["path", { d: "M20 18h2" }], ["path", { d: "m19.07 10.93-1.41 1.41" }], ["path", { d: "M22 22H2" }], ["path", { d: "m16 6-4 4-4-4" }], ["path", { d: "M16 18a4 4 0 0 0-8 0" }]],
 };
@@ -4826,9 +4959,9 @@ const VendorEditM = ({ th, vendor, initialDest, onSave, onDelete, onClose }) => 
  return /*#__PURE__*/React.createElement("button", {
  key: vt[0],
  onClick: function() { u("type", vt[0]); },
- style: { flex: "0 0 calc(25% - 5px)", padding: "8px 2px 6px", border: active ? "1.5px solid " + th.acc : "0.5px solid " + th.bdr, background: active ? (th.dark ? "rgba(20,184,166,0.15)" : "rgba(20,184,166,0.08)") : th.inp, cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", gap: 4, borderRadius: 0 }
- }, /*#__PURE__*/React.createElement(Ico, { name: vt[0], size: 20, color: active ? th.acc : th.mut, sw: 1.5 }),
- /*#__PURE__*/React.createElement("span", { style: { fontSize: 9, color: active ? th.acc : th.mut, lineHeight: 1.1, textAlign: "center" } }, vt[1]));
+ title: vt[1],
+ style: { width: 42, height: 42, border: active ? "1.5px solid " + th.acc : "0.5px solid " + th.bdr, background: active ? (th.dark ? "rgba(20,184,166,0.15)" : "rgba(20,184,166,0.08)") : th.inp, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", borderRadius: 0 }
+ }, /*#__PURE__*/React.createElement(Ico, { name: vt[0], size: 22, color: active ? th.acc : th.mut, sw: 1.5 }));
  })),
  lbl("Name \u00b7 optional"),
  /*#__PURE__*/React.createElement("input", { value: f.name || "", onChange: function(e){ u("name", e.target.value); }, placeholder: "e.g. 7-Eleven Tonsai", autoComplete: "off", style: inpStyle }),
@@ -5599,7 +5732,8 @@ function App() {
   const [noteEdit, setNoteEdit] = useState(null);
   const [showEmergency, setShowEmergency] = useState(false);
   const [bpData, setBpData] = useState(() => {
- try { var s = JSON.parse(localStorage.getItem("th-honeymoon-2027")); return s && s.bpData || {}; } catch(e) { return {}; }
+ var s = load();
+ return s && s.bpData ? s.bpData : {};
   });
   const [bpOpen, setBpOpen] = useState({});
   const [bpView, setBpView] = useState(null);
@@ -5657,6 +5791,7 @@ function App() {
  if (s.homeView) setHomeView(s.homeView);
  if (s.dividerStyle) setDividerStyle(s.dividerStyle);
  if (s.travelDocs) setTravelDocs({ tdacReceived: false, tdac: [], passport_amanda: [], passport_liam: [], ...s.travelDocs });
+ if (s.bpData) setBpData(s.bpData);
  }
  setLoaded(true);
   }, []);
@@ -5679,8 +5814,8 @@ function App() {
  destNotes,
  hideCountdown,
 showSun,
-bpData,
- vendors
+ vendors,
+ bpData
  });
   }, [cards, docs, acts, standby, meals, packing, budgetTotal, heroImg, dark, travelDocs, homeView, dividerStyle, hiddenTransport, dailyEss, destNotes, hideCountdown, vendors, showSun, bpData, loaded]);
   useEffect(() => {
@@ -6031,17 +6166,19 @@ bpData,
   }, "+ Add Activity")));
   // Common card render helpers
   const rf = id => /*#__PURE__*/React.createElement(FlightC, {
- bpExpanded: bpOpen[id], onToggleBp: function(fid) { setBpOpen(function(p) { var n = Object.assign({}, p); n[fid] = !n[fid]; return n; }); },
- bpState: bpData, onSaveBp: function(fid, key, val) { setBpData(function(p) { var n = Object.assign({}, p); if (!n[fid]) n[fid] = {}; n[fid][key] = val; return n; }); },
- onViewBp: function(fid, wk) { getTicket("bp_" + fid + "_" + wk).then(function(t) { if (t) setBpView(t); }); },
- cardId: id,
  th: th,
  d: c(id),
  docs: docs,
  edit: edit,
  onEdit: () => editCard(id),
  onEditDoc: onEditDoc,
- onView: k => openPdf(docs[k])
+ onView: k => openPdf(docs[k]),
+ cardId: id,
+ bpExpanded: bpOpen[id],
+ onToggleBp: function(fid) { setBpOpen(function(p) { var n = Object.assign({}, p); n[fid] = !n[fid]; return n; }); },
+ bpState: bpData,
+ onSaveBp: function(fid, key, val) { setBpData(function(p) { var n = Object.assign({}, p); if (!n[fid]) n[fid] = {}; n[fid][key] = val; return n; }); },
+ onViewBp: function(fid, wk) { getTicket("bp_" + fid + "_" + wk).then(function(t) { if (t) setBpView(t); }); }
   });
   const rl = id => /*#__PURE__*/React.createElement(LBarC, {
  th: th,
@@ -7264,7 +7401,7 @@ bpData,
  fontWeight: heroImg === h.id ? 600 : 400
  }
  }, h.label));
-  }))), [["🌙", "Dark Mode", "Light and dark theme", dark, () => setDark(!dark)], [/*#__PURE__*/React.createElement(Ico, { name: "square-pen", size: 18, color: edit ? th.acc : th.mut, sw: 1.5 }), "Edit Mode", "Modify all cards and documents", edit, () => setEdit(!edit)], ["⏳", "Countdown", "Show days until honeymoon", !hideCountdown, () => setHideCountdown(!hideCountdown)], [/*#__PURE__*/React.createElement(Ico, { name: "sunrise", size: 18, color: showSun ? th.acc : th.mut, sw: 1.5 }), "Sunrise / sunset", "Show sun times on day headers", showSun, () => setShowSun(!showSun)]].map(([ico, t, s, on, fn], i) => /*#__PURE__*/React.createElement("div", {
+  }))), [["🌙", "Dark Mode", "Light and dark theme", dark, () => setDark(!dark)], [/*#__PURE__*/React.createElement(Ico, { name: "square-pen", size: 18, color: edit ? th.acc : th.mut, sw: 1.5 }), "Edit Mode", "Modify all cards and documents", edit, () => setEdit(!edit)], ["⏳", "Countdown", "Show days until honeymoon", !hideCountdown, () => setHideCountdown(!hideCountdown)]].map(([ico, t, s, on, fn], i) => /*#__PURE__*/React.createElement("div", {
  key: i,
  style: {
  background: th.card,
@@ -7495,15 +7632,18 @@ bpData,
  onClose: () => setTransportPopup(false)
   }), bpView && React.createElement("div", {
  onClick: function() { setBpView(null); },
- style: { position: "fixed", inset: 0, zIndex: 10000, background: "rgba(0,0,0,0.9)", display: "flex", alignItems: "center", justifyContent: "center", padding: 16, cursor: "pointer" }
-  }, React.createElement("img", {
- src: bpView.data,
- style: { maxWidth: "100%", maxHeight: "90vh", objectFit: "contain" }
-  }), React.createElement("button", {
+ style: { position: "fixed", inset: 0, zIndex: 10000, background: "rgba(0,0,0,.92)", display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }
+  },
+ React.createElement("button", {
  onClick: function() { setBpView(null); },
- style: { position: "absolute", top: 16, right: 16, background: "rgba(255,255,255,0.15)", border: "none", color: "white", fontSize: 20, width: 36, height: 36, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", borderRadius: 0 }
-  }, "\u2715")),
-  showEmergency && React.createElement("div", {
+ style: { position: "absolute", top: 16, right: 16, background: "rgba(255,255,255,.15)", border: "none", color: "#fff", fontSize: 20, width: 36, height: 36, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", zIndex: 10001 }
+ }, "\u2715"),
+ React.createElement("img", {
+ src: bpView.data,
+ style: { maxWidth: "100%", maxHeight: "85vh", objectFit: "contain" },
+ onClick: function(e) { e.stopPropagation(); }
+ })
+  ), showEmergency && React.createElement("div", {
  onClick: e => { if (e.target === e.currentTarget) setShowEmergency(false); },
  style: { position: "fixed", inset: 0, zIndex: 9999, background: "rgba(0,0,0,0.5)", display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }
   }, React.createElement("div", {
