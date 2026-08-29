@@ -3809,7 +3809,12 @@ const FlightC = ({
   edit,
   onEdit,
   onEditDoc,
-  onView
+  onView,
+  bpExpanded,
+  onToggleBp,
+  bpState,
+  onSaveBp,
+  onViewBp
 }) => /*#__PURE__*/React.createElement("div", {
   style: {
  background: th.accBg,
@@ -3917,15 +3922,65 @@ const FlightC = ({
  marginTop: 4,
  fontStyle: "italic"
   }
-}, d.notes), /*#__PURE__*/React.createElement(PdfBtns, {
-  th: th,
-  docs: docs,
-  keys: d.pdfKeys,
-  edit: edit,
-  onEditDoc: onEditDoc,
-  onView: onView,
-  white: true
-}), /*#__PURE__*/React.createElement(CarrierLogo, { carrier: d.carrier }));
+}, d.notes), /*#__PURE__*/React.createElement(CarrierLogo, { carrier: d.carrier }),
+  /*#__PURE__*/React.createElement("button", {
+ onClick: function() { if (onToggleBp) onToggleBp(d.id || ""); },
+ style: { width: "100%", marginTop: 10, padding: "7px 0", background: "rgba(255,255,255,0.1)", border: "none", color: "rgba(255,255,255,0.75)", fontSize: 11, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 6, borderRadius: 0 }
+  }, React.createElement(Ico, { name: "ticket", size: 13, color: "rgba(255,255,255,0.7)", sw: 1.5 }), "Documents & boarding passes",
+  React.createElement(Ico, { name: bpExpanded ? "chevron-up" : "chevron-down", size: 13, color: "rgba(255,255,255,0.5)", sw: 1.5 })),
+  bpExpanded && React.createElement("div", { style: { marginTop: 8, borderTop: "1px solid rgba(255,255,255,0.15)", paddingTop: 10 } },
+ React.createElement(PdfBtns, { th: th, docs: docs, keys: d.pdfKeys, edit: edit, onEditDoc: onEditDoc, onView: onView, white: true }),
+ React.createElement("div", { style: { display: "flex", gap: 8, marginTop: 10 } },
+ ["Amanda", "Liam"].map(function(who) {
+ var wk = who.toLowerCase();
+ var fid = d.id || d.flight;
+ var bp = bpState && bpState[fid] || {};
+ var photoKey = wk + "_photo";
+ var bagKey = wk + "_bag";
+ var hasPhoto = bp[photoKey];
+ return React.createElement("div", { key: wk, style: { flex: 1 } },
+ React.createElement("div", { style: { fontSize: 10, color: "rgba(255,255,255,0.5)", marginBottom: 4 } }, who),
+ React.createElement("div", {
+ onClick: function() {
+ if (hasPhoto && onViewBp) { onViewBp(fid, wk); return; }
+ var inp = document.createElement("input");
+ inp.type = "file"; inp.accept = "image/*"; inp.capture = "environment";
+ inp.onchange = function(e) {
+ var file = e.target.files[0]; if (!file) return;
+ var reader = new FileReader();
+ reader.onload = function(ev) {
+ putTicket({ id: "bp_" + fid + "_" + wk, data: ev.target.result, name: who + " boarding pass", type: file.type }).then(function() {
+ if (onSaveBp) onSaveBp(fid, photoKey, "bp_" + fid + "_" + wk);
+ });
+ };
+ reader.readAsDataURL(file);
+ };
+ inp.click();
+ },
+ style: { position: "relative", height: 72, background: hasPhoto ? "rgba(255,255,255,0.08)" : "transparent", border: hasPhoto ? "none" : "0.5px dashed rgba(255,255,255,0.25)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", cursor: "pointer", overflow: "hidden" }
+ },
+ hasPhoto ? React.createElement("div", { style: { fontSize: 10, color: "rgba(255,255,255,0.6)", display: "flex", alignItems: "center", gap: 4 } },
+ React.createElement(Ico, { name: "ticket", size: 14, color: "rgba(255,255,255,0.5)", sw: 1.5 }), "View pass") :
+ React.createElement(React.Fragment, null,
+ React.createElement(Ico, { name: "camera", size: 16, color: "rgba(255,255,255,0.35)", sw: 1.5 }),
+ React.createElement("span", { style: { fontSize: 8, color: "rgba(255,255,255,0.3)", marginTop: 3 } }, "Add pass")),
+ hasPhoto && edit ? React.createElement("button", {
+ onClick: function(e) { e.stopPropagation(); delTicket("bp_" + fid + "_" + wk).then(function() { if (onSaveBp) onSaveBp(fid, photoKey, ""); }); },
+ style: { position: "absolute", top: 2, right: 2, width: 16, height: 16, background: "rgba(0,0,0,0.5)", border: "none", color: "white", fontSize: 10, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", borderRadius: 0 }
+ }, "\u2715") : null),
+ React.createElement("div", { style: { marginTop: 4 } },
+ bp[bagKey] ? React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 4, padding: "5px", background: "rgba(255,255,255,0.08)" } },
+ React.createElement(Ico, { name: "scan-barcode", size: 12, color: "#14b8a6", sw: 1.5 }),
+ React.createElement("span", { style: { fontSize: 9, color: "rgba(255,255,255,0.7)", fontFamily: "'DM Mono', monospace" } }, bp[bagKey]),
+ edit ? React.createElement("button", { onClick: function() { if (onSaveBp) onSaveBp(fid, bagKey, ""); }, style: { marginLeft: "auto", background: "none", border: "none", color: "rgba(255,255,255,0.4)", fontSize: 10, cursor: "pointer", padding: 0 } }, "\u2715") : null) :
+ React.createElement("button", {
+ onClick: function() {
+ var v = prompt("Enter bag tag number:");
+ if (v && onSaveBp) onSaveBp(fid, bagKey, v.trim());
+ },
+ style: { width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: 4, padding: "5px", border: "0.5px dashed rgba(255,255,255,0.2)", background: "none", color: "rgba(255,255,255,0.35)", fontSize: 9, cursor: "pointer", borderRadius: 0 }
+ }, React.createElement(Ico, { name: "scan-barcode", size: 11, color: "rgba(255,255,255,0.35)", sw: 1.5 }), "Bag tag")));
+ }))));
 const LBarC = ({
   th,
   d,
@@ -4117,15 +4172,65 @@ const FerryC = ({
  alignItems: "center",
  gap: 3
   }
-}, /*#__PURE__*/React.createElement(Ico, { name: "wallet", size: 10, color: "rgba(255,255,255,.7)", sw: 1.5 }), " ", d.cost)), /*#__PURE__*/React.createElement(PdfBtns, {
-  th: th,
-  docs: docs,
-  keys: d.pdfKeys,
-  edit: edit,
-  onEditDoc: onEditDoc,
-  onView: onView,
-  white: true
-}), /*#__PURE__*/React.createElement(CarrierLogo, { carrier: d.carrier }));
+}, /*#__PURE__*/React.createElement(Ico, { name: "wallet", size: 10, color: "rgba(255,255,255,.7)", sw: 1.5 }), " ", d.cost)), /*#__PURE__*/React.createElement(CarrierLogo, { carrier: d.carrier }),
+  /*#__PURE__*/React.createElement("button", {
+ onClick: function() { if (onToggleBp) onToggleBp(d.id || ""); },
+ style: { width: "100%", marginTop: 10, padding: "7px 0", background: "rgba(255,255,255,0.1)", border: "none", color: "rgba(255,255,255,0.75)", fontSize: 11, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 6, borderRadius: 0 }
+  }, React.createElement(Ico, { name: "ticket", size: 13, color: "rgba(255,255,255,0.7)", sw: 1.5 }), "Documents & boarding passes",
+  React.createElement(Ico, { name: bpExpanded ? "chevron-up" : "chevron-down", size: 13, color: "rgba(255,255,255,0.5)", sw: 1.5 })),
+  bpExpanded && React.createElement("div", { style: { marginTop: 8, borderTop: "1px solid rgba(255,255,255,0.15)", paddingTop: 10 } },
+ React.createElement(PdfBtns, { th: th, docs: docs, keys: d.pdfKeys, edit: edit, onEditDoc: onEditDoc, onView: onView, white: true }),
+ React.createElement("div", { style: { display: "flex", gap: 8, marginTop: 10 } },
+ ["Amanda", "Liam"].map(function(who) {
+ var wk = who.toLowerCase();
+ var fid = d.id || d.flight;
+ var bp = bpState && bpState[fid] || {};
+ var photoKey = wk + "_photo";
+ var bagKey = wk + "_bag";
+ var hasPhoto = bp[photoKey];
+ return React.createElement("div", { key: wk, style: { flex: 1 } },
+ React.createElement("div", { style: { fontSize: 10, color: "rgba(255,255,255,0.5)", marginBottom: 4 } }, who),
+ React.createElement("div", {
+ onClick: function() {
+ if (hasPhoto && onViewBp) { onViewBp(fid, wk); return; }
+ var inp = document.createElement("input");
+ inp.type = "file"; inp.accept = "image/*"; inp.capture = "environment";
+ inp.onchange = function(e) {
+ var file = e.target.files[0]; if (!file) return;
+ var reader = new FileReader();
+ reader.onload = function(ev) {
+ putTicket({ id: "bp_" + fid + "_" + wk, data: ev.target.result, name: who + " boarding pass", type: file.type }).then(function() {
+ if (onSaveBp) onSaveBp(fid, photoKey, "bp_" + fid + "_" + wk);
+ });
+ };
+ reader.readAsDataURL(file);
+ };
+ inp.click();
+ },
+ style: { position: "relative", height: 72, background: hasPhoto ? "rgba(255,255,255,0.08)" : "transparent", border: hasPhoto ? "none" : "0.5px dashed rgba(255,255,255,0.25)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", cursor: "pointer", overflow: "hidden" }
+ },
+ hasPhoto ? React.createElement("div", { style: { fontSize: 10, color: "rgba(255,255,255,0.6)", display: "flex", alignItems: "center", gap: 4 } },
+ React.createElement(Ico, { name: "ticket", size: 14, color: "rgba(255,255,255,0.5)", sw: 1.5 }), "View pass") :
+ React.createElement(React.Fragment, null,
+ React.createElement(Ico, { name: "camera", size: 16, color: "rgba(255,255,255,0.35)", sw: 1.5 }),
+ React.createElement("span", { style: { fontSize: 8, color: "rgba(255,255,255,0.3)", marginTop: 3 } }, "Add pass")),
+ hasPhoto && edit ? React.createElement("button", {
+ onClick: function(e) { e.stopPropagation(); delTicket("bp_" + fid + "_" + wk).then(function() { if (onSaveBp) onSaveBp(fid, photoKey, ""); }); },
+ style: { position: "absolute", top: 2, right: 2, width: 16, height: 16, background: "rgba(0,0,0,0.5)", border: "none", color: "white", fontSize: 10, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", borderRadius: 0 }
+ }, "\u2715") : null),
+ React.createElement("div", { style: { marginTop: 4 } },
+ bp[bagKey] ? React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 4, padding: "5px", background: "rgba(255,255,255,0.08)" } },
+ React.createElement(Ico, { name: "scan-barcode", size: 12, color: "#14b8a6", sw: 1.5 }),
+ React.createElement("span", { style: { fontSize: 9, color: "rgba(255,255,255,0.7)", fontFamily: "'DM Mono', monospace" } }, bp[bagKey]),
+ edit ? React.createElement("button", { onClick: function() { if (onSaveBp) onSaveBp(fid, bagKey, ""); }, style: { marginLeft: "auto", background: "none", border: "none", color: "rgba(255,255,255,0.4)", fontSize: 10, cursor: "pointer", padding: 0 } }, "\u2715") : null) :
+ React.createElement("button", {
+ onClick: function() {
+ var v = prompt("Enter bag tag number:");
+ if (v && onSaveBp) onSaveBp(fid, bagKey, v.trim());
+ },
+ style: { width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: 4, padding: "5px", border: "0.5px dashed rgba(255,255,255,0.2)", background: "none", color: "rgba(255,255,255,0.35)", fontSize: 9, cursor: "pointer", borderRadius: 0 }
+ }, React.createElement(Ico, { name: "scan-barcode", size: 11, color: "rgba(255,255,255,0.35)", sw: 1.5 }), "Bag tag")));
+ }))));
 const XferC = ({
   th,
   d,
@@ -4631,6 +4736,8 @@ const LU = {
   "square-pen": [["path", { d: "M12 3H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" }], ["path", { d: "M18.375 2.625a1 1 0 013 3l-9.013 9.014a2 2 0 01-.853.505l-2.873.84a.5.5 0 01-.62-.62l.84-2.873a2 2 0 01.506-.852z" }]],
   wallet: [["path", { d: "M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1" }], ["path", { d: "M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4" }]],
   sail: [["path", { d: "M2 21c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1 .6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1" }], ["path", { d: "M19.38 20A11.6 11.6 0 0 0 21 14l-9-4-9 4c0 2.9.94 5.34 2.81 7.76" }], ["path", { d: "M19 13V7a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v6" }], ["path", { d: "M12 10v4" }], ["path", { d: "M12 2v3" }]],
+  camera: [["path", { d: "M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z" }], ["circle", { cx: "12", cy: "13", r: "3" }]],
+  "scan-barcode": [["path", { d: "M3 7V5a2 2 0 0 1 2-2h2" }], ["path", { d: "M17 3h2a2 2 0 0 1 2 2v2" }], ["path", { d: "M21 17v2a2 2 0 0 1-2 2h-2" }], ["path", { d: "M7 21H5a2 2 0 0 1-2-2v-2" }], ["path", { d: "M8 7v10" }], ["path", { d: "M12 7v10" }], ["path", { d: "M17 7v10" }]],
   ticket: [["path", { d: "M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z" }], ["path", { d: "M13 5v2" }], ["path", { d: "M13 17v2" }], ["path", { d: "M13 11v2" }]],
   pin: [["path", { d: "M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0" }], ["circle", { cx: "12", cy: "10", r: "3" }]],
   car: [["path", { d: "M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2" }], ["circle", { cx: "7", cy: "17", r: "2" }], ["path", { d: "M9 17h6" }], ["circle", { cx: "17", cy: "17", r: "2" }]],
@@ -4663,6 +4770,9 @@ const LU = {
   phone: [["path", { d: "M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" }]],
   "shield-check": [["path", { d: "M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" }], ["path", { d: "m9 12 2 2 4-4" }]],
   "map-pin": [["path", { d: "M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0" }], ["circle", { cx: "12", cy: "10", r: "3" }]],
+  camera: [["path", { d: "M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z" }], ["circle", { cx: "12", cy: "13", r: "3" }]],
+  "scan-barcode": [["path", { d: "M3 7V5a2 2 0 0 1 2-2h2" }], ["path", { d: "M17 3h2a2 2 0 0 1 2 2v2" }], ["path", { d: "M21 17v2a2 2 0 0 1-2 2h-2" }], ["path", { d: "M7 21H5a2 2 0 0 1-2-2v-2" }], ["path", { d: "M8 7v10" }], ["path", { d: "M12 7v10" }], ["path", { d: "M17 7v10" }]],
+  ticket: [["path", { d: "M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z" }], ["path", { d: "M13 5v2" }], ["path", { d: "M13 17v2" }], ["path", { d: "M13 11v2" }]],
   sunrise: [["path", { d: "M12 2v8" }], ["path", { d: "m4.93 10.93 1.41 1.41" }], ["path", { d: "M2 18h2" }], ["path", { d: "M20 18h2" }], ["path", { d: "m19.07 10.93-1.41 1.41" }], ["path", { d: "M22 22H2" }], ["path", { d: "m8 6 4-4 4 4" }], ["path", { d: "M16 18a4 4 0 0 0-8 0" }]],
   sunset: [["path", { d: "M12 10V2" }], ["path", { d: "m4.93 10.93 1.41 1.41" }], ["path", { d: "M2 18h2" }], ["path", { d: "M20 18h2" }], ["path", { d: "m19.07 10.93-1.41 1.41" }], ["path", { d: "M22 22H2" }], ["path", { d: "m16 6-4 4-4-4" }], ["path", { d: "M16 18a4 4 0 0 0-8 0" }]],
 };
@@ -5717,6 +5827,11 @@ function App() {
   const [showVendorMgr, setShowVendorMgr] = useState(false);
   const [noteEdit, setNoteEdit] = useState(null);
   const [showEmergency, setShowEmergency] = useState(false);
+  const [bpData, setBpData] = useState(() => {
+ try { var s = JSON.parse(localStorage.getItem("th-honeymoon-2027")); return s && s.bpData || {}; } catch(e) { return {}; }
+  });
+  const [bpOpen, setBpOpen] = useState({});
+  const [bpView, setBpView] = useState(null);
   const [showSun, setShowSun] = useState(() => {
  try { var s = JSON.parse(localStorage.getItem("th-honeymoon-2027")); return s && s.showSun !== undefined ? s.showSun : true; } catch(e) { return true; }
   });
@@ -5793,9 +5908,10 @@ function App() {
  destNotes,
  hideCountdown,
 showSun,
+bpData,
  vendors
  });
-  }, [cards, docs, acts, standby, meals, packing, budgetTotal, heroImg, dark, travelDocs, homeView, dividerStyle, hiddenTransport, dailyEss, destNotes, hideCountdown, vendors, showSun, loaded]);
+  }, [cards, docs, acts, standby, meals, packing, budgetTotal, heroImg, dark, travelDocs, homeView, dividerStyle, hiddenTransport, dailyEss, destNotes, hideCountdown, vendors, showSun, bpData, loaded]);
   useEffect(() => {
  document.body.className = dark ? "dark" : "";
   }, [dark]);
@@ -6144,6 +6260,9 @@ showSun,
   }, "+ Add Activity")));
   // Common card render helpers
   const rf = id => /*#__PURE__*/React.createElement(FlightC, {
+ bpExpanded: bpOpen[id], onToggleBp: function(fid) { setBpOpen(function(p) { var n = Object.assign({}, p); n[fid] = !n[fid]; return n; }); },
+ bpState: bpData, onSaveBp: function(fid, key, val) { setBpData(function(p) { var n = Object.assign({}, p); if (!n[fid]) n[fid] = {}; n[fid][key] = val; return n; }); },
+ onViewBp: function(fid, wk) { getTicket("bp_" + fid + "_" + wk).then(function(t) { if (t) setBpView(t); }); },
  th: th,
  d: c(id),
  docs: docs,
@@ -7602,7 +7721,17 @@ showSun,
  hiddenTransport: hiddenTransport,
  onSave: h => { setHiddenTransport(h); setTransportPopup(false); },
  onClose: () => setTransportPopup(false)
-  }), showEmergency && React.createElement("div", {
+  }), bpView && React.createElement("div", {
+ onClick: function() { setBpView(null); },
+ style: { position: "fixed", inset: 0, zIndex: 10000, background: "rgba(0,0,0,0.9)", display: "flex", alignItems: "center", justifyContent: "center", padding: 16, cursor: "pointer" }
+  }, React.createElement("img", {
+ src: bpView.data,
+ style: { maxWidth: "100%", maxHeight: "90vh", objectFit: "contain" }
+  }), React.createElement("button", {
+ onClick: function() { setBpView(null); },
+ style: { position: "absolute", top: 16, right: 16, background: "rgba(255,255,255,0.15)", border: "none", color: "white", fontSize: 20, width: 36, height: 36, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", borderRadius: 0 }
+  }, "\u2715")),
+  showEmergency && React.createElement("div", {
  onClick: e => { if (e.target === e.currentTarget) setShowEmergency(false); },
  style: { position: "fixed", inset: 0, zIndex: 9999, background: "rgba(0,0,0,0.5)", display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }
   }, React.createElement("div", {
