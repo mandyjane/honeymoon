@@ -3794,11 +3794,13 @@ var getCarrierKey = function(carrier) {
 var CarrierLogo = function(props) {
   var key = getCarrierKey(props.carrier);
   if (!key) return null;
-  var st = Object.assign({ position: "absolute", bottom: 10, right: 14, opacity: 0.15 }, props.posStyle || {});
+  var st = { position: "absolute", bottom: 0, right: 0, opacity: 0.15 };
   if (key === "awm") return React.createElement("img", { src: CARRIER_LOGOS.awm, style: Object.assign({}, st, { width: 80 }), alt: "" });
   var logo = CARRIER_LOGOS[key];
+  var lw = key === "ba" ? 70 : 45;
+  var lh = key === "ba" ? 90 : 60;
   return React.createElement("svg", {
- style: Object.assign({}, st, { width: 45, height: 60 }), viewBox: logo.vb, xmlns: "http://www.w3.org/2000/svg"
+ style: Object.assign({}, st, { width: lw, height: lh }), viewBox: logo.vb, xmlns: "http://www.w3.org/2000/svg"
   }, React.createElement("g", { transform: logo.t, fill: "#fff", stroke: "none" },
  React.createElement("path", { d: logo.d })));
 };
@@ -3892,49 +3894,51 @@ const FlightC = ({
     );
   };
   return React.createElement("div", {
-    style: { background: th.accBg, borderRadius: 0, padding: "16px 18px", color: "#fff", position: "relative" }
+    style: { background: th.accBg, borderRadius: 0, padding: "16px 18px", color: "#fff" }
   },
     React.createElement("input", { ref: fileRef, type: "file", accept: "image/*", capture: "environment", style: { display: "none" }, onChange: handleFile }),
-    edit && React.createElement(Pen, { th: th, onClick: onEdit, abs: true }),
-    React.createElement("div", { style: { display: "flex", justifyContent: "space-between", marginBottom: 8, paddingRight: edit ? 34 : 0 } },
-      React.createElement("span", { style: { fontSize: 11, opacity: .8, textTransform: "uppercase", letterSpacing: 1 } }, d.carrier),
-      React.createElement("span", { style: { fontSize: 11, background: "rgba(255,255,255,.2)", padding: "2px 8px", borderRadius: 20 } }, d.flight)
-    ),
-    React.createElement("div", { style: { display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 } },
-      React.createElement("div", null,
-        React.createElement("div", { style: { fontFamily: "'Fraunces',Georgia,serif", fontSize: 20, fontWeight: 700 } }, d.dep),
-        React.createElement("div", { style: { fontSize: 12, opacity: .8 } }, d.from)
+    React.createElement("div", { style: { position: "relative" } },
+      edit && React.createElement(Pen, { th: th, onClick: onEdit, abs: true }),
+      React.createElement("div", { style: { display: "flex", justifyContent: "space-between", marginBottom: 8, paddingRight: edit ? 34 : 0 } },
+        React.createElement("span", { style: { fontSize: 11, opacity: .8, textTransform: "uppercase", letterSpacing: 1 } }, d.carrier),
+        React.createElement("span", { style: { fontSize: 11, background: "rgba(255,255,255,.2)", padding: "2px 8px", borderRadius: 20 } }, d.flight)
       ),
-      React.createElement("div", { style: { flex: 1, textAlign: "center", padding: "0 6px" } },
-        React.createElement("div", { style: { borderTop: "1.5px dashed rgba(255,255,255,.4)", position: "relative", margin: "10px 0" } },
-          React.createElement("span", { style: { position: "absolute", top: -8, left: "50%", transform: "translateX(-50%)", fontSize: 14 } },
-            React.createElement(Ico, { name: "plane", size: 14, color: "rgba(255,255,255,.7)", sw: 1.5 })
+      React.createElement("div", { style: { display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 } },
+        React.createElement("div", null,
+          React.createElement("div", { style: { fontFamily: "'Fraunces',Georgia,serif", fontSize: 20, fontWeight: 700 } }, d.dep),
+          React.createElement("div", { style: { fontSize: 12, opacity: .8 } }, d.from)
+        ),
+        React.createElement("div", { style: { flex: 1, textAlign: "center", padding: "0 6px" } },
+          React.createElement("div", { style: { borderTop: "1.5px dashed rgba(255,255,255,.4)", position: "relative", margin: "10px 0" } },
+            React.createElement("span", { style: { position: "absolute", top: -8, left: "50%", transform: "translateX(-50%)", fontSize: 14 } },
+              React.createElement(Ico, { name: "plane", size: 14, color: "rgba(255,255,255,.7)", sw: 1.5 })
+            )
           )
+        ),
+        React.createElement("div", { style: { textAlign: "right" } },
+          React.createElement("div", { style: { fontFamily: "'Fraunces',Georgia,serif", fontSize: 20, fontWeight: 700 } }, d.arr),
+          React.createElement("div", { style: { fontSize: 12, opacity: .8 } }, d.to)
         )
       ),
-      React.createElement("div", { style: { textAlign: "right" } },
-        React.createElement("div", { style: { fontFamily: "'Fraunces',Georgia,serif", fontSize: 20, fontWeight: 700 } }, d.arr),
-        React.createElement("div", { style: { fontSize: 12, opacity: .8 } }, d.to)
-      )
-    ),
-    React.createElement("div", { style: { fontSize: 11, opacity: .7 } }, d.date),
-    d.bref && React.createElement("div", { style: { fontSize: 11, marginTop: 6, background: "rgba(255,255,255,.15)", padding: "3px 8px", borderRadius: 8, display: "inline-block" } }, "Ref: ", d.bref),
-    d.notes && React.createElement("div", { style: { fontSize: 11, opacity: .7, marginTop: 4, fontStyle: "italic" } }, d.notes),
-    React.createElement("button", {
-      onClick: function() { if (onToggleBp) onToggleBp(cid); },
-      style: { display: "flex", alignItems: "center", gap: 8, marginTop: 12, padding: "8px 12px", background: exp ? "rgba(255,255,255,.15)" : "rgba(255,255,255,.1)", cursor: "pointer", border: "none", color: "rgba(255,255,255,.75)", fontSize: 12, fontWeight: 500, width: "calc(100% - 70px)", textAlign: "left", fontFamily: "inherit" }
-    },
-      React.createElement(Ico, { name: "ticket", size: 16, color: "rgba(255,255,255,.6)", sw: 1.5 }),
-      "Documents & boarding passes",
-      React.createElement("span", { style: { marginLeft: "auto" } }, React.createElement(Ico, { name: exp ? "chevUp" : "chevDown", size: 14, color: "rgba(255,255,255,.5)", sw: 2 }))
+      React.createElement("div", { style: { fontSize: 11, opacity: .7 } }, d.date),
+      d.bref && React.createElement("div", { style: { fontSize: 11, marginTop: 6, background: "rgba(255,255,255,.15)", padding: "3px 8px", borderRadius: 8, display: "inline-block" } }, "Ref: ", d.bref),
+      d.notes && React.createElement("div", { style: { fontSize: 11, opacity: .7, marginTop: 4, fontStyle: "italic" } }, d.notes),
+      React.createElement("button", {
+        onClick: function() { if (onToggleBp) onToggleBp(cid); },
+        style: { display: "flex", alignItems: "center", gap: 8, marginTop: 12, padding: "8px 12px", background: exp ? "rgba(255,255,255,.15)" : "rgba(255,255,255,.1)", cursor: "pointer", border: "none", color: "rgba(255,255,255,.75)", fontSize: 12, fontWeight: 500, width: "calc(100% - 70px)", textAlign: "left", fontFamily: "inherit" }
+      },
+        React.createElement(Ico, { name: "ticket", size: 16, color: "rgba(255,255,255,.6)", sw: 1.5 }),
+        "Documents & boarding passes",
+        React.createElement("span", { style: { marginLeft: "auto" } }, React.createElement(Ico, { name: exp ? "chevUp" : "chevDown", size: 14, color: "rgba(255,255,255,.5)", sw: 2 }))
+      ),
+      React.createElement(CarrierLogo, { carrier: d.carrier })
     ),
     exp && React.createElement("div", { style: { marginTop: 8 } },
       React.createElement("div", { style: { display: "flex", gap: 10 } },
         travCol("Amanda", "amanda"),
         travCol("Liam", "liam")
       )
-    ),
-    React.createElement(CarrierLogo, { carrier: d.carrier, posStyle: { top: 50, bottom: "auto" } })
+    )
   );
 };
 const LBarC = ({
