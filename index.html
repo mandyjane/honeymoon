@@ -5914,27 +5914,50 @@ showSun,
   }));
   useEffect(function() {
     if (!showWeather) return;
+    var tripStart = new Date("2027-02-12");
+    var daysUntil = Math.ceil((tripStart - new Date()) / 864e5);
+    var useForecast = daysUntil <= 16;
     var locs = [
-      { name: "Koh Phi Phi", lat: 7.7407, lon: 98.7784, dates: "Fri 12 \u2013 Mon 15 Feb", color: "#14b8a6" },
-      { name: "Koh Samui", lat: 9.5120, lon: 100.0067, dates: "Mon 15 \u2013 Sat 21 Feb", color: "#f59e0b" },
-      { name: "Phuket", lat: 7.8804, lon: 98.3923, dates: "Sat 21 \u2013 Wed 25 Feb", color: "#ef4444" }
+      { name: "Koh Phi Phi", lat: 7.7407, lon: 98.7784, dates: "Fri 12 \u2013 Mon 15 Feb", color: "#14b8a6", start: "02-12", end: "02-15" },
+      { name: "Koh Samui", lat: 9.5120, lon: 100.0067, dates: "Mon 15 \u2013 Sat 21 Feb", color: "#f59e0b", start: "02-15", end: "02-21" },
+      { name: "Phuket", lat: 7.8804, lon: 98.3923, dates: "Sat 21 \u2013 Wed 25 Feb", color: "#ef4444", start: "02-21", end: "02-25" }
     ];
-    Promise.all(locs.map(function(loc) {
-      return fetch("https://api.open-meteo.com/v1/forecast?latitude=" + loc.lat + "&longitude=" + loc.lon + "&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,weathercode,relative_humidity_2m_max&timezone=Asia/Bangkok&forecast_days=16")
-        .then(function(r) { return r.json(); })
-        .then(function(d) { return { name: loc.name, dates: loc.dates, color: loc.color, daily: d.daily }; })
-        .catch(function() { return null; });
-    })).then(function(results) {
-      var valid = results.filter(function(r) { return r && r.daily; });
-      if (valid.length > 0) {
-        var obj = { fetched: Date.now(), destinations: valid.map(function(r) {
-          var days = []; for (var i = 0; i < r.daily.time.length; i++) { days.push({ date: r.daily.time[i], hi: Math.round(r.daily.temperature_2m_max[i]), lo: Math.round(r.daily.temperature_2m_min[i]), rain: r.daily.precipitation_probability_max[i], code: r.daily.weathercode[i], humid: r.daily.relative_humidity_2m_max ? r.daily.relative_humidity_2m_max[i] : 0 }); }
-          return { name: r.name, dates: r.dates, color: r.color, days: days };
-        }) };
-        setWeatherData(obj);
-        try { localStorage.setItem("th-weather-cache", JSON.stringify(obj)); } catch(e) {}
-      }
-    });
+    if (useForecast) {
+      Promise.all(locs.map(function(loc) {
+        return fetch("https://api.open-meteo.com/v1/forecast?latitude=" + loc.lat + "&longitude=" + loc.lon + "&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,weathercode&timezone=Asia/Bangkok&start_date=2027-" + loc.start + "&end_date=2027-" + loc.end)
+          .then(function(r) { return r.json(); })
+          .then(function(d) { return { name: loc.name, dates: loc.dates, color: loc.color, daily: d.daily, forecast: true }; })
+          .catch(function() { return null; });
+      })).then(function(results) {
+        var valid = results.filter(function(r) { return r && r.daily; });
+        if (valid.length > 0) {
+          var obj = { fetched: Date.now(), historical: false, destinations: valid.map(function(r) {
+            var days = []; for (var i = 0; i < r.daily.time.length; i++) { days.push({ date: r.daily.time[i], hi: Math.round(r.daily.temperature_2m_max[i]), lo: Math.round(r.daily.temperature_2m_min[i]), rain: r.daily.precipitation_probability_max[i] || 0, code: r.daily.weathercode[i], humid: 0 }); }
+            return { name: r.name, dates: r.dates, color: r.color, days: days };
+          }) };
+          setWeatherData(obj); try { localStorage.setItem("th-weather-cache", JSON.stringify(obj)); } catch(e) {}
+        }
+      });
+    } else {
+      var refYear = new Date().getFullYear();
+      if (new Date().getMonth() >= 2) refYear = refYear; else refYear = refYear - 1;
+      Promise.all(locs.map(function(loc) {
+        return fetch("https://archive-api.open-meteo.com/v1/archive?latitude=" + loc.lat + "&longitude=" + loc.lon + "&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,weathercode&timezone=Asia/Bangkok&start_date=" + refYear + "-" + loc.start + "&end_date=" + refYear + "-" + loc.end)
+          .then(function(r) { return r.json(); })
+          .then(function(d) { return { name: loc.name, dates: loc.dates, color: loc.color, daily: d.daily, refYear: refYear }; })
+          .catch(function() { return null; });
+      })).then(function(results) {
+        var valid = results.filter(function(r) { return r && r.daily; });
+        if (valid.length > 0) {
+          var yr = valid[0].refYear;
+          var obj = { fetched: Date.now(), historical: true, refYear: yr, destinations: valid.map(function(r) {
+            var days = []; for (var i = 0; i < r.daily.time.length; i++) { days.push({ date: "2027-" + r.daily.time[i].substring(5), hi: Math.round(r.daily.temperature_2m_max[i]), lo: Math.round(r.daily.temperature_2m_min[i]), rain: r.daily.precipitation_sum ? Math.min(100, Math.round(r.daily.precipitation_sum[i] * 10)) : 0, code: r.daily.weathercode[i], humid: 0 }); }
+            return { name: r.name, dates: r.dates, color: r.color, days: days };
+          }) };
+          setWeatherData(obj); try { localStorage.setItem("th-weather-cache", JSON.stringify(obj)); } catch(e) {}
+        }
+      });
+    }
   }, [showWeather]);
   var wmoIcon = function(c) { if (c === 0) return "\u2600\ufe0f"; if (c <= 2) return "\ud83c\udf24\ufe0f"; if (c === 3) return "\u26c5"; if (c <= 48) return "\ud83c\udf2b\ufe0f"; if (c <= 55) return "\ud83c\udf26\ufe0f"; if (c <= 65) return "\ud83c\udf27\ufe0f"; if (c <= 75) return "\u2744\ufe0f"; if (c <= 82) return "\ud83c\udf27\ufe0f"; return "\u26c8\ufe0f"; };
   var dayNames = ["SUN","MON","TUE","WED","THU","FRI","SAT"];
@@ -6570,8 +6593,8 @@ showSun,
   showWeather && weatherData && weatherData.destinations && React.createElement("div", { style: { margin: "16px 0 8px" } },
     React.createElement("div", { style: { display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 } },
       React.createElement("div", { style: { fontSize: 11, textTransform: "uppercase", letterSpacing: 1.5, color: th.mut, fontWeight: 600, display: "flex", alignItems: "center", gap: 6 } },
-        React.createElement("span", { style: { display: "inline-block", width: 18, height: 2, background: th.acc } }), "Weather Forecast"),
-      React.createElement("div", { style: { fontSize: 9, color: "rgba(255,255,255,.2)" } }, weatherData.fetched ? "Updated " + Math.round((Date.now() - weatherData.fetched) / 3600000) + "h ago" : "")
+        React.createElement("span", { style: { display: "inline-block", width: 18, height: 2, background: th.acc } }), weatherData.historical ? "Weather Reference" : "Weather Forecast"),
+      React.createElement("div", { style: { fontSize: 9, color: "rgba(255,255,255,.2)" } }, weatherData.historical ? "Based on Feb " + weatherData.refYear : "Live forecast")
     ),
     weatherData.destinations.map(function(dest, di) {
       return React.createElement("div", { key: di, style: { marginBottom: di < weatherData.destinations.length - 1 ? 12 : 0 } },
