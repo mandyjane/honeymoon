@@ -5740,8 +5740,9 @@ function App() {
   const [bpData, setBpData] = useState(() => { var s = load(); return s && s.bpData ? s.bpData : {}; });
   const [bpOpen, setBpOpen] = useState({});
   const [bpView, setBpView] = useState(null);
-  const [menuTrans, setMenuTrans] = useState({ open: false, loading: false, results: null });
-  const transRef = React.useRef(null);
+  const [showFab, setShowFab] = useState(() => { try { var s = JSON.parse(localStorage.getItem("th-honeymoon-2027")); return s && s.showFab !== undefined ? s.showFab : true; } catch(e) { return true; } });
+  const [showWeather, setShowWeather] = useState(() => { try { var s = JSON.parse(localStorage.getItem("th-honeymoon-2027")); return s && s.showWeather !== undefined ? s.showWeather : true; } catch(e) { return true; } });
+  const [weatherData, setWeatherData] = useState(() => { try { var w = JSON.parse(localStorage.getItem("th-weather-cache")); return w || null; } catch(e) { return null; } });
   const [showSun, setShowSun] = useState(() => {
  try { var s = JSON.parse(localStorage.getItem("th-honeymoon-2027")); return s && s.showSun !== undefined ? s.showSun : true; } catch(e) { return true; }
   });
@@ -5820,9 +5821,11 @@ function App() {
  hideCountdown,
 showSun,
  vendors,
- bpData
+ bpData,
+ showWeather,
+ showFab
  });
-  }, [cards, docs, acts, standby, meals, packing, budgetTotal, heroImg, dark, travelDocs, homeView, dividerStyle, hiddenTransport, dailyEss, destNotes, hideCountdown, vendors, showSun, bpData, loaded]);
+  }, [cards, docs, acts, standby, meals, packing, budgetTotal, heroImg, dark, travelDocs, homeView, dividerStyle, hiddenTransport, dailyEss, destNotes, hideCountdown, vendors, showSun, bpData, showWeather, showFab, loaded]);
   useEffect(() => {
  document.body.className = dark ? "dark" : "";
   }, [dark]);
@@ -5909,20 +5912,32 @@ showSun,
  ...data
  }
   }));
-  var handleTransPhoto = function(e) {
-    var file = e.target.files && e.target.files[0];
-    if (!file) return; e.target.value = "";
-    var reader = new FileReader();
-    reader.onload = function(ev) { translateMenu(ev.target.result); };
-    reader.readAsDataURL(file);
-  };
-  var translateMenu = function(dataUrl) {
-    setMenuTrans(function(p) { return { open: true, loading: true, results: null }; });
-    var apiKey = localStorage.getItem("anthropic_api_key");
-    if (!apiKey) { apiKey = prompt("Enter your Anthropic API key for AI features:"); if (!apiKey) { setMenuTrans(function(p) { return { open: true, loading: false, results: null }; }); return; } localStorage.setItem("anthropic_api_key", apiKey); }
-    var parts = dataUrl.split(","); var mimeMatch = dataUrl.match(/data:([^;]+)/); var mime = mimeMatch ? mimeMatch[1] : "image/jpeg"; var b64 = parts[1];
-    fetch("https://api.anthropic.com/v1/messages", { method: "POST", headers: { "Content-Type": "application/json", "x-api-key": apiKey, "anthropic-version": "2023-06-01", "anthropic-dangerous-direct-browser-access": "true" }, body: JSON.stringify({ model: "claude-sonnet-4-6", max_tokens: 2000, messages: [{ role: "user", content: [{ type: "image", source: { type: "base64", media_type: mime, data: b64 } }, { type: "text", text: 'This is a photo of a Thai restaurant menu. Extract all visible menu items. Return ONLY a JSON array, no markdown, no backticks. Each object: {"thai": "Thai text", "english": "English name", "desc": "Brief description", "thb": price_number_or_0, "spice": 0_to_3}.' }] }] }) }).then(function(resp) { return resp.json(); }).then(function(data) { if (data.error) { alert("API error: " + (data.error.message || "")); setMenuTrans(function(p) { return { open: true, loading: false, results: null }; }); return; } var text = data.content.map(function(c) { return c.text || ""; }).join(""); var clean = text.replace(/```json|```/g, "").trim(); var items = JSON.parse(clean); setMenuTrans(function(p) { return { open: true, loading: false, results: items }; }); }).catch(function(e) { alert("Translation failed: " + e.message); setMenuTrans(function(p) { return { open: true, loading: false, results: null }; }); });
-  };
+  useEffect(function() {
+    if (!showWeather) return;
+    var locs = [
+      { name: "Koh Phi Phi", lat: 7.7407, lon: 98.7784, dates: "Fri 12 \u2013 Mon 15 Feb", color: "#14b8a6" },
+      { name: "Koh Samui", lat: 9.5120, lon: 100.0067, dates: "Mon 15 \u2013 Sat 21 Feb", color: "#f59e0b" },
+      { name: "Phuket", lat: 7.8804, lon: 98.3923, dates: "Sat 21 \u2013 Wed 25 Feb", color: "#ef4444" }
+    ];
+    Promise.all(locs.map(function(loc) {
+      return fetch("https://api.open-meteo.com/v1/forecast?latitude=" + loc.lat + "&longitude=" + loc.lon + "&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,weathercode,relative_humidity_2m_max&timezone=Asia/Bangkok&forecast_days=16")
+        .then(function(r) { return r.json(); })
+        .then(function(d) { return { name: loc.name, dates: loc.dates, color: loc.color, daily: d.daily }; })
+        .catch(function() { return null; });
+    })).then(function(results) {
+      var valid = results.filter(function(r) { return r && r.daily; });
+      if (valid.length > 0) {
+        var obj = { fetched: Date.now(), destinations: valid.map(function(r) {
+          var days = []; for (var i = 0; i < r.daily.time.length; i++) { days.push({ date: r.daily.time[i], hi: Math.round(r.daily.temperature_2m_max[i]), lo: Math.round(r.daily.temperature_2m_min[i]), rain: r.daily.precipitation_probability_max[i], code: r.daily.weathercode[i], humid: r.daily.relative_humidity_2m_max ? r.daily.relative_humidity_2m_max[i] : 0 }); }
+          return { name: r.name, dates: r.dates, color: r.color, days: days };
+        }) };
+        setWeatherData(obj);
+        try { localStorage.setItem("th-weather-cache", JSON.stringify(obj)); } catch(e) {}
+      }
+    });
+  }, [showWeather]);
+  var wmoIcon = function(c) { if (c === 0) return "\u2600\ufe0f"; if (c <= 2) return "\ud83c\udf24\ufe0f"; if (c === 3) return "\u26c5"; if (c <= 48) return "\ud83c\udf2b\ufe0f"; if (c <= 55) return "\ud83c\udf26\ufe0f"; if (c <= 65) return "\ud83c\udf27\ufe0f"; if (c <= 75) return "\u2744\ufe0f"; if (c <= 82) return "\ud83c\udf27\ufe0f"; return "\u26c8\ufe0f"; };
+  var dayNames = ["SUN","MON","TUE","WED","THU","FRI","SAT"];
   const editCard = id => sCe({
  id,
  type: (cards[id] || INIT_CARDS[id])._t
@@ -6552,6 +6567,37 @@ showSun,
   /*#__PURE__*/React.createElement("a", { href: "https://goo.gl/maps/BFkEGg3z2J1GSaJ36?g_st=ac", target: "_blank", rel: "noopener", style: { fontSize: 12, fontWeight: 500, color: th.acc, textDecoration: "none", padding: "4px 8px" } }, "Samui"),
   /*#__PURE__*/React.createElement("span", { style: { color: th.bdr, fontSize: 12 } }, "|"),
   /*#__PURE__*/React.createElement("a", { href: "https://goo.gl/maps/1pwWDHuiWszWqLoQ6?g_st=ac", target: "_blank", rel: "noopener", style: { fontSize: 12, fontWeight: 500, color: th.acc, textDecoration: "none", padding: "4px 8px" } }, "Phuket")),
+  showWeather && weatherData && weatherData.destinations && React.createElement("div", { style: { margin: "16px 0 8px" } },
+    React.createElement("div", { style: { display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 } },
+      React.createElement("div", { style: { fontSize: 11, textTransform: "uppercase", letterSpacing: 1.5, color: th.mut, fontWeight: 600, display: "flex", alignItems: "center", gap: 6 } },
+        React.createElement("span", { style: { display: "inline-block", width: 18, height: 2, background: th.acc } }), "Weather Forecast"),
+      React.createElement("div", { style: { fontSize: 9, color: "rgba(255,255,255,.2)" } }, weatherData.fetched ? "Updated " + Math.round((Date.now() - weatherData.fetched) / 3600000) + "h ago" : "")
+    ),
+    weatherData.destinations.map(function(dest, di) {
+      return React.createElement("div", { key: di, style: { marginBottom: di < weatherData.destinations.length - 1 ? 12 : 0 } },
+        React.createElement("div", { style: { display: "flex", alignItems: "baseline", gap: 6, marginBottom: 8 } },
+          React.createElement("div", { style: { width: 4, height: 4, borderRadius: "50%", background: dest.color, flexShrink: 0 } }),
+          React.createElement("div", { style: { fontSize: 13, fontWeight: 600, color: th.text } }, dest.name),
+          React.createElement("div", { style: { fontSize: 10, color: th.mut } }, dest.dates)
+        ),
+        React.createElement("div", { style: { display: "flex", gap: 6, overflowX: "auto", WebkitOverflowScrolling: "touch", scrollbarWidth: "none", msOverflowStyle: "none", paddingBottom: 4 } },
+          dest.days.slice(0, 7).map(function(day, i) {
+            var dt = new Date(day.date + "T00:00:00");
+            return React.createElement("div", { key: i, style: { minWidth: 58, background: "rgba(255,255,255,.03)", border: "0.5px solid rgba(255,255,255,.06)", padding: "8px 6px", textAlign: "center", flexShrink: 0 } },
+              React.createElement("div", { style: { fontSize: 9, color: th.mut, textTransform: "uppercase", letterSpacing: .5 } }, dayNames[dt.getDay()]),
+              React.createElement("div", { style: { fontSize: 11, color: th.sub, marginTop: 1 } }, dt.getDate()),
+              React.createElement("div", { style: { fontSize: 22, margin: "6px 0 4px", lineHeight: 1 } }, wmoIcon(day.code)),
+              React.createElement("div", { style: { fontSize: 15, fontWeight: 700, color: th.text } }, day.hi + "\u00b0"),
+              React.createElement("div", { style: { fontSize: 10, color: th.mut, marginTop: 1 } }, day.lo + "\u00b0"),
+              React.createElement("div", { style: { display: "flex", alignItems: "center", justifyContent: "center", gap: 2, fontSize: 9, color: "rgba(59,130,246,.7)", marginTop: 4 } }, "\ud83d\udca7" + day.rain + "%"),
+              React.createElement("div", { style: { fontSize: 8, color: "rgba(255,255,255,.2)", marginTop: 2 } }, day.humid + "%")
+            );
+          })
+        ),
+        di < weatherData.destinations.length - 1 && React.createElement("div", { style: { height: 1, background: "rgba(255,255,255,.04)", marginTop: 8 } })
+      );
+    })
+  ),
   /*#__PURE__*/React.createElement(Sec, {
  th: th
   }, "Trip Timeline"), [{
@@ -7152,48 +7198,7 @@ showSun,
  marginLeft: 6
  }
  }, "A$", Math.round(dayTotal / r))))));
-  })()), React.createElement("input", { ref: transRef, type: "file", accept: "image/*", capture: "environment", style: { display: "none" }, onChange: handleTransPhoto }),
- !menuTrans.open ? React.createElement("div", {
-   onClick: function() { setMenuTrans(function(p) { return Object.assign({}, p, { open: true }); }); },
-   style: { display: "flex", alignItems: "center", gap: 8, padding: "10px 12px", background: th.dark ? "rgba(168,85,247,.08)" : "rgba(168,85,247,.06)", border: "1px solid rgba(168,85,247,.2)", marginTop: 16, marginBottom: 12, cursor: "pointer" }
- },
-   React.createElement(Ico, { name: "camera", size: 18, color: "rgb(168,85,247)", sw: 1.5 }),
-   React.createElement("div", { style: { flex: 1 } },
-     React.createElement("div", { style: { fontSize: 12, fontWeight: 600, color: "rgb(168,85,247)" } }, "\ud83d\udcf8 Translate a Thai Menu"),
-     React.createElement("div", { style: { fontSize: 10, color: "rgba(168,85,247,.6)", marginTop: 1 } }, "Photo \u2192 English with AUD prices")
-   ),
-   React.createElement("span", { style: { color: "rgba(168,85,247,.5)", fontSize: 14 } }, "\u203a")
- ) : React.createElement("div", {
-   style: { background: th.dark ? "rgba(168,85,247,.05)" : "rgba(168,85,247,.04)", border: "1px solid rgba(168,85,247,.12)", padding: 12, marginTop: 16, marginBottom: 12 }
- },
-   React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 } },
-     React.createElement("div", { style: { fontSize: 13, fontWeight: 600, color: "rgb(168,85,247)" } }, "\u2728 Menu Translation"),
-     React.createElement("div", { onClick: function() { setMenuTrans({ open: false, loading: false, results: null }); }, style: { fontSize: 12, color: "rgba(168,85,247,.5)", cursor: "pointer" } }, "\u2715 Close")
-   ),
-   React.createElement("div", {
-     onClick: function() { if (transRef.current) transRef.current.click(); },
-     style: { width: "100%", height: 80, background: "rgba(255,255,255,.03)", border: "1.5px dashed rgba(168,85,247,.2)", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, marginBottom: 10, cursor: "pointer" }
-   },
-     React.createElement(Ico, { name: "camera", size: 16, color: "rgba(168,85,247,.4)", sw: 1.5 }),
-     React.createElement("span", { style: { fontSize: 11, color: "rgba(168,85,247,.4)" } }, menuTrans.loading ? "Translating..." : "Tap to photograph menu")
-   ),
-   menuTrans.loading && React.createElement("div", { style: { textAlign: "center", padding: 16, fontSize: 12, color: "rgba(168,85,247,.6)" } }, "\u2728 Reading menu..."),
-   menuTrans.results && React.createElement("div", null, menuTrans.results.map(function(item, i) {
-     var spiceLabels = ["", "\ud83c\udf36\ufe0f Mild", "\ud83c\udf36\ufe0f\ud83c\udf36\ufe0f Spicy", "\ud83c\udf36\ufe0f\ud83c\udf36\ufe0f\ud83c\udf36\ufe0f Very Spicy"];
-     return React.createElement("div", { key: i, style: { display: "flex", justifyContent: "space-between", alignItems: "flex-start", padding: "8px 0", borderBottom: i < menuTrans.results.length - 1 ? "1px solid rgba(255,255,255,.06)" : "none" } },
-       React.createElement("div", { style: { flex: 1 } },
-         item.thai && React.createElement("div", { style: { fontSize: 12, fontWeight: 600, color: th.text } }, item.thai),
-         React.createElement("div", { style: { fontSize: 11, color: th.dark ? "rgba(255,255,255,.65)" : "rgba(0,0,0,.65)", marginTop: 1 } }, item.english),
-         item.desc && React.createElement("div", { style: { fontSize: 10, color: th.mut, marginTop: 1 } }, item.desc),
-         item.spice > 0 && React.createElement("div", { style: { display: "inline-block", fontSize: 8, padding: "1px 4px", background: "rgba(239,68,68,.12)", color: "#ef4444", marginTop: 2 } }, spiceLabels[item.spice] || "")
-       ),
-       item.thb > 0 && React.createElement("div", { style: { textAlign: "right", flexShrink: 0, marginLeft: 10 } },
-         React.createElement("div", { style: { fontSize: 11, color: th.sub } }, "\u0e3f", item.thb),
-         React.createElement("div", { style: { fontSize: 10, color: th.acc } }, "\u2248 A$", Math.round(item.thb / (liveRate || 22.5)))
-       )
-     );
-   }))
- ), tab === "currency" && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+  })()), tab === "currency" && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
  style: {
  fontFamily: "'Fraunces',Georgia,serif",
  fontSize: 24,
@@ -7482,7 +7487,7 @@ showSun,
  background: dividerStyle === val ? (th.dark ? "rgba(14,116,144,0.15)" : "rgba(14,116,144,0.08)") : "transparent",
  color: dividerStyle === val ? th.acc : th.sub, fontSize: 13, fontWeight: dividerStyle === val ? 600 : 400, cursor: "pointer"
  }
-  }, label); })), [["🌙", "Dark Mode", "Light and dark theme", dark, () => setDark(!dark)], [/*#__PURE__*/React.createElement(Ico, { name: "square-pen", size: 18, color: edit ? th.acc : th.mut, sw: 1.5 }), "Edit Mode", "Modify all cards and documents", edit, () => setEdit(!edit)], ["⏳", "Countdown", "Show days until honeymoon", !hideCountdown, () => setHideCountdown(!hideCountdown)]].map(([ico, t, s, on, fn], i) => /*#__PURE__*/React.createElement("div", {
+  }, label); })), [["🌙", "Dark Mode", "Light and dark theme", dark, () => setDark(!dark)], ["\u270f\ufe0f", "Edit Button", "Show floating edit button", showFab, () => setShowFab(!showFab)], ["⏳", "Countdown", "Show days until honeymoon", !hideCountdown, () => setHideCountdown(!hideCountdown)], ["\ud83c\udf24\ufe0f", "Weather Forecast", "Show forecast on home overview", showWeather, () => setShowWeather(!showWeather)]].map(([ico, t, s, on, fn], i) => /*#__PURE__*/React.createElement("div", {
  key: i,
  style: {
  background: th.card,
@@ -8052,7 +8057,7 @@ showSun,
  color: th.text
  }
  }, /*#__PURE__*/React.createElement(Ico, { name: "square-pen", size: 14, color: th.acc, sw: 1.5 }))) : null;
-  })))))), tab !== "settings" && /*#__PURE__*/React.createElement("button", {
+  })))))), tab !== "settings" && showFab && /*#__PURE__*/React.createElement("button", {
  onClick: () => setEdit(!edit),
  "aria-label": edit ? "Exit edit mode" : "Enter edit mode",
  style: {
