@@ -6259,10 +6259,11 @@ showSun,
  bpState: bpData,
  onSaveBp: function(fid, key, val) { setBpData(function(p) { var n = Object.assign({}, p); if (!n[fid]) n[fid] = {}; n[fid][key] = val; return n; }); },
  onViewBp: function(fid, wk, viewType) {
+   var lbl = wk.charAt(0).toUpperCase() + wk.slice(1) + " \u2014 " + (c(fid).flight || fid);
    if (viewType === "bag") {
-     var bpd = bpData[fid]; if (bpd && bpd[wk + "_bag"]) setBpView({ type: "bag", number: bpd[wk + "_bag"], label: wk.charAt(0).toUpperCase() + wk.slice(1) + " \u2014 " + (c(fid).flight || fid) });
+     var bpd = bpData[fid]; if (bpd && bpd[wk + "_bag"]) setBpView({ type: "bag", number: bpd[wk + "_bag"], label: lbl, fid: fid, wk: wk });
    } else {
-     getTicket("bp_" + fid + "_" + wk).then(function(t) { if (t) setBpView({ type: "bp", data: t.data, label: wk.charAt(0).toUpperCase() + wk.slice(1) + " \u2014 " + (c(fid).flight || fid) }); });
+     getTicket("bp_" + fid + "_" + wk).then(function(t) { if (t) setBpView({ type: "bp", data: t.data, label: lbl, fid: fid, wk: wk }); });
    }
  }
   });
@@ -7067,7 +7068,8 @@ showSun,
  fontSize: 11,
  opacity: .8
  }
- }, "A$", Math.round(dayTotal / r), " · ", dayMeals.length, " meal", dayMeals.length !== 1 ? "s" : ""))), /*#__PURE__*/React.createElement("div", {
+ }, "A$", Math.round(dayTotal / r), " · ", dayMeals.length, " meal", dayMeals.length !== 1 ? "s" : ""))),
+ ), /*#__PURE__*/React.createElement("div", {
  style: {
  overflowX: "auto",
  WebkitOverflowScrolling: "touch",
@@ -7212,7 +7214,49 @@ showSun,
  color: th.acc,
  marginLeft: 6
  }
- }, "A$", Math.round(dayTotal / r))))));
+ }, "A$", Math.round(dayTotal / r))))),
+ React.createElement("input", { ref: transRef, type: "file", accept: "image/*", style: { display: "none" }, onChange: handleTransPhoto }),
+ !menuTrans.open ? React.createElement("div", {
+   onClick: function() { setMenuTrans(function(p) { return Object.assign({}, p, { open: true }); }); },
+   style: { display: "flex", alignItems: "center", gap: 8, padding: "10px 12px", background: th.dark ? "rgba(168,85,247,.08)" : "rgba(168,85,247,.06)", border: "1px solid rgba(168,85,247,.2)", marginBottom: 12, cursor: "pointer" }
+ },
+   React.createElement(Ico, { name: "camera", size: 18, color: "rgb(168,85,247)", sw: 1.5 }),
+   React.createElement("div", { style: { flex: 1 } },
+     React.createElement("div", { style: { fontSize: 12, fontWeight: 600, color: "rgb(168,85,247)" } }, "\ud83d\udcf8 Translate a Thai Menu"),
+     React.createElement("div", { style: { fontSize: 10, color: "rgba(168,85,247,.6)", marginTop: 1 } }, "Photo \u2192 English with AUD prices")
+   ),
+   React.createElement("span", { style: { color: "rgba(168,85,247,.5)", fontSize: 14 } }, "\u203a")
+ ) : React.createElement("div", {
+   style: { background: th.dark ? "rgba(168,85,247,.05)" : "rgba(168,85,247,.04)", border: "1px solid rgba(168,85,247,.12)", padding: 12, marginBottom: 12 }
+ },
+   React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 } },
+     React.createElement("div", { style: { fontSize: 13, fontWeight: 600, color: "rgb(168,85,247)" } }, "\u2728 Menu Translation"),
+     React.createElement("div", { onClick: function() { setMenuTrans({ open: false, loading: false, results: null }); }, style: { fontSize: 12, color: "rgba(168,85,247,.5)", cursor: "pointer" } }, "\u2715 Close")
+   ),
+   React.createElement("div", {
+     onClick: function() { if (transRef.current) transRef.current.click(); },
+     style: { width: "100%", height: 80, background: "rgba(255,255,255,.03)", border: "1.5px dashed rgba(168,85,247,.2)", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, marginBottom: 10, cursor: "pointer" }
+   },
+     React.createElement(Ico, { name: "camera", size: 16, color: "rgba(168,85,247,.4)", sw: 1.5 }),
+     React.createElement("span", { style: { fontSize: 11, color: "rgba(168,85,247,.4)" } }, menuTrans.loading ? "Translating..." : "Tap to photograph menu")
+   ),
+   menuTrans.loading && React.createElement("div", { style: { textAlign: "center", padding: 16, fontSize: 12, color: "rgba(168,85,247,.6)" } }, "\u2728 Reading menu..."),
+   menuTrans.results && React.createElement("div", null, menuTrans.results.map(function(item, i) {
+     var spiceLabels = ["", "\ud83c\udf36\ufe0f Mild", "\ud83c\udf36\ufe0f\ud83c\udf36\ufe0f Spicy", "\ud83c\udf36\ufe0f\ud83c\udf36\ufe0f\ud83c\udf36\ufe0f Very Spicy"];
+     return React.createElement("div", { key: i, style: { display: "flex", justifyContent: "space-between", alignItems: "flex-start", padding: "8px 0", borderBottom: i < menuTrans.results.length - 1 ? "1px solid rgba(255,255,255,.06)" : "none" } },
+       React.createElement("div", { style: { flex: 1 } },
+         item.thai && React.createElement("div", { style: { fontSize: 12, fontWeight: 600, color: th.text } }, item.thai),
+         React.createElement("div", { style: { fontSize: 11, color: th.dark ? "rgba(255,255,255,.65)" : "rgba(0,0,0,.65)", marginTop: 1 } }, item.english),
+         item.desc && React.createElement("div", { style: { fontSize: 10, color: th.mut, marginTop: 1 } }, item.desc),
+         item.spice > 0 && React.createElement("div", { style: { display: "inline-block", fontSize: 8, padding: "1px 4px", background: "rgba(239,68,68,.12)", color: "#ef4444", marginTop: 2 } }, spiceLabels[item.spice] || "")
+       ),
+       item.thb > 0 && React.createElement("div", { style: { textAlign: "right", flexShrink: 0, marginLeft: 10 } },
+         React.createElement("div", { style: { fontSize: 11, color: th.sub } }, "\u0e3f", item.thb),
+         React.createElement("div", { style: { fontSize: 10, color: th.acc } }, "\u2248 A$", Math.round(item.thb / (liveRate || 22.5)))
+       )
+     );
+   }))
+ );
   })()), tab === "currency" && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
  style: {
  fontFamily: "'Fraunces',Georgia,serif",
@@ -7718,18 +7762,18 @@ showSun,
  onClose: () => setTransportPopup(false)
   }), bpView && React.createElement("div", {
  onClick: function() { setBpView(null); },
- style: { position: "fixed", inset: 0, zIndex: 10000, backdropFilter: "blur(8px)", WebkitBackdropFilter: "blur(8px)", background: "rgba(0,0,0,.5)", display: "flex", alignItems: "center", justifyContent: "center", padding: 24 }
+ style: { position: "fixed", inset: 0, zIndex: 10000, backdropFilter: "blur(8px)", WebkitBackdropFilter: "blur(8px)", background: "rgba(0,0,0,.5)", display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }
   },
  React.createElement("div", {
  onClick: function(e) { e.stopPropagation(); },
- style: { background: th.dark ? "#1a2332" : "#fff", border: "0.5px solid " + (th.dark ? "rgba(255,255,255,.12)" : "rgba(0,0,0,.1)"), width: "100%", maxWidth: 300, padding: 16, position: "relative" }
+ style: { background: th.dark ? "#1a2332" : "#fff", border: "0.5px solid " + (th.dark ? "rgba(255,255,255,.12)" : "rgba(0,0,0,.1)"), width: "100%", maxWidth: 300, padding: "12px 12px 8px", position: "relative" }
  },
  React.createElement("button", {
    onClick: function() { setBpView(null); },
-   style: { position: "absolute", top: 10, right: 10, background: "rgba(255,255,255,.1)", border: "none", color: th.dark ? "rgba(255,255,255,.5)" : "rgba(0,0,0,.4)", fontSize: 14, width: 26, height: 26, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }
+   style: { position: "absolute", top: 8, right: 8, background: "rgba(255,255,255,.1)", border: "none", color: th.dark ? "rgba(255,255,255,.5)" : "rgba(0,0,0,.4)", fontSize: 14, width: 26, height: 26, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }
  }, "\u2715"),
- React.createElement("div", { style: { fontSize: 10, textTransform: "uppercase", letterSpacing: 1, color: th.dark ? "rgba(255,255,255,.4)" : "rgba(0,0,0,.4)", marginBottom: 12, textAlign: "center" } }, bpView.label || ""),
- bpView.type === "bag" ? React.createElement("div", { style: { background: "#fff", padding: "20px 16px", display: "flex", flexDirection: "column", alignItems: "center", gap: 10 } },
+ React.createElement("div", { style: { fontSize: 10, textTransform: "uppercase", letterSpacing: 1, color: th.dark ? "rgba(255,255,255,.4)" : "rgba(0,0,0,.4)", marginBottom: 8, textAlign: "center" } }, bpView.label || ""),
+ bpView.type === "bag" ? React.createElement("div", { style: { background: "#fff", padding: "16px 12px", display: "flex", flexDirection: "column", alignItems: "center", gap: 8 } },
    React.createElement("svg", { viewBox: "0 0 200 60", style: { width: "80%", height: 50 } },
      (function() {
        var num = (bpView.number || "").replace(/\s/g, "");
@@ -7750,8 +7794,22 @@ showSun,
    React.createElement("div", { style: { fontSize: 14, fontFamily: "'DM Mono',monospace", letterSpacing: 2, color: "#000", fontWeight: 500 } }, bpView.number)
  ) : React.createElement("img", {
    src: bpView.data,
-   style: { width: "100%", maxHeight: 250, objectFit: "contain" }
- })
+   style: { width: "100%", objectFit: "contain" }
+ }),
+ React.createElement("button", {
+   onClick: function() {
+     var v = bpView;
+     if (v.type === "bag") {
+       setBpData(function(p) { var n = Object.assign({}, p); if (n[v.fid]) { n[v.fid][v.wk + "_bag"] = ""; } return n; });
+     } else {
+       var blobId = "bp_" + v.fid + "_" + v.wk;
+       delTicket(blobId).catch(function(){});
+       setBpData(function(p) { var n = Object.assign({}, p); if (n[v.fid]) { n[v.fid][v.wk + "_photo"] = ""; } return n; });
+     }
+     setBpView(null);
+   },
+   style: { width: "100%", marginTop: 8, padding: "6px 0", background: "transparent", border: "1px solid " + (th.dark ? "rgba(255,255,255,.12)" : "rgba(0,0,0,.1)"), color: th.dark ? "rgba(255,255,255,.4)" : "rgba(0,0,0,.4)", fontSize: 11, cursor: "pointer", fontFamily: "inherit" }
+ }, "Remove")
  )
   ), showEmergency && React.createElement("div", {
  onClick: e => { if (e.target === e.currentTarget) setShowEmergency(false); },
