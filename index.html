@@ -5765,6 +5765,7 @@ function App() {
   const [homeView, setHomeView] = useState("overview");
   const [brefOpen, setBrefOpen] = useState(false);
   const [wxOpen, setWxOpen] = useState(true);
+  const [wxDestOpen, setWxDestOpen] = useState({0: true, 1: true, 2: true});
   const [tlOpen, setTlOpen] = useState(true);
   const [budgetOpen, setBudgetOpen] = useState(true);
   const [byfOpen, setByfOpen] = useState(true);
@@ -6603,13 +6604,15 @@ showSun,
         React.createElement("span", { style: { fontSize: 12, color: th.mut, transform: wxOpen ? "rotate(180deg)" : "rotate(0deg)", transition: "transform 0.2s" } }, "\u25be"))
     ),
     wxOpen && weatherData.destinations.map(function(dest, di) {
+      var destOpen = wxDestOpen[di] !== false;
       return React.createElement("div", { key: di, style: { marginBottom: di < weatherData.destinations.length - 1 ? 12 : 0 } },
-        React.createElement("div", { style: { display: "flex", alignItems: "baseline", gap: 6, marginBottom: 8 } },
-          React.createElement("div", { style: { width: 4, height: 4, borderRadius: "50%", background: dest.color, flexShrink: 0 } }),
+        React.createElement("div", { onClick: function() { setWxDestOpen(function(prev) { var n = Object.assign({}, prev); n[di] = !destOpen; return n; }); }, style: { display: "flex", alignItems: "center", gap: 6, marginBottom: destOpen ? 8 : 0, cursor: "pointer", padding: "2px 0" } },
+          React.createElement("div", { style: { width: 5, height: 5, borderRadius: "50%", background: dest.color, flexShrink: 0 } }),
           React.createElement("div", { style: { fontSize: 13, fontWeight: 600, color: th.text } }, dest.name),
-          React.createElement("div", { style: { fontSize: 10, color: th.mut } }, dest.dates)
+          React.createElement("div", { style: { fontSize: 10, color: th.mut } }, dest.dates),
+          React.createElement("span", { style: { marginLeft: "auto", fontSize: 11, color: th.mut, transform: destOpen ? "rotate(180deg)" : "rotate(0deg)", transition: "transform 0.2s" } }, "\u25be")
         ),
-        React.createElement("div", { style: { display: "flex", gap: 6, overflowX: "auto", WebkitOverflowScrolling: "touch", scrollbarWidth: "none", msOverflowStyle: "none", paddingBottom: 4 } },
+        destOpen && React.createElement("div", { style: { display: "flex", gap: 6, overflowX: "auto", WebkitOverflowScrolling: "touch", scrollbarWidth: "none", msOverflowStyle: "none", paddingBottom: 4 } },
           dest.days.slice(0, 7).map(function(day, i) {
             var dt = new Date(day.date + "T00:00:00");
             return React.createElement("div", { key: i, style: { minWidth: 58, background: "rgba(255,255,255,.03)", border: "0.5px solid rgba(255,255,255,.06)", padding: "8px 6px", textAlign: "center", flexShrink: 0 } },
