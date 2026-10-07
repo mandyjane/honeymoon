@@ -3203,7 +3203,7 @@ const TicketsM = ({
  style: {
  position: "fixed",
  inset: 0,
- zIndex: 10001,
+ zIndex: 9999,
  background: "rgba(0,0,0,.7)",
  display: "flex",
  alignItems: "flex-end",
@@ -5765,7 +5765,6 @@ function App() {
   const [homeView, setHomeView] = useState("overview");
   const [brefOpen, setBrefOpen] = useState(false);
   const [wxOpen, setWxOpen] = useState(true);
-  const [wxDestOpen, setWxDestOpen] = useState({0: true, 1: true, 2: true});
   const [tlOpen, setTlOpen] = useState(true);
   const [budgetOpen, setBudgetOpen] = useState(true);
   const [byfOpen, setByfOpen] = useState(true);
@@ -6555,7 +6554,18 @@ showSun,
   /*#__PURE__*/React.createElement("div", {
  style: { fontSize: 12, opacity: .7, letterSpacing: 0.5 }
   }, "February 2027 \u00b7 14 nights \u00b7 3 destinations"),
-  )),
+  /*#__PURE__*/React.createElement("div", {
+ style: { display: "flex", gap: 8, marginTop: 12 }
+  }, ["Phi Phi Islands", "Koh Samui", "Phuket"].map(function(d, i) {
+ return /*#__PURE__*/React.createElement("span", {
+ key: i,
+ style: {
+ fontSize: 11, padding: "6px 14px", borderRadius: 100,
+ border: "1px solid rgba(255,255,255,.25)", color: "rgba(255,255,255,.9)",
+ background: "rgba(255,255,255,.06)"
+ }
+ }, d);
+  })))),
   /* -- COUNTDOWN BAR (below hero) -- */
   !hideCountdown && Math.ceil((new Date("2027-02-11") - new Date()) / 864e5) > 0 && /*#__PURE__*/React.createElement("div", {
  style: {
@@ -6593,15 +6603,13 @@ showSun,
         React.createElement("span", { style: { fontSize: 12, color: th.mut, transform: wxOpen ? "rotate(180deg)" : "rotate(0deg)", transition: "transform 0.2s" } }, "\u25be"))
     ),
     wxOpen && weatherData.destinations.map(function(dest, di) {
-      var destOpen = wxDestOpen[di] !== false;
       return React.createElement("div", { key: di, style: { marginBottom: di < weatherData.destinations.length - 1 ? 12 : 0 } },
-        React.createElement("div", { onClick: function() { setWxDestOpen(function(prev) { var n = Object.assign({}, prev); n[di] = !destOpen; return n; }); }, style: { display: "flex", alignItems: "center", gap: 6, marginBottom: destOpen ? 8 : 0, cursor: "pointer", padding: "2px 0" } },
-          React.createElement("div", { style: { width: 5, height: 5, borderRadius: "50%", background: dest.color, flexShrink: 0 } }),
+        React.createElement("div", { style: { display: "flex", alignItems: "baseline", gap: 6, marginBottom: 8 } },
+          React.createElement("div", { style: { width: 4, height: 4, borderRadius: "50%", background: dest.color, flexShrink: 0 } }),
           React.createElement("div", { style: { fontSize: 13, fontWeight: 600, color: th.text } }, dest.name),
-          React.createElement("div", { style: { fontSize: 10, color: th.mut } }, dest.dates),
-          React.createElement("span", { style: { marginLeft: "auto", fontSize: 11, color: th.mut, transform: destOpen ? "rotate(180deg)" : "rotate(0deg)", transition: "transform 0.2s" } }, "\u25be")
+          React.createElement("div", { style: { fontSize: 10, color: th.mut } }, dest.dates)
         ),
-        destOpen && React.createElement("div", { style: { display: "flex", gap: 6, overflowX: "auto", WebkitOverflowScrolling: "touch", scrollbarWidth: "none", msOverflowStyle: "none", paddingBottom: 4 } },
+        React.createElement("div", { style: { display: "flex", gap: 6, overflowX: "auto", WebkitOverflowScrolling: "touch", scrollbarWidth: "none", msOverflowStyle: "none", paddingBottom: 4 } },
           dest.days.slice(0, 7).map(function(day, i) {
             var dt = new Date(day.date + "T00:00:00");
             return React.createElement("div", { key: i, style: { minWidth: 58, background: "rgba(255,255,255,.03)", border: "0.5px solid rgba(255,255,255,.06)", padding: "8px 6px", textAlign: "center", flexShrink: 0 } },
@@ -7604,7 +7612,22 @@ showSun,
  acts,
  standby,
  meals,
- dark
+ packing,
+ budgetTotal,
+ heroImg,
+ dark,
+ travelDocs,
+ homeView,
+ dividerStyle,
+ hiddenTransport,
+ dailyEss,
+ destNotes,
+ hideCountdown,
+ showSun,
+ vendors,
+ bpData,
+ showWeather,
+ showFab
  }, null, 2);
  const b = new Blob([d], {
  type: "application/json"
@@ -7668,6 +7691,21 @@ showSun,
  if (d.standby) setStandby(d.standby);
  if (d.meals) setMeals(d.meals);
  if (d.dark !== undefined) setDark(d.dark);
+ if (d.packing) setPacking(d.packing);
+ if (d.budgetTotal !== undefined) setBudgetTotal(d.budgetTotal);
+ if (d.heroImg !== undefined) setHeroImg(d.heroImg);
+ if (d.travelDocs) setTravelDocs(d.travelDocs);
+ if (d.homeView) setHomeView(d.homeView);
+ if (d.dividerStyle) setDividerStyle(d.dividerStyle);
+ if (d.hiddenTransport) setHiddenTransport(d.hiddenTransport);
+ if (d.dailyEss) setDailyEss(d.dailyEss);
+ if (d.destNotes) setDestNotes(d.destNotes);
+ if (d.hideCountdown !== undefined) setHideCountdown(d.hideCountdown);
+ if (d.showSun !== undefined) setShowSun(d.showSun);
+ if (d.vendors) setVendors(d.vendors);
+ if (d.bpData) setBpData(d.bpData);
+ if (d.showWeather !== undefined) setShowWeather(d.showWeather);
+ if (d.showFab !== undefined) setShowFab(d.showFab);
  alert("Imported successfully!");
  } catch {
  alert("Invalid backup file");
