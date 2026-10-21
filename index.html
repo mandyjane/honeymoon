@@ -85,6 +85,27 @@ const delTicket = async id => {
  r.onerror = () => rej(r.error);
   });
 };
+const getAllTickets = async () => {
+  const db = await openTDB();
+  return new Promise((res, rej) => {
+ const tx = db.transaction(TSTORE, "readonly");
+ const r = tx.objectStore(TSTORE).getAll();
+ r.onsuccess = () => res(r.result || []);
+ r.onerror = () => rej(r.error);
+  });
+};
+const blobToBase64 = blob => new Promise((res, rej) => {
+  const r = new FileReader();
+  r.onload = () => res(r.result);
+  r.onerror = () => rej(r.error);
+  r.readAsDataURL(blob);
+});
+const base64ToBlob = dataUrl => {
+  var parts = dataUrl.split(","); var mime = parts[0].match(/:(.*?);/)[1];
+  var raw = atob(parts[1]); var arr = new Uint8Array(raw.length);
+  for (var i = 0; i < raw.length; i++) arr[i] = raw.charCodeAt(i);
+  return new Blob([arr], { type: mime });
+};
 const clearTickets = async () => {
   const db = await openTDB();
   return new Promise((res, rej) => {
@@ -7605,39 +7626,33 @@ showSun,
  marginBottom: 12
  }
   }, /*#__PURE__*/React.createElement("button", {
- onClick: () => {
- const d = JSON.stringify({
- cards,
- docs,
- acts,
- standby,
- meals,
- packing,
- budgetTotal,
- heroImg,
- dark,
- travelDocs,
- homeView,
- dividerStyle,
- hiddenTransport,
- dailyEss,
- destNotes,
- hideCountdown,
- showSun,
- vendors,
- bpData,
- showWeather,
- showFab
+ onClick: async () => {
+ try {
+ var allTickets = await getAllTickets();
+ var ticketExport = [];
+ for (var t of allTickets) {
+ var rec = { id: t.id, name: t.name, type: t.type };
+ if (t.activityId) rec.activityId = t.activityId;
+ if (t.addedAt) rec.addedAt = t.addedAt;
+ if (t.data && typeof t.data === "string") { rec.data = t.data; }
+ else if (t.blob instanceof Blob) { rec.data = await blobToBase64(t.blob); rec.wasBlob = true; }
+ else if (t.data instanceof ArrayBuffer) { var bl = new Blob([t.data], { type: t.type }); rec.data = await blobToBase64(bl); rec.wasBlob = true; }
+ ticketExport.push(rec);
+ }
+ var d = JSON.stringify({
+ cards, docs, acts, standby, meals, packing, budgetTotal, heroImg, dark,
+ travelDocs, homeView, dividerStyle, hiddenTransport, dailyEss, destNotes,
+ hideCountdown, showSun, vendors, bpData, showWeather, showFab,
+ _tickets: ticketExport
  }, null, 2);
- const b = new Blob([d], {
- type: "application/json"
- });
- const u = URL.createObjectURL(b);
- const a = document.createElement("a");
+ var b = new Blob([d], { type: "application/json" });
+ var u = URL.createObjectURL(b);
+ var a = document.createElement("a");
  a.href = u;
  a.download = "honeymoon-backup-" + new Date().toISOString().slice(0, 10) + ".json";
  a.click();
  URL.revokeObjectURL(u);
+ } catch (err) { alert("Export failed: " + err.message); }
  },
  style: {
  flex: 1,
@@ -7706,7 +7721,26 @@ showSun,
  if (d.bpData) setBpData(d.bpData);
  if (d.showWeather !== undefined) setShowWeather(d.showWeather);
  if (d.showFab !== undefined) setShowFab(d.showFab);
+ if (d._tickets && d._tickets.length) {
+ (async () => {
+ try {
+ await clearTickets();
+ var count = 0;
+ for (var t of d._tickets) {
+ var rec = { id: t.id, name: t.name, type: t.type };
+ if (t.activityId) rec.activityId = t.activityId;
+ if (t.addedAt) rec.addedAt = t.addedAt;
+ if (t.wasBlob && t.data) { rec.blob = base64ToBlob(t.data); }
+ else if (t.data) { rec.data = t.data; }
+ await putTicket(rec);
+ count++;
+ }
+ alert("Imported successfully! Restored " + count + " file(s).");
+ } catch (err) { alert("Imported settings but file restore failed: " + err.message); }
+ })();
+ } else {
  alert("Imported successfully!");
+ }
  } catch {
  alert("Invalid backup file");
  }
